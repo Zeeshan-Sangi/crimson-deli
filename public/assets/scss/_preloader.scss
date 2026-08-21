@@ -1,0 +1,140 @@
+.back-to-top{
+    background-color: $theme-color;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    color: $header-color;
+    font-size: 18px;
+    position: fixed;
+    display: inline-block;
+    z-index: 999;
+    right: 30px;
+    bottom: 30px;
+    @include transition;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    border-radius: 12px;
+
+    &:hover {
+        background-color: $header-color;
+        color: $white;
+    }
+    
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(0);
+    }
+}
+
+
+.preloader{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 999999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+    background: $white;
+}
+.loader {
+    width: fit-content;
+    font-size: 80px;
+    line-height: 1.5;
+    font-family: $heading-font;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #0000;
+    -webkit-text-stroke: 1px $theme-color;
+    background:
+    radial-gradient(1.13em at 50% 1.6em,$theme-color 99%,#0000 101%) calc(50% - 1.6em) 0/3.2em 100% text,
+    radial-gradient(1.13em at 50% -0.8em,#0000 99%,$theme-color 101%) 50% .8em/3.2em 100% repeat-x  text;
+    animation: l9 2s linear infinite;
+    @include breakpoint (max-sm){
+        font-size: 36px;
+    }
+  }
+  .loader:before {
+    content: "Crimson Deli";
+  }
+  @keyframes l9 {
+    to {background-position: calc(50% + 1.6em) 0,calc(50% + 3.2em) .8em}
+}
+
+
+
+
+.cursor-outer {
+    margin-inline-start: -12px;
+    margin-top: -12px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid $theme-color;
+    background-color: $theme-color;
+    box-sizing: border-box;
+    z-index: 10000000;
+    opacity: 0.34;
+    transition: all 0.4s ease-out 0s;
+}
+.cursor-outer.cursor-hover {
+    opacity: 0.14;
+}
+.cursor-outer.cursor-big {
+    opacity: 0;
+}
+
+.mouseCursor {
+    position: fixed;
+    top: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    bottom: 0;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translateZ(0);
+    visibility: hidden;
+    text-align: center;
+}
+.mouseCursor.cursor-big {
+    width: 20px;
+    height: 20px;
+    margin-inline-start: -12px;
+    margin-top: -12px;
+}
+
+.cursor-inner {
+    margin-inline-start: -3px;
+    margin-top: -3px;
+    width: 10px;
+    height: 10px;
+    z-index: 10000001;
+    background-color: $theme-color;
+    opacity: 1;
+    transition: all 0.24s ease-out 0s;
+}
+.cursor-inner span {
+    color: $white; 
+    line-height: 60px;
+    opacity: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+}
+
+.cursor-inner.cursor-big span {
+    opacity: 1;
+}
+
+.cursor-inner.cursor-hover {
+    margin-inline-start: -10px;
+    margin-top: -10px;
+    width: 30px;
+    height: 30px;
+    background-color: $theme-color;
+    border: 1px solid #686363;
+    opacity: 0;
+}
