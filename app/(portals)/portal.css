@@ -1,0 +1,1217 @@
+/* Font comes from next/font in app/layout.tsx as --font-baloo. The CDN
+   @import that used to sit here was a second render-blocking request to
+   fonts.googleapis.com on every portal page. */
+
+:root {
+  /* Same palette as the sign-in pages (components/auth/auth.css): warm cream
+     surfaces, ink text, crimson as the only accent. The portals used a neutral
+     zinc grey that read as a different product. */
+  --p-bg: #fbf8f5;
+  --p-surface: #ffffff;
+  --p-fg: #01030d;
+  --p-muted: #6f6862;
+  --p-border: #e5ddd6;
+  --p-field: #f1ece8;
+  --p-primary: #900000;
+  --p-primary-deep: #6b0000;
+  --p-primary-fg: #ffffff;
+  --p-success: #15803d;
+  --p-warn: #a16207;
+  --p-radius: 12px;
+  --p-radius-sm: 10px;
+  --p-shadow: 0 10px 22px rgba(144, 0, 0, 0.22);
+  --p-font: var(--font-baloo), sans-serif;
+}
+
+.portal-body {
+  margin: 0;
+  font-family: var(--p-font);
+  background: var(--p-bg);
+  color: var(--p-fg);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.portal-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--p-surface);
+  border-bottom: 1px solid var(--p-border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.portal-brand {
+  font-weight: 700;
+  color: var(--p-primary);
+  text-decoration: none;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.portal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.portal-nav a {
+  text-decoration: none;
+  color: var(--p-muted);
+  padding: 8px 10px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--p-radius);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.portal-nav a:hover,
+.portal-nav a[data-active="true"] {
+  color: var(--p-fg);
+  background: var(--p-bg);
+}
+
+.portal-main {
+  flex: 1;
+  padding: 16px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.portal-h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.portal-sub {
+  margin: 0 0 16px;
+  color: var(--p-muted);
+  font-size: 13px;
+}
+
+.portal-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.portal-grid-2 {
+  grid-template-columns: 1.2fr 0.8fr;
+}
+
+@media (max-width: 800px) {
+  .portal-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.portal-card {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  padding: 18px;
+}
+
+.portal-card h2,
+.portal-card h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.portal-muted {
+  color: var(--p-muted);
+}
+
+.portal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  background: var(--p-surface);
+  color: var(--p-fg);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
+    color 0.2s ease;
+}
+
+.portal-btn:hover {
+  background: var(--p-bg);
+}
+
+.portal-btn-primary {
+  background: var(--p-primary);
+  border-color: var(--p-primary);
+  color: var(--p-primary-fg);
+  box-shadow: var(--p-shadow);
+}
+
+.portal-btn-primary:hover {
+  filter: brightness(1.05);
+  background: var(--p-primary);
+}
+
+.portal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.portal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.portal-table th,
+.portal-table td {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--p-border);
+  vertical-align: top;
+}
+
+.portal-table th {
+  color: var(--p-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.portal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: var(--p-bg);
+  color: var(--p-muted);
+}
+
+.portal-badge-new {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.portal-badge-preparing {
+  background: #fef3c7;
+  color: #92400e;
+}
+.portal-badge-packed {
+  background: #dcfce7;
+  color: #166534;
+}
+.portal-badge-done {
+  background: #ece5df;
+  color: #3f3f46;
+}
+
+.portal-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: var(--p-radius);
+  color: #9a3412;
+  font-size: 12px;
+}
+
+/* Team board */
+.team-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .team-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.team-col {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  min-height: 280px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.team-col-head {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--p-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.team-col-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-order {
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius-sm);
+  padding: 12px;
+  background: var(--p-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.team-order strong {
+  font-size: 14px;
+}
+
+.team-order ul {
+  margin: 8px 0;
+  padding-left: 16px;
+}
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.admin-nav a {
+  text-decoration: none;
+  color: var(--p-fg);
+  border: 1px solid var(--p-border);
+  background: var(--p-surface);
+  padding: 8px 12px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--p-radius);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.admin-nav a[data-active="true"] {
+  background: var(--p-primary);
+  border-color: var(--p-primary);
+  color: var(--p-primary-fg);
+}
+
+.portal-form {
+  display: grid;
+  gap: 10px;
+  max-width: 480px;
+}
+
+.portal-form label {
+  display: grid;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.portal-form input,
+.portal-form select,
+.portal-form textarea {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px solid transparent;
+  border-radius: var(--p-radius);
+  background: var(--p-field);
+  color: var(--p-fg);
+  font: inherit;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.portal-form textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.portal-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.portal-stat {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  padding: 12px;
+}
+
+.portal-stat .n {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.portal-stat .l {
+  color: var(--p-muted);
+  font-size: 12px;
+}
+
+
+/* ================================================================ CRM shell */
+
+.crm {
+  --sidebar-w: 248px;
+  min-height: 100vh;
+  background: var(--p-bg);
+  font-family: var(--p-font);
+  color: var(--p-fg);
+}
+
+/* ---- sidebar (matches auth-visual brand panel) ---- */
+
+.crm-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 12px 16px;
+  background: var(--p-primary);
+  overflow-x: hidden;
+  /* The panel itself must not scroll, or the brand and "View storefront"
+     scroll out of view on a short window. Only .crm-nav scrolls. */
+  overflow-y: hidden;
+  z-index: 30;
+}
+
+.crm-sidebar__pattern {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.09);
+  pointer-events: none;
+}
+
+/* Organic cream sweep — same curve as auth-visual__cutout. */
+.crm-sidebar__cutout {
+  position: absolute;
+  top: -12%;
+  right: -78%;
+  width: 108%;
+  height: 124%;
+  background: var(--p-bg);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.crm-sidebar__bolt {
+  position: absolute;
+  z-index: 2;
+  color: var(--p-fg);
+  pointer-events: none;
+}
+
+.crm-sidebar__bolt--1 {
+  top: 38%;
+  left: 10%;
+  width: 22px;
+  transform: rotate(12deg);
+}
+
+.crm-sidebar__bolt--2 {
+  bottom: 18%;
+  left: 16%;
+  width: 18px;
+  transform: rotate(-16deg);
+}
+
+.crm-brand {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 12px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.crm-brand img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+.crm-nav {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 18px;
+  flex: 1;
+  /* A flex child will not shrink below its content without this, which is what
+     stops `overflow-y: auto` from ever engaging. */
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.crm-nav__group {
+  display: grid;
+  gap: 2px;
+}
+
+.crm-nav__title {
+  margin: 0 0 4px;
+  padding: 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.crm-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: var(--p-radius-sm);
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+}
+
+.crm-nav__link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.crm-nav__link[data-active="true"] {
+  background: #fff;
+  color: var(--p-primary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.crm-sidebar__back {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.62);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.crm-sidebar__back:hover {
+  color: #fff;
+}
+
+/* ---- main (matches auth-panel) ---- */
+
+.crm-main {
+  position: relative;
+  min-width: 0;
+  height: 100vh;
+  height: 100dvh;
+  margin-left: var(--sidebar-w);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--p-bg);
+}
+
+.crm-main__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(144, 0, 0, 0.05);
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(
+    ellipse 52% 62% at 50% 42%,
+    transparent 42%,
+    #000 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 52% 62% at 50% 42%,
+    transparent 42%,
+    #000 100%
+  );
+}
+
+.crm-main__bolt {
+  position: absolute;
+  z-index: 1;
+  color: var(--p-fg);
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.crm-main__bolt--1 {
+  top: 18%;
+  right: 5%;
+  width: 18px;
+  transform: rotate(10deg);
+}
+
+.crm-main__bolt--2 {
+  bottom: 12%;
+  left: 3%;
+  width: 16px;
+  transform: rotate(-18deg);
+}
+
+.crm-topbar {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 28px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--p-border);
+}
+
+/* White sliver from topbar into the curve gap — not on the red sidebar. */
+.crm-topbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 16px;
+  transform: translateX(-100%);
+  background: #ffffff;
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+  pointer-events: none;
+}
+
+.crm-topbar__heading h1 {
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.crm-topbar__heading p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--p-muted);
+}
+
+.crm-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.crm-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  border-left: 1px solid var(--p-border);
+}
+
+.crm-user__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--p-primary);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.crm-user__meta {
+  display: grid;
+  line-height: 1.25;
+}
+
+.crm-user__name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.crm-user__role {
+  font-size: 11px;
+  color: var(--p-muted);
+  text-transform: capitalize;
+}
+
+.crm-user__logout {
+  border: 1px solid var(--p-border);
+  background: var(--p-surface);
+  border-radius: var(--p-radius);
+  min-height: 32px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--p-fg);
+}
+
+.crm-user__logout:hover:not(:disabled) {
+  background: var(--p-bg);
+}
+
+/* ---- content ---- */
+
+.crm-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 28px 48px;
+  max-width: 1440px;
+  width: 100%;
+}
+
+/* ---- building blocks ---- */
+
+.crm-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.crm-stat {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  padding: 18px 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.crm-stat__label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--p-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.crm-stat__value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-top: 4px;
+  letter-spacing: -0.02em;
+}
+
+.crm-stat__hint {
+  font-size: 12px;
+  color: var(--p-muted);
+  margin-top: 2px;
+}
+
+.crm-card {
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.crm-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.crm-card__head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.crm-card__head p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--p-muted);
+}
+
+.crm-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.crm-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--p-muted);
+  font-size: 13px;
+}
+
+.crm-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.crm-toolbar input[type="search"],
+.crm-toolbar input[type="text"],
+.crm-toolbar select {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid transparent;
+  border-radius: var(--p-radius);
+  font: inherit;
+  font-size: 14px;
+  background: var(--p-field);
+  color: var(--p-fg);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.crm-toolbar input[type="search"]:focus,
+.crm-toolbar input[type="text"]:focus,
+.crm-toolbar select:focus {
+  outline: none;
+  background: var(--p-surface);
+  border-color: var(--p-primary);
+}
+
+.crm-toolbar input[type="search"] {
+  min-width: 220px;
+}
+
+.crm-toolbar input[type="number"] {
+  min-height: 44px;
+  width: 64px;
+  padding: 0 10px;
+  border: 1.5px solid transparent;
+  border-radius: var(--p-radius);
+  font: inherit;
+  font-size: 14px;
+  background: var(--p-field);
+  color: var(--p-fg);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.crm-toolbar input[type="number"]:focus {
+  outline: none;
+  background: var(--p-surface);
+  border-color: var(--p-primary);
+}
+
+.crm-toolbar__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--p-muted);
+}
+
+/* Tables inherit .portal-table; this only adds horizontal safety on narrow screens. */
+.crm-table-wrap {
+  overflow-x: auto;
+}
+
+@media (max-width: 900px) {
+  .crm-sidebar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 12px;
+    z-index: 20;
+  }
+
+  .crm-main {
+    margin-left: 0;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .crm-sidebar__cutout {
+    top: auto;
+    bottom: -62%;
+    right: -20%;
+    width: 140%;
+    height: 78%;
+  }
+
+  .crm-sidebar__bolt {
+    display: none;
+  }
+
+  .crm-brand {
+    flex-direction: row;
+    padding: 0 8px 0 0;
+    white-space: nowrap;
+  }
+
+  .crm-brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .crm-nav {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    overflow-y: visible;
+  }
+
+  .crm-nav__group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .crm-nav__title {
+    display: none;
+  }
+
+  .crm-nav__link {
+    white-space: nowrap;
+  }
+
+  .crm-sidebar__back {
+    display: none;
+  }
+
+  .crm-content {
+    padding: 16px 12px 32px;
+    overflow-y: visible;
+    min-height: auto;
+  }
+
+  .crm-topbar {
+    padding: 12px 16px;
+  }
+
+  .crm-topbar::before {
+    display: none;
+  }
+}
+
+/* Focus, matching components/auth/auth.css: the field lifts to white and takes
+   a crimson border, so keyboard users get the same cue on both sides of the
+   sign-in boundary. */
+.portal-form input:focus,
+.portal-form select:focus,
+.portal-form textarea:focus {
+  outline: none;
+  background: var(--p-surface);
+  border-color: var(--p-primary);
+}
+
+.portal-btn:hover:not(:disabled) {
+  border-color: var(--p-primary);
+  color: var(--p-primary);
+}
+
+.portal-btn-primary:hover:not(:disabled) {
+  background: var(--p-primary-deep);
+  border-color: var(--p-primary-deep);
+  color: var(--p-primary-fg);
+}
+
+.portal-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Bootstrap utility the portal components rely on but never loaded — without
+   it the muted sub-line stays inline and runs into the name above it. */
+.d-block { display: block; }
+
+.crm-stat__unit {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--p-muted);
+}
+
+/* ----------------------------------------------------------- action menu */
+
+.portal-kebab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius-sm);
+  background: var(--p-surface);
+  color: var(--p-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.portal-kebab:hover,
+.portal-kebab[aria-expanded="true"] {
+  color: var(--p-primary);
+  border-color: var(--p-primary);
+}
+
+.portal-kebab:focus-visible {
+  outline: 2px solid var(--p-primary);
+  outline-offset: 2px;
+}
+
+/* Fixed, so the scrolling table wrapper cannot clip it. */
+.portal-menu {
+  position: fixed;
+  z-index: 60;
+  min-width: 190px;
+  padding: 6px;
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+}
+
+.portal-menu__item {
+  appearance: none;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  padding: 9px 11px;
+  border-radius: var(--p-radius-sm);
+  color: var(--p-fg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.portal-menu__item:hover:not(:disabled),
+.portal-menu__item:focus-visible {
+  background: var(--p-field);
+  outline: none;
+}
+
+.portal-menu__item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.portal-menu__item--danger { color: var(--p-primary); }
+
+.portal-menu__item--danger:hover:not(:disabled),
+.portal-menu__item--danger:focus-visible {
+  background: var(--p-primary);
+  color: var(--p-primary-fg);
+}
+
+/* Separates destructive items from routine ones. */
+.portal-menu__item--divide {
+  margin-top: 5px;
+  border-top: 1px solid var(--p-border);
+  padding-top: 11px;
+  border-radius: 0 0 var(--p-radius-sm) var(--p-radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-kebab,
+  .portal-menu__item { transition: none; }
+}
+
+/* --------------------------------------------------------------- actions */
+
+/* Action clusters wrap instead of forcing the table wider on narrow screens. */
+.crm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.crm-actions--confirm {
+  gap: 8px;
+}
+
+.portal-btn-danger {
+  background: var(--p-primary);
+  border-color: var(--p-primary);
+  color: var(--p-primary-fg);
+}
+
+.portal-btn-danger:hover:not(:disabled) {
+  background: var(--p-primary-deep);
+  border-color: var(--p-primary-deep);
+}
+
+/* Destructive but not the primary action on the row — quiet until hovered. */
+.portal-btn-danger-ghost {
+  color: var(--p-primary);
+}
+
+.portal-btn-danger-ghost:hover:not(:disabled) {
+  background: var(--p-primary);
+  border-color: var(--p-primary);
+  color: var(--p-primary-fg);
+}
+
+/* ------------------------------------------------------------------ modal */
+
+/* Native <dialog>: the browser handles focus trapping, Escape and the top
+   layer, so this only has to supply looks. */
+.portal-modal {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  /* A <dialog> centres itself with the UA's `margin: auto`, which Tailwind's
+     preflight resets to 0 — without this it pins to the top-left corner. */
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  background: var(--p-surface);
+  color: var(--p-fg);
+  font-family: var(--p-font);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  overflow: visible;
+}
+
+.portal-modal::backdrop {
+  background: rgba(10, 6, 4, 0.45);
+}
+
+.portal-modal__panel {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 64px);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.portal-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.portal-modal__head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.portal-modal__head p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--p-muted);
+}
+
+.portal-modal__close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius-sm);
+  background: none;
+  color: var(--p-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.portal-modal__close:hover {
+  color: var(--p-primary);
+  border-color: var(--p-primary);
+}
+
+/* The form is width-capped for readability in the page; in the dialog the
+   panel already caps it, so let it fill. */
+.portal-modal .portal-form {
+  max-width: none;
+}
+
+.portal-modal__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-btn,
+  .portal-form input,
+  .portal-form select,
+  .portal-form textarea,
+  .portal-modal__close {
+    transition: none;
+  }
+}

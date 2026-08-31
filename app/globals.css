@@ -1,0 +1,205 @@
+/* Tailwind for the whole app — storefront and portals.
+   source(none) + explicit @source keeps scanning to our own source tree; the
+   interim public/site/*.html pages are never scanned. */
+/* Cascade order. `legacy` sits above Tailwind's preflight but below the
+   utilities, so converted markup can be styled with plain utility classes
+   while unconverted markup still gets the old sheets.
+
+   This MUST come before `@import "tailwindcss"`: the import expands in
+   place and registers theme/base/components/utilities itself, so a layer
+   named afterwards lands last and ends up with the HIGHEST priority — the
+   opposite of what we want. CSS allows @layer statements before @import. */
+@layer theme, base, legacy, components, utilities;
+
+@import "tailwindcss" source(none);
+
+@source "./";
+@source "../components";
+@source "../lib";
+
+/* `static` so the brand vars are always emitted, not tree-shaken away when no
+   utility happens to reference them yet. */
+@theme static {
+  /* Unified brand — login, portals, storefront (Phase 1+) */
+  --color-crimson: #900000;
+  --color-crimson-fg: #ffffff;
+  --color-gold: #fbbc00;
+  --color-ink: #01030d;
+
+  /* Legacy storefront aliases — old pages still reference these */
+  --color-body-text: #6f6862;
+  --color-brand-black: #01030d;
+  --color-soft: #fbf8f5;
+  --color-hero: #fbf8f5;
+  --color-badge: #fff1ee;
+
+  /* Portal chrome — aligned with auth.css / portal.css */
+  --color-p-bg: #fbf8f5;
+  --color-p-surface: #ffffff;
+  --color-p-fg: #01030d;
+  --color-p-muted: #6f6862;
+  --color-p-border: #e5ddd6;
+  --color-p-success: #15803d;
+  --color-p-warn: #a16207;
+
+  --radius-p: 12px;
+}
+
+/* Shared tokens for .cd-* chrome and future page conversions */
+:root {
+  --cd-cream: #fbf8f5;
+  --cd-surface: #ffffff;
+  --cd-crimson: #900000;
+  --cd-crimson-deep: #6b0000;
+  --cd-ink: #01030d;
+  --cd-muted: #6f6862;
+  --cd-border: #e5ddd6;
+  --cd-field: #f1ece8;
+  --cd-gold: #fbbc00;
+  --cd-radius: 12px;
+  --cd-radius-sm: 10px;
+  --cd-shadow: 0 10px 22px rgba(144, 0, 0, 0.22);
+  --cd-font: var(--font-baloo), sans-serif;
+}
+
+/* Deliberately NOT inside `@layer components`.
+   bootstrap.min.css is still loaded unlayered while the storefront is being
+   converted, and unlayered CSS beats every layer regardless of specificity —
+   so a layered `.cd-btn { color: #fff }` lost to Bootstrap's `a { color }`
+   and the buttons rendered with black label text. Plain rules win on
+   specificity instead. Move this back into a layer once Bootstrap is gone. */
+/* Storefront button.
+   Reproduces main.css's `.theme-btn` stack: a crimson pill whose two corner
+   circles expand on hover to wash it in ink (--color-ink), turning the label
+   white. Kept as a component class because the effect needs ::before/::after. */
+.cd-btn {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 20px 13px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  text-transform: capitalize;
+  white-space: nowrap;
+  background-color: var(--color-crimson);
+  color: #fff;
+  transition: color 0.4s ease;
+}
+.cd-btn::before,
+.cd-btn::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  z-index: -1;
+  background-color: var(--color-ink);
+  transform: translate(-50%, -50%);
+  transition: 1s ease;
+}
+.cd-btn::before {
+  top: -2em;
+  left: -2em;
+}
+.cd-btn::after {
+  left: calc(100% + 2em);
+  top: calc(100% + 2em);
+}
+.cd-btn:hover {
+  color: #fff;
+}
+.cd-btn:hover::before,
+.cd-btn:hover::after {
+  width: 410px;
+  height: 410px;
+}
+
+/* The outline variant: same hover wash, transparent until then. */
+.cd-btn--outline {
+  background-color: transparent;
+  border: 1px solid var(--cd-border);
+  padding: 10px 20px 11px;
+  color: var(--cd-ink);
+}
+
+/* Portal-style solid button — header, forms, chrome */
+.cd-btn-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid var(--cd-crimson);
+  border-radius: var(--cd-radius);
+  background: var(--cd-crimson);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--cd-shadow);
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+
+.cd-btn-solid:hover {
+  filter: brightness(1.05);
+  color: #fff;
+}
+
+.cd-btn-solid--ghost {
+  background: var(--cd-surface);
+  color: var(--cd-ink);
+  border-color: var(--cd-border);
+  box-shadow: none;
+}
+
+.cd-btn-solid--ghost:hover {
+  background: var(--cd-cream);
+  color: var(--cd-crimson);
+  border-color: var(--cd-crimson);
+  filter: none;
+}
+
+/* main.css's `.link-effect`: underline draws in from the left on hover.
+
+   NOTE: `display: inline` here is load-bearing for the underline, and because
+   this file is unlayered it beats Tailwind's `flex`/`grid` utilities. Do not
+   put `.cd-link` on a flex or grid container — it will silently collapse the
+   layout. It is for inline text links only. */
+.cd-link {
+  display: inline;
+  background-image: linear-gradient(
+    180deg,
+    var(--color-crimson) 0%,
+    var(--color-crimson) 100%
+  );
+  background-position: 0 95%;
+  background-repeat: no-repeat;
+  background-size: 0% 2px;
+  transition: background-size 0.4s ease;
+}
+.cd-link:hover {
+  color: var(--color-crimson);
+  background-size: 100% 2px;
+}
+
+/* CLAUDE.md §10 */
+@media (prefers-reduced-motion: reduce) {
+  .cd-btn,
+  .cd-btn::before,
+  .cd-btn::after,
+  .cd-link {
+    transition: none;
+  }
+}

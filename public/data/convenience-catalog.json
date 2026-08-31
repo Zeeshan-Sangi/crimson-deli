@@ -1,0 +1,775 @@
+{
+  "doordashUrl": "https://www.doordash.com/convenience/store/crimson-deli-inc.-philadelphia-28047799/",
+  "updated": "2026-08-27",
+  "count": 96,
+  "products": [
+    {
+      "name": "7Up Caffeine-Free Lemon Lime Flavored Soda Cans (12 fl oz x 12 ct)",
+      "price": "$9.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/7up-caffeine-free-lemon-lime-flavored-soda-cans-12-a12ce507.webp",
+      "slug": "7up-caffeine-free-lemon-lime-flavored-soda-cans-12-a12ce507",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "AriZona All Natural Fruit Punch Tall Boy Juice Cocktail Bottle (20 fl oz)",
+      "price": "$1.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/arizona-all-natural-fruit-punch-tall-boy-juice-coc-7ef23841.webp",
+      "slug": "arizona-all-natural-fruit-punch-tall-boy-juice-coc-7ef23841",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "AriZona All Natural Kiwi & Strawberry Fruit Juice Cocktail Can (23 fl oz)",
+      "price": "$1.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/arizona-all-natural-kiwi-strawberry-fruit-juice-co-1640b919.webp",
+      "slug": "arizona-all-natural-kiwi-strawberry-fruit-juice-co-1640b919",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "AriZona Mucho Mango Fruit Juice Cocktail Can (23 fl oz)",
+      "price": "$1.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/arizona-mucho-mango-fruit-juice-cocktail-can-23-fl-b897b64e.webp",
+      "slug": "arizona-mucho-mango-fruit-juice-cocktail-can-23-fl-b897b64e",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "AriZona Orangeade Fruit Juice Cocktail Can (23 fl oz)",
+      "price": "$1.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/arizona-orangeade-fruit-juice-cocktail-can-23-fl-o-025020c7.webp",
+      "slug": "arizona-orangeade-fruit-juice-cocktail-can-23-fl-o-025020c7",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Bang Radical Skadattle Energy Drink (16 fl oz)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/bang-radical-skadattle-energy-drink-16-fl-oz-3bd8ccf1.webp",
+      "slug": "bang-radical-skadattle-energy-drink-16-fl-oz-3bd8ccf1",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Ben & Jerry's Cherry Garcia Ice Cream (1 pt)",
+      "price": "$5.99",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/ben-jerry-s-cherry-garcia-ice-cream-1-pt-77df3f1a.webp",
+      "slug": "ben-jerry-s-cherry-garcia-ice-cream-1-pt-77df3f1a",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Ben & Jerry's Chunky Monkey Banana Ice Cream (1 pt)",
+      "price": "$8.29",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/ben-jerry-s-chunky-monkey-banana-ice-cream-1-pt-a373753c.webp",
+      "slug": "ben-jerry-s-chunky-monkey-banana-ice-cream-1-pt-a373753c",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Ben & Jerry's Half Baked Chocolate & Vanilla Ice Cream (1 pt)",
+      "price": "$7.29",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/ben-jerry-s-half-baked-chocolate-vanilla-ice-cream-61d49a4c.webp",
+      "slug": "ben-jerry-s-half-baked-chocolate-vanilla-ice-cream-61d49a4c",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Ben & Jerry's New York Super Fudge Chunk Ice Cream (1 pt)",
+      "price": "$7.29",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/ben-jerry-s-new-york-super-fudge-chunk-ice-cream-1-cae8a1c6.webp",
+      "slug": "ben-jerry-s-new-york-super-fudge-chunk-ice-cream-1-cae8a1c6",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Black Forest Gummy Worms Bag (128 g)",
+      "price": "$1.89",
+      "cat": "candy",
+      "img": "/assets/img/crimson/convenience/black-forest-gummy-worms-bag-128-g-e68bbac8.webp",
+      "slug": "black-forest-gummy-worms-bag-128-g-e68bbac8",
+      "catLabel": "Candy"
+    },
+    {
+      "name": "Bodyarmor Super Drink Superior Hydration Orange Mango Sports Drink Bottle (16 fl oz)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/bodyarmor-super-drink-superior-hydration-orange-ma-c0ef3d17.webp",
+      "slug": "bodyarmor-super-drink-superior-hydration-orange-ma-c0ef3d17",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Calypso Grapeberry Lemonade Bottle (16 fl oz)",
+      "price": "$3.28",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/calypso-grapeberry-lemonade-bottle-16-fl-oz-39e27337.webp",
+      "slug": "calypso-grapeberry-lemonade-bottle-16-fl-oz-39e27337",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Calypso Lemonade Ocean Blue (16 oz)",
+      "price": "$3.39",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/calypso-lemonade-ocean-blue-16-oz-e05227c9.webp",
+      "slug": "calypso-lemonade-ocean-blue-16-oz-e05227c9",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Calypso Pineapple Peach Limeade Bottle (16 fl oz)",
+      "price": "$3.39",
+      "cat": "mixed",
+      "img": "/assets/img/crimson/convenience/calypso-pineapple-peach-limeade-bottle-16-fl-oz-99bb42ee.webp",
+      "slug": "calypso-pineapple-peach-limeade-bottle-16-fl-oz-99bb42ee",
+      "catLabel": "Essentials"
+    },
+    {
+      "name": "Canada Dry Caffeine Free Ginger Ale Soda Bottle (2 L)",
+      "price": "$4.80",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/canada-dry-caffeine-free-ginger-ale-soda-bottle-2-16423a52.webp",
+      "slug": "canada-dry-caffeine-free-ginger-ale-soda-bottle-2-16423a52",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Coke Original Soda Bottle (1 L)",
+      "price": "$2.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/coke-original-soda-bottle-1-l-8fc6633a.webp",
+      "slug": "coke-original-soda-bottle-1-l-8fc6633a",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Coke Original Soda Can (12 fl oz)",
+      "price": "$1.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/coke-original-soda-can-12-fl-oz-01b55145.webp",
+      "slug": "coke-original-soda-can-12-fl-oz-01b55145",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Core Hydration Purified Water (20 fl oz)",
+      "price": "$3.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/core-hydration-purified-water-20-fl-oz-029ae5ed.webp",
+      "slug": "core-hydration-purified-water-20-fl-oz-029ae5ed",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Core Hydration Purified Water (23.9 fl oz)",
+      "price": "$3.59",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/core-hydration-purified-water-23-9-fl-oz-afaa5ea6.webp",
+      "slug": "core-hydration-purified-water-23-9-fl-oz-afaa5ea6",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Core Hydration Purified Water (30.4 fl oz)",
+      "price": "$2.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/core-hydration-purified-water-30-4-fl-oz-be3fc19b.webp",
+      "slug": "core-hydration-purified-water-30-4-fl-oz-be3fc19b",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Cracker Barrel Extra Sharp Cheddar Cheese (1 oz)",
+      "price": "$1.19",
+      "cat": "dairy-eggs",
+      "img": "/assets/img/crimson/convenience/cracker-barrel-extra-sharp-cheddar-cheese-1-oz-6fa82b62.webp",
+      "slug": "cracker-barrel-extra-sharp-cheddar-cheese-1-oz-6fa82b62",
+      "catLabel": "Dairy & Eggs"
+    },
+    {
+      "name": "Crush Grape Soda Bottle (20 fl oz)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/crush-grape-soda-bottle-20-fl-oz-d8d01b7a.webp",
+      "slug": "crush-grape-soda-bottle-20-fl-oz-d8d01b7a",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "DG Jamaican Pineapple Soda (12 oz)",
+      "price": "$2.19",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/dg-jamaican-pineapple-soda-12-oz-92e7f912.webp",
+      "slug": "dg-jamaican-pineapple-soda-12-oz-92e7f912",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Deer Park 100% Natural Spring Water Plastic Bottle (1.5 L)",
+      "price": "$3.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/deer-park-100-natural-spring-water-plastic-bottle-7203b67f.webp",
+      "slug": "deer-park-100-natural-spring-water-plastic-bottle-7203b67f",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Deer Park 100% Natural Spring Water Plastic Bottle (33.8 fl oz)",
+      "price": "$2.50",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/deer-park-100-natural-spring-water-plastic-bottle-124e60ad.webp",
+      "slug": "deer-park-100-natural-spring-water-plastic-bottle-124e60ad",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Dole 100% Apple Flavor Juice Bottle (15.2 fl oz)",
+      "price": "$1.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/dole-100-apple-flavor-juice-bottle-15-2-fl-oz-096ae8fb.webp",
+      "slug": "dole-100-apple-flavor-juice-bottle-15-2-fl-oz-096ae8fb",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Essentia Water Ionized Alkaline Water Bottle with Sports Cap (700 ml)",
+      "price": "$3.39",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/essentia-water-ionized-alkaline-water-bottle-with-8307fe15.webp",
+      "slug": "essentia-water-ionized-alkaline-water-bottle-with-8307fe15",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Everfresh Cranberry Juice Bottle (32 oz)",
+      "price": "$5.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/everfresh-cranberry-juice-bottle-32-oz-58eed945.webp",
+      "slug": "everfresh-cranberry-juice-bottle-32-oz-58eed945",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Everfresh Grapefruit Juice Bottle (16 oz)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/everfresh-grapefruit-juice-bottle-16-oz-9f3b4092.webp",
+      "slug": "everfresh-grapefruit-juice-bottle-16-oz-9f3b4092",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Everfresh Juice Orange Juice Bottle (32 oz)",
+      "price": "$5.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/everfresh-juice-orange-juice-bottle-32-oz-318ea5ba.webp",
+      "slug": "everfresh-juice-orange-juice-bottle-32-oz-318ea5ba",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Everfresh Juice Pineapple Juice Bottle (12 oz)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/everfresh-juice-pineapple-juice-bottle-12-oz-7717dda3.webp",
+      "slug": "everfresh-juice-pineapple-juice-bottle-12-oz-7717dda3",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Everfresh Ruby Red Grapefruit Juice Bottle (16 fl oz)",
+      "price": "$3.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/everfresh-ruby-red-grapefruit-juice-bottle-16-fl-o-7d528fa4.webp",
+      "slug": "everfresh-ruby-red-grapefruit-juice-bottle-16-fl-o-7d528fa4",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Fairlife 2% Reduced Fat Ultra-Filtered Chocolate Milk Bottle (14 fl oz)",
+      "price": "$2.49",
+      "cat": "dairy-eggs",
+      "img": "/assets/img/crimson/convenience/fairlife-2-reduced-fat-ultra-filtered-chocolate-mi-08db9cdf.webp",
+      "slug": "fairlife-2-reduced-fat-ultra-filtered-chocolate-mi-08db9cdf",
+      "catLabel": "Dairy & Eggs"
+    },
+    {
+      "name": "Fairlife 2% Reduced Fat Ultra-Filtered Milk (14 fl oz)",
+      "price": "$2.49",
+      "cat": "dairy-eggs",
+      "img": "/assets/img/crimson/convenience/fairlife-2-reduced-fat-ultra-filtered-milk-14-fl-o-ebeff23e.webp",
+      "slug": "fairlife-2-reduced-fat-ultra-filtered-milk-14-fl-o-ebeff23e",
+      "catLabel": "Dairy & Eggs"
+    },
+    {
+      "name": "Fairlife 2% Reduced Fat Ultra-Filtered Milk Bottle (14 fl oz)",
+      "price": "$2.49",
+      "cat": "dairy-eggs",
+      "img": "/assets/img/crimson/convenience/fairlife-2-reduced-fat-ultra-filtered-milk-bottle-c3614840.webp",
+      "slug": "fairlife-2-reduced-fat-ultra-filtered-milk-bottle-c3614840",
+      "catLabel": "Dairy & Eggs"
+    },
+    {
+      "name": "Gatorade Fierce Grape Thirst Quencher (28 fl oz)",
+      "price": "$3.39",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/gatorade-fierce-grape-thirst-quencher-28-fl-oz-fe864342.webp",
+      "slug": "gatorade-fierce-grape-thirst-quencher-28-fl-oz-fe864342",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Gatorade G Gatorlyte Strawberry & Kiwi Rapid Rehydration Electrolyte Sports Drink Bottle (20 fl oz)",
+      "price": "$3.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/gatorade-g-gatorlyte-strawberry-kiwi-rapid-rehydra-07dab1b1.webp",
+      "slug": "gatorade-g-gatorlyte-strawberry-kiwi-rapid-rehydra-07dab1b1",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Gatorade Lower Sugar Electrolyte Beverage Fruit Punch (28 fl oz)",
+      "price": "$3.39",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/gatorade-lower-sugar-electrolyte-beverage-fruit-pu-0065456f.webp",
+      "slug": "gatorade-lower-sugar-electrolyte-beverage-fruit-pu-0065456f",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Gatorade Thirst Quencher Cool Blue Sports Drink Bottle (24 fl oz)",
+      "price": "$2.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/gatorade-thirst-quencher-cool-blue-sports-drink-bo-a4be4cd2.webp",
+      "slug": "gatorade-thirst-quencher-cool-blue-sports-drink-bo-a4be4cd2",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Gatorade Thirst Quencher Cool Blue Sports Drink Bottle (28 fl oz)",
+      "price": "$3.39",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/gatorade-thirst-quencher-cool-blue-sports-drink-bo-5605967d.webp",
+      "slug": "gatorade-thirst-quencher-cool-blue-sports-drink-bo-5605967d",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Gatorade Thirst Quencher Fruit Punch Sports Drink Bottle (24 fl oz)",
+      "price": "$2.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/gatorade-thirst-quencher-fruit-punch-sports-drink-7bd0736e.webp",
+      "slug": "gatorade-thirst-quencher-fruit-punch-sports-drink-7bd0736e",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Gatorade Thirst Quencher Orange Sports Drink Bottle (28 fl oz)",
+      "price": "$3.39",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/gatorade-thirst-quencher-orange-sports-drink-bottl-cefaf72f.webp",
+      "slug": "gatorade-thirst-quencher-orange-sports-drink-bottl-cefaf72f",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Glac\u00e9au Smartwater Vapor Distilled Water (33.8 fl oz)",
+      "price": "$3.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/glac-au-smartwater-vapor-distilled-water-33-8-fl-o-c182521c.webp",
+      "slug": "glac-au-smartwater-vapor-distilled-water-33-8-fl-o-c182521c",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Haagen-Dazs Coffee Ice Cream (14 fl oz)",
+      "price": "$6.99",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/haagen-dazs-coffee-ice-cream-14-fl-oz-6465daf1.webp",
+      "slug": "haagen-dazs-coffee-ice-cream-14-fl-oz-6465daf1",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Haagen-Dazs Rocky Road Ice Cream (14 fl oz)",
+      "price": "$6.99",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/haagen-dazs-rocky-road-ice-cream-14-fl-oz-33500f3a.webp",
+      "slug": "haagen-dazs-rocky-road-ice-cream-14-fl-oz-33500f3a",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Haagen-Dazs Strawberry Ice Cream (14 fl oz)",
+      "price": "$6.99",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/haagen-dazs-strawberry-ice-cream-14-fl-oz-9102840a.webp",
+      "slug": "haagen-dazs-strawberry-ice-cream-14-fl-oz-9102840a",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Haagen-Dazs Vanilla Ice Cream (14 fl oz)",
+      "price": "$6.99",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/haagen-dazs-vanilla-ice-cream-14-fl-oz-7f308067.webp",
+      "slug": "haagen-dazs-vanilla-ice-cream-14-fl-oz-7f308067",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "Haagen-Dazs Vanilla Swiss Almond Ice Cream (14 fl oz)",
+      "price": "$6.99",
+      "cat": "frozen",
+      "img": "/assets/img/crimson/convenience/haagen-dazs-vanilla-swiss-almond-ice-cream-14-fl-o-18404371.webp",
+      "slug": "haagen-dazs-vanilla-swiss-almond-ice-cream-14-fl-o-18404371",
+      "catLabel": "Frozen"
+    },
+    {
+      "name": "International Delight Lactose Free Gluten Free Hazelnut Coffee Creamer (32 fl oz)",
+      "price": "$4.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/international-delight-lactose-free-gluten-free-haz-4008aea2.webp",
+      "slug": "international-delight-lactose-free-gluten-free-haz-4008aea2",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "International Delight Lactose Free Gluten Free Hazelnut Flavored Creamer (16 fl oz)",
+      "price": "$4.99",
+      "cat": "mixed",
+      "img": "/assets/img/crimson/convenience/international-delight-lactose-free-gluten-free-haz-9a2d38c3.webp",
+      "slug": "international-delight-lactose-free-gluten-free-haz-9a2d38c3",
+      "catLabel": "Essentials"
+    },
+    {
+      "name": "Land O'Lakes Traditional Half And Half (32 fl oz)",
+      "price": "$2.99",
+      "cat": "dairy-eggs",
+      "img": "/assets/img/crimson/convenience/land-o-lakes-traditional-half-and-half-32-fl-oz-4d61a276.webp",
+      "slug": "land-o-lakes-traditional-half-and-half-32-fl-oz-4d61a276",
+      "catLabel": "Dairy & Eggs"
+    },
+    {
+      "name": "Mountain Dew Citrus Soda Bottle (1 L)",
+      "price": "$3.19",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/mountain-dew-citrus-soda-bottle-1-l-1d87faf9.webp",
+      "slug": "mountain-dew-citrus-soda-bottle-1-l-1d87faf9",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Mountain Dew Citrus Soda Bottle (2 L)",
+      "price": "$4.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/mountain-dew-citrus-soda-bottle-2-l-a7f1a933.webp",
+      "slug": "mountain-dew-citrus-soda-bottle-2-l-a7f1a933",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Mountain Dew Citrus Soda Bottle (20 fl oz)",
+      "price": "$2.69",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/mountain-dew-citrus-soda-bottle-20-fl-oz-b0f7450f.webp",
+      "slug": "mountain-dew-citrus-soda-bottle-20-fl-oz-b0f7450f",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Nesquik Low Fat Chocolate Milk RTD Bottle (14 fl oz)",
+      "price": "$3.49",
+      "cat": "dairy-eggs",
+      "img": "/assets/img/crimson/convenience/nesquik-low-fat-chocolate-milk-rtd-bottle-14-fl-oz-d85dbb92.webp",
+      "slug": "nesquik-low-fat-chocolate-milk-rtd-bottle-14-fl-oz-d85dbb92",
+      "catLabel": "Dairy & Eggs"
+    },
+    {
+      "name": "Nesquik Low Fat Fudge Brownie Milk Bottle (14 fl oz)",
+      "price": "$2.99",
+      "cat": "dairy-eggs",
+      "img": "/assets/img/crimson/convenience/nesquik-low-fat-fudge-brownie-milk-bottle-14-fl-oz-243b701b.webp",
+      "slug": "nesquik-low-fat-fudge-brownie-milk-bottle-14-fl-oz-243b701b",
+      "catLabel": "Dairy & Eggs"
+    },
+    {
+      "name": "Ocean Spray Original 100% Vitamin C Cranberry Juice Cocktail Bottle (64 fl oz)",
+      "price": "$4.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/ocean-spray-original-100-vitamin-c-cranberry-juice-e3b64568.webp",
+      "slug": "ocean-spray-original-100-vitamin-c-cranberry-juice-e3b64568",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Pepsi Cola Soda (12 fl oz \u00d7 12 ct)",
+      "price": "$12.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/pepsi-cola-soda-12-fl-oz-12-ct-6b36d249.webp",
+      "slug": "pepsi-cola-soda-12-fl-oz-12-ct-6b36d249",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Pepsi Wild Cherry Flavor Soda Bottle (20 fl oz)",
+      "price": "$3.22",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/pepsi-wild-cherry-flavor-soda-bottle-20-fl-oz-6b89b5e6.webp",
+      "slug": "pepsi-wild-cherry-flavor-soda-bottle-20-fl-oz-6b89b5e6",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Poland 100% Natural Spring Water Plastic Bottle (16.9 fl oz)",
+      "price": "$1.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/poland-100-natural-spring-water-plastic-bottle-16-a87b79ec.webp",
+      "slug": "poland-100-natural-spring-water-plastic-bottle-16-a87b79ec",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Poland Spring 100% Natural Spring Water Bottles (16.9 fl oz x 6 ct)",
+      "price": "$1.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/poland-spring-100-natural-spring-water-bottles-16-aa3e4eac.webp",
+      "slug": "poland-spring-100-natural-spring-water-bottles-16-aa3e4eac",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Poland Spring 100% Natural Spring Water Plastic Bottle (1 L)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/poland-spring-100-natural-spring-water-plastic-bot-4407a0e6.webp",
+      "slug": "poland-spring-100-natural-spring-water-plastic-bot-4407a0e6",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Poland Spring 100% Natural Spring Water Sport Cap Plastic Bottle (23.7 fl oz)",
+      "price": "$2.09",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/poland-spring-100-natural-spring-water-sport-cap-p-804ab965.webp",
+      "slug": "poland-spring-100-natural-spring-water-sport-cap-p-804ab965",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Prime Hydration Lemon Lime Drink Plastic Bottle (16.9 fl oz)",
+      "price": "$2.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/prime-hydration-lemon-lime-drink-plastic-bottle-16-e8d3b939.webp",
+      "slug": "prime-hydration-lemon-lime-drink-plastic-bottle-16-e8d3b939",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Propel Water Zero Sugar Grape Electrolyte Water Beverage (20 fl oz)",
+      "price": "$1.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/propel-water-zero-sugar-grape-electrolyte-water-be-a08325d7.webp",
+      "slug": "propel-water-zero-sugar-grape-electrolyte-water-be-a08325d7",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull 189 mg Caffeine Energy Drink Can (20 fl oz)",
+      "price": "$5.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-189-mg-caffeine-energy-drink-can-20-fl-oz-c3b966dd.webp",
+      "slug": "red-bull-189-mg-caffeine-energy-drink-can-20-fl-oz-c3b966dd",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull 80 mg Caffeine the Green Edition Dragon Fruit Energy Drink Can (8.4 fl oz)",
+      "price": "$2.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-80-mg-caffeine-the-green-edition-dragon-f-9151b739.webp",
+      "slug": "red-bull-80-mg-caffeine-the-green-edition-dragon-f-9151b739",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Caffeine 80 mg The Yellow Edition Tropical Energy Drink Can (8.4 fl oz)",
+      "price": "$2.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-caffeine-80-mg-the-yellow-edition-tropica-6ea5ca7d.webp",
+      "slug": "red-bull-caffeine-80-mg-the-yellow-edition-tropica-6ea5ca7d",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Caffeine The Coconut Edition Berry Energy Drink Can (8.4 fl oz)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-caffeine-the-coconut-edition-berry-energy-4db91f1d.webp",
+      "slug": "red-bull-caffeine-the-coconut-edition-berry-energy-4db91f1d",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Caffeine the Peach Flavor Edition Nectarine Energy Drink Can (8.4 fl oz)",
+      "price": "$2.49",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-caffeine-the-peach-flavor-edition-nectari-eae28633.webp",
+      "slug": "red-bull-caffeine-the-peach-flavor-edition-nectari-eae28633",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Coconut Berry The Coconut Edition Energy Drink Can (355 ml)",
+      "price": "$3.89",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-coconut-berry-the-coconut-edition-energy-8a30ae24.webp",
+      "slug": "red-bull-coconut-berry-the-coconut-edition-energy-8a30ae24",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Dragon Fruit The Green Edition 114 mg Caffeine Energy Drink Can (12 fl oz)",
+      "price": "$3.89",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-dragon-fruit-the-green-edition-114-mg-caf-64031b3f.webp",
+      "slug": "red-bull-dragon-fruit-the-green-edition-114-mg-caf-64031b3f",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Plum Twist The Winter Edition Energy Drink Can (12 fl oz)",
+      "price": "$3.89",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-plum-twist-the-winter-edition-energy-drin-79036b51.webp",
+      "slug": "red-bull-plum-twist-the-winter-edition-energy-drin-79036b51",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Pomegranate The Winter Edition Energy Drink Can (8.4 fl oz)",
+      "price": "$5.34",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-pomegranate-the-winter-edition-energy-dri-6e611a06.webp",
+      "slug": "red-bull-pomegranate-the-winter-edition-energy-dri-6e611a06",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Tangerine The Orange Edition Energy Drink Can (12 fl oz)",
+      "price": "$3.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-tangerine-the-orange-edition-energy-drink-61960c97.webp",
+      "slug": "red-bull-tangerine-the-orange-edition-energy-drink-61960c97",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull The Red Edition Watermelon Energy Drink Can (8.4 fl oz)",
+      "price": "$2.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-the-red-edition-watermelon-energy-drink-c-7dd155e4.webp",
+      "slug": "red-bull-the-red-edition-watermelon-energy-drink-c-7dd155e4",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Red Bull Zero Sugar 114 mg Caffeine Taurine & B Vitamins Energy Drink Can (12 fl oz)",
+      "price": "$5.39",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/red-bull-zero-sugar-114-mg-caffeine-taurine-b-vita-f493be8e.webp",
+      "slug": "red-bull-zero-sugar-114-mg-caffeine-taurine-b-vita-f493be8e",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Rockstar Boom Whipped Strawberry Energy Drink Can (16 fl oz)",
+      "price": "$2.59",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/rockstar-boom-whipped-strawberry-energy-drink-can-4dfca873.webp",
+      "slug": "rockstar-boom-whipped-strawberry-energy-drink-can-4dfca873",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Rockstar Zero Sugar Tangerine Mango Guava & Strawberry Flavor Pure Energy Drink Can (16 fl oz)",
+      "price": "$2.59",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/rockstar-zero-sugar-tangerine-mango-guava-strawber-c0fa3772.webp",
+      "slug": "rockstar-zero-sugar-tangerine-mango-guava-strawber-c0fa3772",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Sathers Caramel Creams Candy (57 g)",
+      "price": "$0.89",
+      "cat": "candy",
+      "img": "/assets/img/crimson/convenience/sathers-caramel-creams-candy-57-g-f628b88f.webp",
+      "slug": "sathers-caramel-creams-candy-57-g-f628b88f",
+      "catLabel": "Candy"
+    },
+    {
+      "name": "Sathers Gummi Bears (3.25 oz)",
+      "price": "$0.89",
+      "cat": "candy",
+      "img": "/assets/img/crimson/convenience/sathers-gummi-bears-3-25-oz-6d5195dc.webp",
+      "slug": "sathers-gummi-bears-3-25-oz-6d5195dc",
+      "catLabel": "Candy"
+    },
+    {
+      "name": "Sathers Peach Rings Candy (2.75 oz)",
+      "price": "$0.89",
+      "cat": "candy",
+      "img": "/assets/img/crimson/convenience/sathers-peach-rings-candy-2-75-oz-34f5b80e.webp",
+      "slug": "sathers-peach-rings-candy-2-75-oz-34f5b80e",
+      "catLabel": "Candy"
+    },
+    {
+      "name": "Sour Patch Kids Soft & Chewy Candies Extreme Sour Bag (4 oz)",
+      "price": "$2.39",
+      "cat": "candy",
+      "img": "/assets/img/crimson/convenience/sour-patch-kids-soft-chewy-candies-extreme-sour-ba-48832d96.webp",
+      "slug": "sour-patch-kids-soft-chewy-candies-extreme-sour-ba-48832d96",
+      "catLabel": "Candy"
+    },
+    {
+      "name": "Sprite Lemon-Lime Soda (20 fl oz)",
+      "price": "$3.69",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/sprite-lemon-lime-soda-20-fl-oz-6248cc9b.webp",
+      "slug": "sprite-lemon-lime-soda-20-fl-oz-6248cc9b",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Starburst GummiBurst Original Cherry, Orange Strawberry & Lemon Gummies (6 oz x 12 ct)",
+      "price": "$3.89",
+      "cat": "candy",
+      "img": "/assets/img/crimson/convenience/starburst-gummiburst-original-cherry-orange-strawb-f6fbed12.webp",
+      "slug": "starburst-gummiburst-original-cherry-orange-strawb-f6fbed12",
+      "catLabel": "Candy"
+    },
+    {
+      "name": "Starburst Gummibursts Liquid Filled Gummies Candy (6 oz)",
+      "price": "$2.59",
+      "cat": "candy",
+      "img": "/assets/img/crimson/convenience/starburst-gummibursts-liquid-filled-gummies-candy-32fe7042.webp",
+      "slug": "starburst-gummibursts-liquid-filled-gummies-candy-32fe7042",
+      "catLabel": "Candy"
+    },
+    {
+      "name": "Sunkist Zero Sugar Orange Soda (2 L)",
+      "price": "$4.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/sunkist-zero-sugar-orange-soda-2-l-23103abf.webp",
+      "slug": "sunkist-zero-sugar-orange-soda-2-l-23103abf",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Tahitian Treat Fruit Punch Soda (2 L)",
+      "price": "$4.00",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/tahitian-treat-fruit-punch-soda-2-l-34650da3.webp",
+      "slug": "tahitian-treat-fruit-punch-soda-2-l-34650da3",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Tropicana Cranberry Flavored Juice Blend Bottle (15.2 fl oz)",
+      "price": "$2.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/tropicana-cranberry-flavored-juice-blend-bottle-15-e8e30a9e.webp",
+      "slug": "tropicana-cranberry-flavored-juice-blend-bottle-15-e8e30a9e",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Tropicana Pure Premium Calcium & Vitamin D Some Pulp 100% Orange Juice Bottle (12 fl oz)",
+      "price": "$2.29",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/tropicana-pure-premium-calcium-vitamin-d-some-pulp-3ee41afc.webp",
+      "slug": "tropicana-pure-premium-calcium-vitamin-d-some-pulp-3ee41afc",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "V8 Splash Berry Blend Beverage (16 fl oz)",
+      "price": "$1.99",
+      "cat": "mixed",
+      "img": "/assets/img/crimson/convenience/v8-splash-berry-blend-beverage-16-fl-oz-5694d435.webp",
+      "slug": "v8-splash-berry-blend-beverage-16-fl-oz-5694d435",
+      "catLabel": "Essentials"
+    },
+    {
+      "name": "V8 Splash Mango Peach Flavored Juice Beverage Bottle (64 fl oz)",
+      "price": "$3.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/v8-splash-mango-peach-flavored-juice-beverage-bott-cda5d308.webp",
+      "slug": "v8-splash-mango-peach-flavored-juice-beverage-bott-cda5d308",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "V8 Splash Tropical Blend Flavored Juice Beverage Bottle (64 fl oz)",
+      "price": "$3.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/v8-splash-tropical-blend-flavored-juice-beverage-b-8b8a6180.webp",
+      "slug": "v8-splash-tropical-blend-flavored-juice-beverage-b-8b8a6180",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Welch's Orange Pineapple Juice Bottle (10 fl oz)",
+      "price": "$0.99",
+      "cat": "drinks",
+      "img": "/assets/img/crimson/convenience/welch-s-orange-pineapple-juice-bottle-10-fl-oz-2f0b3555.webp",
+      "slug": "welch-s-orange-pineapple-juice-bottle-10-fl-oz-2f0b3555",
+      "catLabel": "Drinks"
+    },
+    {
+      "name": "Yoo-Hoo Chocolate Drink Cans (11 fl oz x 6 ct)",
+      "price": "$1.00",
+      "cat": "mixed",
+      "img": "/assets/img/crimson/convenience/yoo-hoo-chocolate-drink-cans-11-fl-oz-x-6-ct-dd2b53b0.webp",
+      "slug": "yoo-hoo-chocolate-drink-cans-11-fl-oz-x-6-ct-dd2b53b0",
+      "catLabel": "Essentials"
+    }
+  ]
+}

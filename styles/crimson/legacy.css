@@ -1,0 +1,15 @@
+/* The legacy storefront CSS, pulled into a named cascade layer.
+
+   Unlayered CSS beats every layer regardless of specificity, so while
+   bootstrap.min.css and main.css loaded unlayered they silently overrode
+   Tailwind utilities: `mb-5` on an h3 lost to `h3 { margin-bottom: 48px }`,
+   `mb-6` on a ul lost to `ul { margin-bottom: 0 }`, and so on. Converted
+   markup could not be styled without `!important` everywhere.
+
+   globals.css declares the order as: theme, base, legacy, components,
+   utilities. So this still overrides Tailwind's preflight (as it did before),
+   but Tailwind utilities now override it — which is what lets a page be
+   converted section by section. Delete this file once nothing imports the
+   two sheets below. */
+@import "./bootstrap.min.css" layer(legacy);
+@import "./main.css" layer(legacy);

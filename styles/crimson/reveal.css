@@ -1,0 +1,34 @@
+/* Scroll reveal.
+
+   Replaces animate.css (56K), of which this site only ever used `fadeInUp`.
+   ScrollReveal.tsx adds `.animated` when an element scrolls into view; the
+   keyframe below is the same 20px rise animate.css shipped.
+
+   CLAUDE.md §10: gated behind prefers-reduced-motion here as well as in
+   ScrollReveal.tsx, so the animation cannot run even if the class is applied. */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+.fadeInUp {
+  animation-name: fadeInUp;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated,
+  .fadeInUp {
+    animation: none;
+  }
+}

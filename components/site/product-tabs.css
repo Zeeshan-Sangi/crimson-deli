@@ -1,0 +1,222 @@
+/* Description / Reviews tabs on the fresh-food detail page. Scoped with a
+   `cd-` prefix so nothing collides with the template's legacy main.css. */
+
+.cd-sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+.cd-product__rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: #6f6862;
+}
+
+.cd-tabs { margin-top: 56px; }
+
+.cd-tabs__bar {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid #e5ddd6;
+}
+
+.cd-tabs__tab {
+  appearance: none;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: #6f6862;
+  padding: 12px 18px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: color .2s ease, border-color .2s ease;
+}
+
+.cd-tabs__tab:hover { color: var(--cd-crimson, #900000); }
+
+.cd-tabs__tab[aria-selected="true"] {
+  color: var(--cd-crimson, #900000);
+  border-bottom-color: var(--cd-crimson, #900000);
+}
+
+.cd-tabs__tab:focus-visible {
+  outline: 2px solid var(--cd-crimson, #900000);
+  outline-offset: -2px;
+}
+
+.cd-tabs__count {
+  display: inline-block;
+  min-width: 22px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: #f1ece8;
+  color: #6f6862;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.cd-tabs__panel { padding: 28px 0 8px; }
+
+.cd-tabs__lede {
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: #4a4340;
+  max-width: 68ch;
+  margin: 0 0 20px;
+}
+
+.cd-facts { margin: 0; padding-left: 18px; color: #6f6862; font-size: 15px; line-height: 1.9; }
+.cd-facts strong { color: #191113; }
+
+/* ------------------------------------------------------------------ stars */
+
+.cd-stars { display: inline-flex; gap: 2px; color: #e0a112; vertical-align: middle; }
+.cd-star { width: 17px; height: 17px; display: block; }
+
+.cd-starpick { display: inline-flex; gap: 4px; color: #e0a112; }
+
+.cd-starpick__item { cursor: pointer; display: inline-flex; }
+.cd-starpick__item .cd-star { width: 28px; height: 28px; }
+.cd-starpick__item input {
+  position: absolute; opacity: 0; width: 0; height: 0;
+}
+.cd-starpick__item:focus-within .cd-star {
+  outline: 2px solid var(--cd-crimson, #900000);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ---------------------------------------------------------------- reviews */
+
+.cd-reviews {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.cd-reviews__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 26px;
+  align-items: center;
+  padding: 20px 22px;
+  border: 1px solid #e5ddd6;
+  border-radius: 14px;
+  background: #fbf8f5;
+  margin-bottom: 26px;
+}
+
+.cd-reviews__avg { display: grid; gap: 4px; justify-items: center; }
+.cd-reviews__num { font-size: 40px; font-weight: 800; line-height: 1; color: #191113; }
+.cd-reviews__count { font-size: 13px; color: #6f6862; }
+
+.cd-bars { list-style: none; margin: 0; padding: 0; flex: 1; min-width: 190px; display: grid; gap: 5px; }
+.cd-bars li { display: grid; grid-template-columns: 30px 1fr 22px; gap: 9px; align-items: center; font-size: 12.5px; color: #6f6862; }
+.cd-bars__track { height: 7px; background: #ece4dd; border-radius: 999px; overflow: hidden; }
+.cd-bars__fill { display: block; height: 100%; background: #e0a112; border-radius: 999px; }
+.cd-bars__n { text-align: right; font-variant-numeric: tabular-nums; }
+
+.cd-reviews__empty {
+  padding: 22px;
+  border: 1px dashed #ddd2c9;
+  border-radius: 14px;
+  color: #6f6862;
+  font-size: 15px;
+  margin: 0 0 24px;
+}
+
+.cd-review { padding: 18px 0; border-bottom: 1px solid #efe8e2; }
+.cd-review:last-child { border-bottom: none; }
+.cd-review__head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 4px; }
+.cd-review__head strong { font-size: 15.5px; color: #191113; }
+.cd-review__date { font-size: 12.5px; color: #948a83; }
+.cd-review__body { margin: 8px 0 0; font-size: 15px; line-height: 1.65; color: #4a4340; }
+
+/* ------------------------------------------------------------------- form */
+
+.cd-reviewform {
+  border: 1px solid #e5ddd6;
+  border-radius: 14px;
+  padding: 24px;
+  background: #fff;
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 14px;
+}
+
+.cd-reviewform h3 { margin: 0; font-size: 18px; }
+.cd-reviewform label { display: grid; gap: 7px; font-size: 13.5px; font-weight: 600; color: #4a4340; }
+
+.cd-reviewform input,
+.cd-reviewform textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  background: #f4efeb;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  color: #191113;
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.cd-reviewform textarea { resize: vertical; }
+
+.cd-reviewform input:focus,
+.cd-reviewform textarea:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--cd-crimson, #900000);
+}
+
+.cd-reviewform__submit {
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  background: var(--cd-crimson, #900000);
+  color: #fff;
+  font: inherit;
+  font-size: 15.5px;
+  font-weight: 700;
+  padding: 13px 18px;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.cd-reviewform__submit:hover:not(:disabled) { background: var(--cd-crimson-deep, #6b0000); }
+.cd-reviewform__submit:disabled { opacity: .6; cursor: not-allowed; }
+
+.cd-reviewform__ok,
+.cd-reviewform__err {
+  margin: 0;
+  padding: 10px 13px;
+  border-radius: 9px;
+  font-size: 14px;
+}
+.cd-reviewform__ok { background: #e7f4ec; border: 1px solid #b6e0c6; color: #14663a; }
+.cd-reviewform__err { background: #fdecec; border: 1px solid #f5c2c2; color: #8a1010; }
+
+@media (max-width: 900px) {
+  .cd-reviews { grid-template-columns: 1fr; gap: 30px; }
+  .cd-reviewform { position: static; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cd-tabs__tab,
+  .cd-reviewform input,
+  .cd-reviewform textarea,
+  .cd-reviewform__submit { transition: none; }
+}

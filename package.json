@@ -3,27 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=8192' next dev",
-    "build": "next build",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
     "start": "next start",
-    "template": "npx --yes serve _template -p 8080",
-    "build:verify": "NEXT_DIST_DIR=.next-verify next build",
-    "start:verify": "NEXT_DIST_DIR=.next-verify next start",
-    "test:reinit": "node scripts/test/reinit.test.mjs",
-    "test:browser": "node scripts/test/browser.test.mjs"
+    "lint": "eslint",
+    "seed:staff": "node scripts/seed-staff.mjs"
   },
   "dependencies": {
-    "next": "^15.5.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "swiper": "^14.1.0"
+    "@tailwindcss/postcss": "^4.3.3",
+    "firebase": "^12.18.0",
+    "firebase-admin": "^14.3.0",
+    "lucide-react": "^1.35.0",
+    "next": "15.5.2",
+    "postcss": "^8.5.26",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "swiper": "^14.2.0",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@types/node": "^22.17.2",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "jsdom": "^30.0.1",
-    "playwright": "^1.62.1",
-    "typescript": "^5.9.2"
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
+    "typescript": "^5"
   }
 }
