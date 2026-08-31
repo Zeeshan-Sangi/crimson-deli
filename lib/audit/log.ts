@@ -1,18 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { getAdminDb } from "@/lib/firebase/admin";
 import type { SessionUser } from "@/lib/auth/types";
 
-/**
- * Append-only trail of admin actions: who changed what, and when.
- *
- * Same interim storage as orders and users — a JSON file now, Firestore later.
- * A logging failure must never fail the mutation it describes, so every write
- * here is wrapped and swallowed.
- */
-const DATA_DIR = path.join(process.cwd(), ".data");
-const LOG_FILE = path.join(DATA_DIR, "audit.json");
-const MAX_ENTRIES = 2000;
+const COLLECTION = "audit";
 
 export type AuditEntity = {
   type: "order" | "product" | "user" | "settings";
@@ -29,14 +19,14 @@ export type AuditEntry = {
   note?: string;
 };
 
-async function readAll(): Promise<AuditEntry[]> {
-  try {
-    const raw = await readFile(LOG_FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as AuditEntry[]) : [];
-  } catch {
-    return [];
-  }
+function col() {
+  return getAdminDb().collection(COLLECTION);
+}
+
+function toEntry(doc: FirebaseFirestore.QueryDocumentSnapshot): AuditEntry | null {
+  const data = doc.data();
+  if (data._seed === true) return null;
+  return data as AuditEntry;
 }
 
 export async function writeAudit(input: {
@@ -46,7 +36,6 @@ export async function writeAudit(input: {
   note?: string;
 }): Promise<void> {
   try {
-    const entries = await readAll();
     const entry: AuditEntry = {
       id: randomUUID(),
       at: new Date().toISOString(),
@@ -55,19 +44,13 @@ export async function writeAudit(input: {
       actor: { id: input.actor.id, email: input.actor.email, name: input.actor.name },
       note: input.note,
     };
-    await mkdir(DATA_DIR, { recursive: true });
-    await writeFile(
-      LOG_FILE,
-      JSON.stringify([entry, ...entries].slice(0, MAX_ENTRIES), null, 2),
-      "utf8",
-    );
+    await col().doc(entry.id).set(entry);
   } catch (err) {
-    // Never let an audit failure break the action it describes.
     console.error("[audit] could not write entry", err);
   }
 }
 
 export async function listAudit(limit = 50): Promise<AuditEntry[]> {
-  const entries = await readAll();
-  return entries.slice(0, limit);
+  const snap = await col().orderBy("at", "desc").limit(limit).get();
+  return snap.docs.map(toEntry).filter((e): e is AuditEntry => e !== null);
 }

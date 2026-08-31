@@ -43,6 +43,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Staff may read contact messages; everything else under /admin stays admin-only.
+  if (
+    pathname === "/admin/messages" &&
+    (user.role === "staff" || user.role === "admin")
+  ) {
+    return NextResponse.next();
+  }
+
   if (!allowed.includes(user.role)) {
     const url = request.nextUrl.clone();
     url.pathname = homeFor(user.role);

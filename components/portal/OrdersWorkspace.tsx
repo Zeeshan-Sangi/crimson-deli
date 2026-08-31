@@ -4,6 +4,7 @@ import { Fragment, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { NEXT_STATUS, type Order, type OrderStatus } from "@/lib/orders/types";
 import ActionMenu, { type MenuAction } from "./ActionMenu";
+import { formatPhone } from "@/lib/format/phone";
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
   received: "Received",
@@ -30,8 +31,9 @@ const ADVANCE_LABEL: Record<OrderStatus, string | null> = {
   cancelled: null,
 };
 
+/** Unpriced orders read the same everywhere: the dashboard says this too. */
 function money(cents: number | null) {
-  return cents === null ? "At store" : `$${(cents / 100).toFixed(2)}`;
+  return cents === null ? "Priced at store" : `$${(cents / 100).toFixed(2)}`;
 }
 
 function when(iso: string) {
@@ -160,7 +162,7 @@ export default function OrdersWorkspace({ orders }: { orders: Order[] }) {
                       <td>{when(o.createdAt)}</td>
                       <td>
                         {o.customer.name}
-                        <span className="portal-muted d-block">{o.customer.phone}</span>
+                        <span className="portal-muted d-block">{formatPhone(o.customer.phone)}</span>
                       </td>
                       <td>
                         {o.items.reduce((n, i) => n + i.qty, 0)} item

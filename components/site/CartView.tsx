@@ -6,7 +6,7 @@ import { PRICE_PLACEHOLDER } from "@/lib/data/food-menu";
 import { siteConfig } from "@/lib/site-config";
 import { X } from "lucide-react";
 
-export default function CartView() {
+export default function CartView({ signedIn = false }: { signedIn?: boolean }) {
   const { lines, count, subtotalCents, ready, setQty, remove, clear } = useCart();
 
   if (!ready) {
@@ -132,8 +132,11 @@ export default function CartView() {
               store when you collect.
             </p>
           )}
-          <Link href="/checkout" className="cd-btn-solid">
-            Checkout for pickup
+          <Link
+            href={signedIn ? "/checkout" : "/login?next=%2Fcheckout"}
+            className="cd-btn-solid"
+          >
+            {signedIn ? "Checkout for pickup" : "Sign in to check out"}
           </Link>
         </div>
       </div>

@@ -1,17 +1,12 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { siteConfig } from "@/lib/site-config";
 import { DAYS, type Settings, type StoreSettings } from "./types";
 
 /**
- * Store and checkout settings (CLAUDE.md §3).
- *
- * Nothing here may be hardcoded elsewhere — tax rate, tip presets, hours and
- * prep time all come from this store so the admin panel is the only place they
- * change.
+ * Store and checkout settings — single Firestore document at settings/default.
  */
-const DATA_DIR = path.join(process.cwd(), ".data");
-const FILE = path.join(DATA_DIR, "settings.json");
+const COLLECTION = "settings";
+const DOC_ID = "default";
 
 export {
   DAYS,
@@ -22,7 +17,6 @@ export {
   type Settings,
 } from "./types";
 
-/** Hours as published on the About page: Sun 9am to 8:30pm, Mon-Sat 9am to 9:30pm. */
 const DEFAULTS: Settings = {
   store: {
     hours: {
@@ -42,8 +36,6 @@ const DEFAULTS: Settings = {
     doordashStoreUrl: siteConfig.doordashUrl,
   },
   checkout: {
-    // TODO: confirm the Philadelphia prepared-food rate with the client
-    // (CLAUDE.md §11). 0 until then, so nothing is invented.
     taxRate: 0,
     taxAppliesTo: "food",
     taxIncludedInPrice: false,
@@ -61,28 +53,35 @@ function serialise<T>(fn: () => Promise<T>): Promise<T> {
   return run;
 }
 
+function docRef() {
+  return getAdminDb().collection(COLLECTION).doc(DOC_ID);
+}
+
+function mergeWithDefaults(parsed: Partial<Settings> | undefined): Settings {
+  return {
+    store: { ...DEFAULTS.store, ...parsed?.store },
+    checkout: { ...DEFAULTS.checkout, ...parsed?.checkout },
+  };
+}
+
 export async function getSettings(): Promise<Settings> {
-  try {
-    const raw = await readFile(FILE, "utf8");
-    const parsed = JSON.parse(raw) as Partial<Settings>;
-    return {
-      store: { ...DEFAULTS.store, ...parsed.store },
-      checkout: { ...DEFAULTS.checkout, ...parsed.checkout },
-    };
-  } catch {
-    return DEFAULTS;
+  const snap = await docRef().get();
+  if (!snap.exists) {
+    const settings = DEFAULTS;
+    await docRef().set({ ...settings, updatedAt: new Date().toISOString() });
+    return settings;
   }
+  const data = snap.data() as Partial<Settings>;
+  return mergeWithDefaults(data);
 }
 
 export async function saveSettings(next: Settings): Promise<Settings> {
   return serialise(async () => {
-    await mkdir(DATA_DIR, { recursive: true });
-    await writeFile(FILE, JSON.stringify(next, null, 2), "utf8");
+    await docRef().set({ ...next, updatedAt: new Date().toISOString() });
     return next;
   });
 }
 
-/** Minutes since midnight, from "HH:MM". */
 function minutes(hhmm: string): number {
   const [h, m] = hhmm.split(":").map(Number);
   return (h || 0) * 60 + (m || 0);
@@ -91,11 +90,9 @@ function minutes(hhmm: string): number {
 export type OpenState = {
   open: boolean;
   reason: "open" | "paused" | "closed_today" | "outside_hours";
-  /** Human-readable next opening, when closed. */
   nextOpen: string | null;
 };
 
-/** Whether the store is accepting orders right now, in its own timezone. */
 export function storeOpenState(settings: Settings, now = new Date()): OpenState {
   const { store } = settings;
   if (store.ordersPaused) return { open: false, reason: "paused", nextOpen: null };
@@ -103,7 +100,6 @@ export function storeOpenState(settings: Settings, now = new Date()): OpenState 
   const local = new Date(
     now.toLocaleString("en-US", { timeZone: store.timezone }),
   );
-  // JS weeks start on Sunday; DAYS starts on Monday.
   const day = DAYS[(local.getDay() + 6) % 7];
   const today = store.hours[day];
 

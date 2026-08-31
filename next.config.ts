@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   // using .next — building into a live dev server's directory corrupts its
   // module cache. Usage: NEXT_DIST_DIR=.next-build npm run build
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  // firebase-admin must run as a native Node dependency on Vercel (not bundled).
+  serverExternalPackages: ["firebase-admin"],
 };
 
 export default nextConfig;

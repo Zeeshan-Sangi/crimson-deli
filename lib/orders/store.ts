@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { listProducts } from "@/lib/products/store";
 import {
   ICE_CREAM_SIZES,
@@ -28,30 +27,27 @@ import {
  * invocation a fresh, read-only filesystem). This is fine for local work; real
  * deployment needs the Firestore implementation from CLAUDE.md §3.
  */
-const DATA_DIR = path.join(process.cwd(), ".data");
-const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+/**
+ * Orders live in Firestore, one document per order keyed by its id.
+ *
+ * The seed script left a `_placeholder` document in each collection; those are
+ * filtered out on read rather than deleted, so re-seeding stays harmless.
+ */
+const COLLECTION = "orders";
+const COUNTER_DOC = "orderCounter";
 
-// Serialise writes so two concurrent checkouts cannot clobber each other.
-let queue: Promise<unknown> = Promise.resolve();
-function serialise<T>(fn: () => Promise<T>): Promise<T> {
-  const run = queue.then(fn, fn);
-  queue = run.catch(() => undefined);
-  return run;
+function col() {
+  return getAdminDb().collection(COLLECTION);
 }
 
-async function readAll(): Promise<Order[]> {
-  try {
-    const raw = await readFile(ORDERS_FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as Order[]) : [];
-  } catch {
-    return [];
-  }
+function isPlaceholder(data: FirebaseFirestore.DocumentData): boolean {
+  return data._seed === true;
 }
 
-async function writeAll(orders: Order[]): Promise<void> {
-  await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(ORDERS_FILE, JSON.stringify(orders, null, 2), "utf8");
+function toOrder(doc: FirebaseFirestore.QueryDocumentSnapshot): Order | null {
+  const data = doc.data();
+  if (isPlaceholder(data)) return null;
+  return data as Order;
 }
 
 function token(): string {
@@ -67,7 +63,11 @@ export class OrderValidationError extends Error {}
  * client only gets to say *which* product and *how many*, never what it costs
  * (CLAUDE.md: never trust client-computed totals).
  */
-export async function createOrder(input: CreateOrderInput): Promise<Order> {
+export async function createOrder(
+  input: CreateOrderInput,
+  /** Signed-in customer, when there is one. Guests pass null. */
+  uid: string | null = null,
+): Promise<Order> {
   // The ordering window is enforced here, not just in the UI.
   const settings = await getSettings();
   const openState = storeOpenState(settings);
@@ -132,11 +132,21 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     ? null
     : items.reduce((sum, i) => sum + (i.priceCents ?? 0) * i.qty, 0);
 
-  return serialise(async () => {
-    const orders = await readAll();
-    const seq = 2481 + orders.length; // continues the store's existing numbering
-    const now = new Date().toISOString();
+  const db = getAdminDb();
+  const now = new Date().toISOString();
 
+  // The order number comes from a counter document bumped inside a
+  // transaction. The old `2481 + orders.length` reused a number as soon as any
+  // order was deleted, and raced under concurrent checkouts.
+  const seq = await db.runTransaction(async (tx) => {
+    const ref = db.collection("meta").doc(COUNTER_DOC);
+    const snap = await tx.get(ref);
+    const next = snap.exists ? (snap.data()!.next as number) : 2482;
+    tx.set(ref, { next: next + 1, updatedAt: now }, { merge: true });
+    return next;
+  });
+
+  {
     const order: Order = {
       id: randomUUID(),
       orderNumber: `CD-${seq}`,
@@ -146,8 +156,8 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
       totalCents: subtotalCents,
       paymentMethod: "pay_at_store",
       paymentStatus: "unpaid",
-      customer: { name, phone, email, uid: null },
-      isGuest: true,
+      customer: { name, phone, email, uid },
+      isGuest: uid === null,
       notes: input.notes?.trim() || null,
       trackingToken: token(),
       statusHistory: [{ status: "received", at: now, byUid: null }],
@@ -155,24 +165,35 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
       updatedAt: now,
     };
 
-    await writeAll([order, ...orders]);
+    await col().doc(order.id).set(order);
     return order;
-  });
+  }
+}
+
+/** One customer's own orders, newest first — their account page. */
+export async function ordersForUser(uid: string): Promise<Order[]> {
+  // Sorted in memory so this needs no composite index — one customer's order
+  // count stays small.
+  const snap = await col().where("customer.uid", "==", uid).get();
+  return snap.docs
+    .map(toOrder)
+    .filter((o): o is Order => o !== null)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export async function listOrders(): Promise<Order[]> {
-  const orders = await readAll();
-  return orders.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const snap = await col().orderBy("createdAt", "desc").get();
+  return snap.docs.map(toOrder).filter((o): o is Order => o !== null);
 }
 
 export async function getOrderByToken(trackingToken: string): Promise<Order | null> {
-  const orders = await readAll();
-  return orders.find((o) => o.trackingToken === trackingToken) ?? null;
+  const snap = await col().where("trackingToken", "==", trackingToken).limit(1).get();
+  return snap.empty ? null : toOrder(snap.docs[0]);
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
-  const orders = await readAll();
-  return orders.find((o) => o.orderNumber === orderNumber) ?? null;
+  const snap = await col().where("orderNumber", "==", orderNumber).limit(1).get();
+  return snap.empty ? null : toOrder(snap.docs[0]);
 }
 
 /** Advances one step along the lifecycle, or cancels. Rejects illegal jumps. */
@@ -180,12 +201,15 @@ export async function setOrderStatus(
   id: string,
   status: OrderStatus,
 ): Promise<Order> {
-  return serialise(async () => {
-    const orders = await readAll();
-    const i = orders.findIndex((o) => o.id === id);
-    if (i === -1) throw new OrderValidationError("Order not found.");
+  const db = getAdminDb();
+  // A transaction, because this is a read-check-write: two staff advancing the
+  // same order at once must not both pass the legality check.
+  return db.runTransaction(async (tx) => {
+    const ref = col().doc(id);
+    const snap = await tx.get(ref);
+    if (!snap.exists) throw new OrderValidationError("Order not found.");
 
-    const current = orders[i];
+    const current = snap.data() as Order;
     const allowed = status === "cancelled" || NEXT_STATUS[current.status] === status;
     if (!allowed)
       throw new OrderValidationError(
@@ -199,8 +223,8 @@ export async function setOrderStatus(
       updatedAt: now,
       statusHistory: [...current.statusHistory, { status, at: now, byUid: null }],
     };
-    orders[i] = updated;
-    await writeAll(orders);
+    tx.set(ref, updated);
     return updated;
   });
 }
+

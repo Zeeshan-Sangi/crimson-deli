@@ -1424,6 +1424,27 @@
   background: var(--cd-surface);
   padding: 20px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  /* The card stretches to match the form column, so the actions are pushed to
+     its foot rather than leaving a block of dead space underneath them. */
+  display: flex;
+  flex-direction: column;
+}
+
+.cd-summary__actions {
+  margin-top: auto;
+  padding-top: 20px;
+  display: grid;
+  gap: 12px;
+  justify-items: stretch;
+  text-align: center;
+}
+
+/* On narrow screens the card is only as tall as its contents, so the auto
+   margin would add nothing — keep the spacing tight instead. */
+@media (max-width: 991px) {
+  .cd-summary__actions {
+    margin-top: 4px;
+  }
 }
 
 .cd-summary h3 {
@@ -1810,5 +1831,115 @@
   font-weight: 700;
   color: var(--cd-crimson);
   text-decoration: underline;
+}
+
+/* ---- 404 + order tracking ---- */
+
+.cd-not-found__code {
+  margin: 0 0 8px;
+  font-size: clamp(72px, 16vw, 120px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--cd-crimson);
+}
+
+.cd-not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.cd-order {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.cd-order__card h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--cd-ink);
+}
+
+.cd-order__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.cd-order__badge {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cd-crimson);
+}
+
+.cd-order__meta {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--cd-muted);
+}
+
+.cd-order__subhead {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--cd-ink);
+}
+
+.cd-order__steps {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 24px;
+  padding-left: 20px;
+}
+
+.cd-order__step {
+  color: var(--cd-muted);
+}
+
+.cd-order__step[data-done="true"] {
+  color: var(--cd-ink);
+}
+
+.cd-order__step[data-current="true"] strong {
+  color: var(--cd-crimson);
+}
+
+.cd-order__step strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 15px;
+}
+
+.cd-order__step span {
+  display: block;
+  font-size: 14px;
+}
+
+.cd-order__items {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  font-size: 14px;
+  color: var(--cd-ink);
+}
+
+.cd-order__note {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--cd-muted);
+}
+
+.cd-order__note a {
+  color: var(--cd-crimson);
+  font-weight: 700;
 }
 

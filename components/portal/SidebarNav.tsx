@@ -10,6 +10,7 @@ import {
   Sandwich,
   SlidersHorizontal,
   Star,
+  Mail,
   User,
   Users,
   type LucideIcon,
@@ -25,6 +26,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
       { href: "/admin", label: "Dashboard", icon: Gauge, exact: true, roles: ["admin"] },
       { href: "/team", label: "Live board", icon: ConciergeBell, roles: ["staff", "admin"] },
       { href: "/admin/orders", label: "Orders", icon: Receipt, roles: ["admin"] },
+      { href: "/admin/messages", label: "Messages", icon: Mail, roles: ["admin"] },
     ],
   },
   {

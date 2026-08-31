@@ -4,14 +4,30 @@ import Link from "next/link";
 import { useState } from "react";
 import { formatCents, useCart } from "@/lib/cart/CartContext";
 import { PRICE_PLACEHOLDER } from "@/lib/data/food-menu";
+import { formatPhone } from "@/lib/format/phone";
 import { siteConfig } from "@/lib/site-config";
 
 type Details = { name: string; phone: string; email: string; notes: string };
 const EMPTY: Details = { name: "", phone: "", email: "", notes: "" };
 
-export default function CheckoutView() {
+export default function CheckoutView({
+  defaultName = "",
+  defaultPhone = "",
+  defaultEmail = "",
+}: {
+  defaultName?: string;
+  defaultPhone?: string;
+  defaultEmail?: string;
+}) {
   const { lines, count, subtotalCents, ready, clear } = useCart();
-  const [details, setDetails] = useState<Details>(EMPTY);
+  // Prefilled from the signed-in account — ordering requires one, so these are
+  // details the store already holds.
+  const [details, setDetails] = useState<Details>({
+    ...EMPTY,
+    name: defaultName,
+    phone: defaultPhone,
+    email: defaultEmail,
+  });
   const [errors, setErrors] = useState<Partial<Record<keyof Details, string>>>({});
   const [placed, setPlaced] = useState<{ orderNumber: string; trackingToken: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -62,6 +78,12 @@ export default function CheckoutView() {
 
       const data = await res.json();
       if (!res.ok) {
+        // A session can expire between loading the page and submitting; send
+        // them to sign in and straight back, rather than showing a dead end.
+        if (res.status === 401) {
+          window.location.href = "/login?next=%2Fcheckout";
+          return;
+        }
         setSubmitError(data?.error ?? "Could not place the order. Please try again.");
         return;
       }
@@ -95,7 +117,7 @@ export default function CheckoutView() {
         <h2>Order placed</h2>
         <p>
           Your order reference is <strong>{placed.orderNumber}</strong>. The counter has it
-          now and will call you on {details.phone.trim()} when it is ready to collect.
+          now and will call you on {formatPhone(details.phone)} when it is ready to collect.
         </p>
         <p>
           Collect from {siteConfig.address}. Questions? Call{" "}
@@ -230,13 +252,15 @@ export default function CheckoutView() {
             </p>
           )}
 
-          <button type="submit" disabled={submitting} className="cd-btn-solid">
-            {submitting ? "Placing order…" : "Place pickup order"}
-          </button>
+          <div className="cd-summary__actions">
+            <button type="submit" disabled={submitting} className="cd-btn-solid">
+              {submitting ? "Placing order…" : "Place pickup order"}
+            </button>
 
-          <Link href="/cart" className="cd-section-head__link" style={{ display: "block", textAlign: "center", marginTop: 12 }}>
-            ← Back to cart
-          </Link>
+            <Link href="/cart" className="cd-section-head__link">
+              ← Back to cart
+            </Link>
+          </div>
         </div>
       </div>
     </form>

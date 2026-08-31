@@ -7,12 +7,27 @@ import { mainNav, siteConfig } from "@/lib/site-config";
 import { useCart } from "@/lib/cart/CartContext";
 import { Mail, MapPin, Menu, Phone, ShoppingBag, User, X } from "lucide-react";
 
+/** What the header needs to know about the visitor. */
+export type HeaderUser = { name: string; role: string } | null;
+
+/** Where a signed-in person's own area lives, by role. */
+function homeFor(role: string): string {
+  if (role === "admin") return "/admin";
+  if (role === "staff") return "/team";
+  return "/account";
+}
+
+/** First name only — the header is tight, and "Store Admin" would wrap. */
+function shortName(name: string): string {
+  return name.trim().split(/\s+/)[0] || "Account";
+}
+
 function navActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function SiteHeader() {
+export default function SiteHeader({ user = null }: { user?: HeaderUser }) {
   const [navOpen, setNavOpen] = useState(false);
   const { count: cartCount } = useCart();
   const pathname = usePathname();
@@ -71,9 +86,12 @@ export default function SiteHeader() {
           </nav>
 
           <div className="cd-site-header__actions">
-            <Link href="/login" className="cd-btn-solid cd-btn-solid--ghost cd-site-header__login">
+            <Link
+              href={user ? homeFor(user.role) : "/login"}
+              className="cd-btn-solid cd-btn-solid--ghost cd-site-header__login"
+            >
               <User size={16} aria-hidden="true" />
-              Log In
+              {user ? shortName(user.name) : "Log In"}
             </Link>
             <Link
               href="/cart"
@@ -130,8 +148,11 @@ export default function SiteHeader() {
                 </li>
               ))}
               <li>
-                <Link href="/login" onClick={() => setNavOpen(false)}>
-                  Log In
+                <Link
+                  href={user ? homeFor(user.role) : "/login"}
+                  onClick={() => setNavOpen(false)}
+                >
+                  {user ? `${shortName(user.name)} · my account` : "Log In"}
                 </Link>
               </li>
             </ul>

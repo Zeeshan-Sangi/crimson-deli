@@ -18,6 +18,8 @@ export default function ContactForm() {
   const [fields, setFields] = useState<Fields>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({});
   const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const set = (key: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFields((f) => ({ ...f, [key]: e.target.value }));
@@ -34,25 +36,36 @@ export default function ContactForm() {
     return Object.keys(next).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
 
-    const subject = fields.subject.trim() || `Message from ${fields.name.trim()}`;
-    const body = [
-      `Name: ${fields.name.trim()}`,
-      `Email: ${fields.email.trim()}`,
-      fields.phone.trim() ? `Phone: ${fields.phone.trim()}` : null,
-      "",
-      fields.message.trim(),
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    window.location.href = `mailto:${siteConfig.email}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    setBusy(true);
+    setSendError(null);
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: fields.name,
+          email: fields.email,
+          phone: fields.phone,
+          subject: fields.subject,
+          body: fields.message,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setSendError(data.error ?? "Could not send your message.");
+        return;
+      }
+      setFields(EMPTY);
+      setSent(true);
+    } catch {
+      setSendError("Could not reach the server. Please call the store instead.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -78,15 +91,25 @@ export default function ContactForm() {
         </div>
       </div>
 
-      <button type="submit" className="cd-btn-solid" style={{ marginTop: 16 }}>
-        Send message <ArrowRight size={16} aria-hidden="true" />
+      <button
+        type="submit"
+        className="cd-btn-solid"
+        style={{ marginTop: 16 }}
+        disabled={busy}
+      >
+        {busy ? "Sending…" : "Send message"} <ArrowRight size={16} aria-hidden="true" />
       </button>
+
+      {sendError && (
+        <p className="cd-form-error" role="alert" style={{ marginTop: 12 }}>
+          {sendError}
+        </p>
+      )}
 
       {sent && (
         <p className="cd-form-success" role="status">
-          Your mail app should have opened with the message ready to send. If it did not,
-          email us directly at{" "}
-          <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.
+          Thanks — we have your message and will get back to you. If it&rsquo;s urgent,
+          call the store on <a href={siteConfig.phoneHref}>{siteConfig.phone}</a>.
         </p>
       )}
     </form>

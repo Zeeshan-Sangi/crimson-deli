@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Order, OrderStatus } from "@/lib/orders/types";
+import { formatPhone } from "@/lib/format/phone";
 
 const COLUMNS: { key: OrderStatus; label: string; advanceLabel: string }[] = [
   { key: "received", label: "New", advanceLabel: "Start preparing" },
@@ -22,7 +23,49 @@ function timeAgo(iso: string) {
   return `${Math.floor(mins / 60)} h ${mins % 60} min ago`;
 }
 
+type MenuItem = { slug: string; name: string; available: boolean; hidden?: boolean };
+
 export default function TeamBoard() {
+  const [products, setProducts] = useState<MenuItem[]>([]);
+  const [savingSlug, setSavingSlug] = useState<string | null>(null);
+  const [productError, setProductError] = useState<string | null>(null);
+
+  async function loadProducts() {
+    try {
+      const res = await fetch("/api/products");
+      if (!res.ok) return;
+      const data = (await res.json()) as { products: MenuItem[] };
+      // Hidden items are off the menu entirely, so they are not sold-out-able.
+      setProducts(data.products.filter((p) => !p.hidden));
+    } catch {
+      // The board keeps working without the toggles.
+    }
+  }
+
+  async function toggleAvailable(item: MenuItem) {
+    setSavingSlug(item.slug);
+    setProductError(null);
+    try {
+      const res = await fetch("/api/products", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ slug: item.slug, available: !item.available }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setProductError(data.error ?? "Could not update that item.");
+        return;
+      }
+      setProducts((prev) =>
+        prev.map((p) => (p.slug === item.slug ? { ...p, available: !p.available } : p)),
+      );
+    } catch {
+      setProductError("Could not reach the server.");
+    } finally {
+      setSavingSlug(null);
+    }
+  }
+
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -46,6 +89,12 @@ export default function TeamBoard() {
     const t = setInterval(load, 10000);
     return () => clearInterval(t);
   }, [load]);
+
+  // The menu changes far less often than the order queue, so it is fetched once
+  // rather than on every poll.
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   async function advance(order: Order) {
     const next = NEXT[order.status];
@@ -115,7 +164,7 @@ export default function TeamBoard() {
                   <article key={o.id} className="team-order">
                     <strong>{o.orderNumber}</strong>
                     <div className="portal-muted">
-                      {o.customer.name} · {o.customer.phone}
+                      {o.customer.name} · {formatPhone(o.customer.phone)}
                     </div>
                     <div className="portal-muted">
                       {o.paymentMethod === "pay_at_store" ? "Pay at store" : "Prepaid"} ·{" "}
@@ -153,11 +202,33 @@ export default function TeamBoard() {
         <div className="crm-card__head">
           <div>
             <h2>Sold-out toggles</h2>
-            <p>
-              Wire to <code>products.available</code> when Firestore is live.
-            </p>
+            <p>Ran out of something? Flip it here and it updates on the site immediately.</p>
           </div>
         </div>
+
+        {productError && <p className="portal-note">{productError}</p>}
+
+        {products.length === 0 ? (
+          <p className="crm-empty">Loading the menu…</p>
+        ) : (
+          <div className="crm-soldout">
+            {products.map((p) => (
+              <button
+                key={p.slug}
+                type="button"
+                className={`crm-soldout__item${p.available ? "" : " crm-soldout__item--out"}`}
+                disabled={savingSlug === p.slug}
+                aria-pressed={!p.available}
+                onClick={() => toggleAvailable(p)}
+              >
+                <span className="crm-soldout__name">{p.name}</span>
+                <span className="crm-soldout__state">
+                  {savingSlug === p.slug ? "…" : p.available ? "Available" : "Sold out"}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </section>
     </>
   );

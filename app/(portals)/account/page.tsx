@@ -3,19 +3,29 @@ import Link from "next/link";
 import PortalShell from "@/components/portal/PortalShell";
 import AccountWorkspace from "@/components/portal/AccountWorkspace";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { listOrders } from "@/lib/orders/store";
+import { listOrders, ordersForUser } from "@/lib/orders/store";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "My account" };
 
+function when(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    timeZone: "America/New_York",
+    dateStyle: "medium",
+  });
+}
+
 export default async function AccountPage() {
   const user = (await getCurrentUser())!;
-  const orders = await listOrders();
 
-  // Customer accounts do not exist yet — guest orders carry no uid — so staff
-  // see the recent order list instead of a personal history.
-  const recent = orders.slice(0, 5);
+  // A customer must only ever see their own orders here — this page is open to
+  // every signed-in role, and it used to show the five most recent orders
+  // store-wide to whoever opened it.
+  const isStaff = user.role === "staff" || user.role === "admin";
+  const recent = isStaff
+    ? (await listOrders()).slice(0, 5)
+    : (await ordersForUser(user.id)).slice(0, 5);
 
   return (
     <PortalShell
@@ -58,8 +68,8 @@ export default async function AccountPage() {
         <section className="crm-card">
           <div className="crm-card__head">
             <div>
-              <h2>Recent orders</h2>
-              <p>Latest across the store</p>
+              <h2>{isStaff ? "Recent orders" : "Your orders"}</h2>
+              <p>{isStaff ? "Latest across the store" : "Orders placed while signed in"}</p>
             </div>
             {user.role === "admin" && (
               <Link href="/admin/orders" className="portal-btn">All orders</Link>
@@ -67,14 +77,18 @@ export default async function AccountPage() {
           </div>
 
           {recent.length === 0 ? (
-            <p className="crm-empty">No orders yet.</p>
+            <p className="crm-empty">
+              {isStaff
+                ? "No orders yet."
+                : "No orders yet. Anything you order while signed in shows up here."}
+            </p>
           ) : (
             <table className="portal-table">
               <tbody>
                 {recent.map((o) => (
                   <tr key={o.id}>
                     <td><strong>{o.orderNumber}</strong></td>
-                    <td>{o.customer.name}</td>
+                    <td>{isStaff ? o.customer.name : when(o.createdAt)}</td>
                     <td style={{ textAlign: "right" }}>
                       <span className="portal-badge">{o.status.replace("_", " ")}</span>
                     </td>
@@ -85,9 +99,9 @@ export default async function AccountPage() {
           )}
 
           <p className="portal-muted" style={{ fontSize: 12, marginTop: 12 }}>
-            Customer sign-in does not exist yet. Every order on the site is placed as a
-            guest and tracked by its own link. Personal order history arrives with
-            customer accounts.
+            {isStaff
+              ? "Store-wide view. Customers see only their own orders here."
+              : "Orders placed as a guest are not listed here — track those with the link from your confirmation."}
           </p>
         </section>
       </div>

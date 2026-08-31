@@ -6,7 +6,7 @@ import { getAdminAuth } from "@/lib/firebase/admin";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const adminAuth = getAdminAuth();
+  const adminAuth = await getAdminAuth();
   if (!adminAuth) {
     return NextResponse.json(
       { error: "Firebase server credentials are not configured." },

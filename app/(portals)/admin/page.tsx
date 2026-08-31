@@ -28,7 +28,7 @@ const STATUS_BADGE: Record<OrderStatus, string> = {
 };
 
 function money(cents: number | null) {
-  return cents === null ? "N/A" : `$${(cents / 100).toFixed(2)}`;
+  return cents === null ? "Priced at store" : `$${(cents / 100).toFixed(2)}`;
 }
 
 function isToday(iso: string) {
@@ -63,7 +63,7 @@ export default async function AdminDashboard() {
   return (
     <PortalShell
       user={user}
-      title={`Good to see you, ${user.name.split(" ")[0]}`}
+      title={`Good to see you, ${user.name}`}
       subtitle="Everything happening at Ogontz Avenue right now."
     >
       <div className="crm-stats">

@@ -1,15 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { MAX_RATING, MIN_RATING, type Review, type ReviewSummary } from "./types";
 
-/**
- * Customer reviews — interim JSON storage, same shape as the other stores and
- * with the same caveat: a file does not survive serverless hosting. Firestore
- * replaces the IO below without changing a single caller.
- */
-const DATA_DIR = path.join(process.cwd(), ".data");
-const FILE = path.join(DATA_DIR, "reviews.json");
+const COLLECTION = "reviews";
+
+function col() {
+  return getAdminDb().collection(COLLECTION);
+}
 
 const MAX_NAME = 60;
 const MAX_BODY = 1500;
@@ -23,28 +20,22 @@ function serialise<T>(fn: () => Promise<T>): Promise<T> {
 
 export class ReviewError extends Error {}
 
+function toReview(doc: FirebaseFirestore.QueryDocumentSnapshot): Review | null {
+  const data = doc.data();
+  if (data._seed === true) return null;
+  return data as Review;
+}
+
 async function readAll(): Promise<Review[]> {
-  try {
-    const raw = await readFile(FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as Review[]) : [];
-  } catch {
-    return [];
-  }
+  const snap = await col().get();
+  return snap.docs.map(toReview).filter((r): r is Review => r !== null);
 }
 
-async function writeAll(reviews: Review[]): Promise<void> {
-  await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(FILE, JSON.stringify(reviews, null, 2), "utf8");
-}
-
-/** Every review, newest first — the admin moderation list. */
 export async function listAllReviews(): Promise<Review[]> {
   const all = await readAll();
   return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
-/** Newest first — what the product page lists. */
 export async function listForProduct(productSlug: string): Promise<Review[]> {
   const all = await readAll();
   return all
@@ -67,7 +58,6 @@ export async function summaryForProduct(productSlug: string): Promise<ReviewSumm
   };
 }
 
-/** Summaries for many products at once, so a listing page reads the file once. */
 export async function summariesBySlug(): Promise<Record<string, ReviewSummary>> {
   const all = await readAll();
   const bySlug: Record<string, Review[]> = {};
@@ -116,20 +106,18 @@ export async function createReview(input: {
   };
 
   return serialise(async () => {
-    const all = await readAll();
-    await writeAll([review, ...all]);
+    await col().doc(review.id).set(review);
     return review;
   });
 }
 
-/** Moderation: staff remove a review that should not be on the site. */
 export async function deleteReview(id: string): Promise<Review> {
   return serialise(async () => {
-    const all = await readAll();
-    const i = all.findIndex((r) => r.id === id);
-    if (i === -1) throw new ReviewError("Review not found.");
-    const [removed] = all.splice(i, 1);
-    await writeAll(all);
+    const ref = col().doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) throw new ReviewError("Review not found.");
+    const removed = doc.data() as Review;
+    await ref.delete();
     return removed;
   });
 }

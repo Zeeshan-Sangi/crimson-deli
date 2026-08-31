@@ -48,6 +48,43 @@ function PhoneIcon() {
   );
 }
 
+/**
+ * Turns a Firebase auth error into a message that names the actual cause.
+ *
+ * The catch-all "check the number" text was actively misleading: a blocked SMS
+ * region, an unauthorised domain and a bad reCAPTCHA all look identical to the
+ * person typing, and none of them are fixed by re-checking the number.
+ */
+function phoneErrorMessage(err: unknown): string {
+  const code =
+    typeof err === "object" && err !== null && "code" in err
+      ? String((err as { code: unknown }).code)
+      : "";
+  const raw =
+    typeof err === "object" && err !== null && "message" in err
+      ? String((err as { message: unknown }).message)
+      : "";
+
+  if (raw.includes("region enabled") || code === "auth/invalid-app-credential") {
+    if (raw.includes("region enabled")) {
+      return "Text messages are not enabled for this country yet. The store needs to allow this region in Firebase before phone sign-in works.";
+    }
+    return "Phone sign-in could not verify this browser. Reload the page and try again.";
+  }
+  if (code === "auth/billing-not-enabled")
+    return "Phone sign-in needs billing enabled on the Firebase project.";
+  if (code === "auth/invalid-phone-number")
+    return "That phone number does not look right. Include the country code, e.g. +1 215 555 0123.";
+  if (code === "auth/too-many-requests")
+    return "Too many attempts from this device. Wait a few minutes and try again.";
+  if (code === "auth/unauthorized-domain")
+    return "This site is not on the Firebase authorised domains list.";
+  if (code === "auth/quota-exceeded")
+    return "The daily SMS limit has been reached. Try again tomorrow or sign in another way.";
+
+  return "Could not send the verification code. Please try another sign-in method.";
+}
+
 function toE164(raw: string): string | null {
   const digits = raw.replace(/\D/g, "");
   if (digits.length === 10) return `+1${digits}`;
@@ -145,7 +182,9 @@ export default function FirebaseAuthButtons({
     }
     const e164 = toE164(phone);
     if (!e164) {
-      reportError("Enter a valid US phone number.");
+      reportError(
+        "Enter a valid phone number — a 10-digit US number, or include the country code like +92 317 6293902.",
+      );
       return;
     }
 
@@ -155,10 +194,13 @@ export default function FirebaseAuthButtons({
       const verifier = ensureRecaptcha(auth);
       confirmationRef.current = await signInWithPhoneNumber(auth, e164, verifier);
       setCodeSent(true);
-    } catch {
+    } catch (err) {
       recaptchaRef.current?.clear();
       recaptchaRef.current = null;
-      reportError("Could not send the verification code. Check the number and try again.");
+      // Logged as well as shown: the console line is what an operator needs to
+      // find the setting to change.
+      console.error("[phone-auth] sendVerificationCode failed", err);
+      reportError(phoneErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -180,8 +222,16 @@ export default function FirebaseAuthButtons({
       const result = await confirmationRef.current.confirm(code.trim());
       const idToken = await result.user.getIdToken();
       await finishWithToken(idToken);
-    } catch {
-      reportError("That code is incorrect or expired.");
+    } catch (err) {
+      const code =
+        typeof err === "object" && err !== null && "code" in err
+          ? String((err as { code: unknown }).code)
+          : "";
+      reportError(
+        code === "auth/code-expired"
+          ? "That code has expired. Send a new one."
+          : "That code is incorrect. Check it and try again.",
+      );
     } finally {
       setBusy(false);
     }

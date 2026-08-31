@@ -71,7 +71,9 @@ export default async function AdminReportsPage() {
           <div className="crm-stat__label">Revenue recorded</div>
           <div className="crm-stat__value">{money(revenue)}</div>
           <div className="crm-stat__hint">
-            {unpriced > 0 ? `${unpriced} items unpriced, so the real total is higher` : "All items priced"}
+            {unpriced > 0
+              ? `From collected orders. ${unpriced} items unpriced, so the real total is higher`
+              : "From collected orders only"}
           </div>
         </div>
         <div className="crm-stat">
@@ -129,7 +131,7 @@ export default async function AdminReportsPage() {
                     </td>
                     <td style={{ textAlign: "right", fontWeight: 700, width: 50 }}>{d.count}</td>
                     <td style={{ textAlign: "right", width: 80 }}>
-                      {d.cents > 0 ? money(d.cents) : "N/A"}
+                      {d.cents > 0 ? money(d.cents) : money(0)}
                     </td>
                   </tr>
                 ))}

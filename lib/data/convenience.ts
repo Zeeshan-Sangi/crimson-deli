@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import type { ConvenienceCatalog, ConvenienceProduct } from "./types";
 
 /**
@@ -13,14 +11,17 @@ import type { ConvenienceCatalog, ConvenienceProduct } from "./types";
  * CLAUDE.md wants the store's own in-store price list instead; until that
  * arrives these are shown as DoorDash prices and labelled as such.
  */
-const CATALOG_PATH = path.join(process.cwd(), "public/data/convenience-catalog.json");
-
 let cached: ConvenienceCatalog | null = null;
 
+/**
+ * Imported rather than read from disk: the catalogue is static reference data
+ * that ships with the build, and a runtime `readFile` under `public/` depends
+ * on serverless file tracing including it.
+ */
 export async function getCatalog(): Promise<ConvenienceCatalog> {
   if (cached) return cached;
-  const raw = await readFile(CATALOG_PATH, "utf8");
-  cached = JSON.parse(raw) as ConvenienceCatalog;
+  const mod = await import("@/public/data/convenience-catalog.json");
+  cached = (mod.default ?? mod) as unknown as ConvenienceCatalog;
   return cached;
 }
 

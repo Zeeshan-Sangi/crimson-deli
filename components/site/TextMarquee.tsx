@@ -27,10 +27,14 @@ export default function TextMarquee() {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const slides = PLATES.flatMap((plate) => [
+  // Swiper needs roughly twice the visible slides to loop cleanly; ten wide
+  // plates is not enough on a large screen, which is what it warns about. The
+  // strip is a repeating marquee anyway, so duplicating the run is free.
+  const oneRun = PLATES.flatMap((plate) => [
     `/assets/img/home-2/${plate}.png`,
     FLOWER,
   ]);
+  const slides = [...oneRun, ...oneRun];
 
   if (reduced) {
     return (

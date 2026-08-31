@@ -20,9 +20,15 @@ dist/
 !.env.example
 
 # Firebase / service account keys (if downloaded locally)
+# The leading-dot form matters: `firebase-service-account*.json` does NOT match
+# `.firebase-service-account.json`, which is the name the CLI writes.
 *-firebase-adminsdk-*.json
 firebase-service-account*.json
+.firebase-service-account*.json
 serviceAccount*.json
+*serviceAccount*.json
+# Catch-all for any file holding a service-account private key.
+**/*service-account*.json
 
 # --- Local dev-only runtime data (Firestore replaces in production) ---
 .data/
@@ -90,3 +96,5 @@ THEMELOCK.COM.url
 *.tmp
 *.temp
 .cache/
+.vercel
+.env*

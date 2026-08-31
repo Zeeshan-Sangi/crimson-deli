@@ -1,65 +1,59 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { hashPassword, verifyPassword } from "./password";
 import type { Role, User } from "./types";
 
 /**
- * User store — interim implementation.
+ * User store — Firestore, one document per user keyed by `id`.
  *
- * Backed by a JSON file so staff accounts work today without Firebase. Every
- * caller goes through these functions, so moving to Firebase Auth + custom
- * claims later means rewriting this file only.
- *
- * NOTE: like the order store, a JSON file does not survive on serverless
- * hosting. Real deployment needs Firebase Auth (CLAUDE.md §4).
+ * Email uniqueness is enforced inside a transaction rather than by a read
+ * followed by a write, so two simultaneous signups cannot both pass the check.
  */
-const DATA_DIR = path.join(process.cwd(), ".data");
-const USERS_FILE = path.join(DATA_DIR, "users.json");
+const COLLECTION = "users";
 
-let queue: Promise<unknown> = Promise.resolve();
-function serialise<T>(fn: () => Promise<T>): Promise<T> {
-  const run = queue.then(fn, fn);
-  queue = run.catch(() => undefined);
-  return run;
+function col() {
+  return getAdminDb().collection(COLLECTION);
 }
 
-async function readAll(): Promise<User[]> {
-  try {
-    const raw = await readFile(USERS_FILE, "utf8");
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return (parsed as User[]).map((u) => ({
-      ...u,
-      phone: u.phone ?? null,
-      firebaseUid: u.firebaseUid ?? null,
-    }));
-  } catch {
-    return [];
-  }
+/** The seed script left a `_placeholder` doc behind; it is not a user. */
+function toUser(doc: FirebaseFirestore.QueryDocumentSnapshot): User | null {
+  const data = doc.data();
+  if (data._seed === true) return null;
+  return {
+    ...(data as User),
+    phone: (data as User).phone ?? null,
+    firebaseUid: (data as User).firebaseUid ?? null,
+  };
 }
 
-async function writeAll(users: User[]): Promise<void> {
-  await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(USERS_FILE, JSON.stringify(users, null, 2), "utf8");
+/** Single-field lookup used by the Firebase sign-in reconciliation. */
+async function findOneBy(field: string, value: string): Promise<User | null> {
+  const snap = await col().where(field, "==", value).limit(1).get();
+  return snap.empty ? null : toUser(snap.docs[0]);
+}
+
+async function allUsers(): Promise<User[]> {
+  const snap = await col().get();
+  return snap.docs.map(toUser).filter((u): u is User => u !== null);
 }
 
 export class AuthError extends Error {}
 
 export async function listUsers(): Promise<User[]> {
-  const users = await readAll();
+  const users = await allUsers();
   return users.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function findByEmail(email: string): Promise<User | null> {
-  const users = await readAll();
   const needle = email.trim().toLowerCase();
-  return users.find((u) => u.email.toLowerCase() === needle) ?? null;
+  const snap = await col().where("email", "==", needle).limit(1).get();
+  return snap.empty ? null : toUser(snap.docs[0]);
 }
 
 export async function findById(id: string): Promise<User | null> {
-  const users = await readAll();
-  return users.find((u) => u.id === id) ?? null;
+  const doc = await col().doc(id).get();
+  if (!doc.exists) return null;
+  return toUser(doc as FirebaseFirestore.QueryDocumentSnapshot);
 }
 
 function normalizePhone(raw: string): string {
@@ -90,9 +84,10 @@ export async function createUser(input: {
 
   const passwordHash = await hashPassword(input.password);
 
-  return serialise(async () => {
-    const users = await readAll();
-    if (users.some((u) => u.email.toLowerCase() === email))
+  const db = getAdminDb();
+  return db.runTransaction(async (tx) => {
+    const clash = await tx.get(col().where("email", "==", email).limit(1));
+    if (!clash.empty)
       throw new AuthError("An account with that email already exists.");
 
     const user: User = {
@@ -106,7 +101,7 @@ export async function createUser(input: {
       createdAt: new Date().toISOString(),
       disabledAt: null,
     };
-    await writeAll([...users, user]);
+    tx.set(col().doc(user.id), user);
     return user;
   });
 }
@@ -123,30 +118,36 @@ export async function authenticate(
 }
 
 export async function setUserRole(id: string, role: Role): Promise<User> {
-  return serialise(async () => {
-    const users = await readAll();
-    const i = users.findIndex((u) => u.id === id);
-    if (i === -1) throw new AuthError("User not found.");
-    users[i] = { ...users[i], role };
-    await writeAll(users);
-    return users[i];
-  });
+  const doc = await col().doc(id).get();
+  if (!doc.exists) throw new AuthError("User not found.");
+  const updated = { ...(doc.data() as User), role };
+  await col().doc(id).set(updated);
+  return updated;
 }
 
 export async function setUserDisabled(id: string, disabled: boolean): Promise<User> {
-  return serialise(async () => {
-    const users = await readAll();
-    const i = users.findIndex((u) => u.id === id);
-    if (i === -1) throw new AuthError("User not found.");
-    const admins = users.filter((u) => u.role === "admin" && !u.disabledAt);
-    if (disabled && users[i].role === "admin" && admins.length <= 1)
-      throw new AuthError("Cannot disable the last active admin.");
-    users[i] = {
-      ...users[i],
+  const db = getAdminDb();
+  // Transactional: the "last active admin" check is a read-then-write, and two
+  // admins disabling each other at once must not both succeed.
+  return db.runTransaction(async (tx) => {
+    const ref = col().doc(id);
+    const doc = await tx.get(ref);
+    if (!doc.exists) throw new AuthError("User not found.");
+    const current = doc.data() as User;
+
+    if (disabled && current.role === "admin") {
+      const admins = await tx.get(col().where("role", "==", "admin"));
+      const active = admins.docs.filter((d) => !(d.data() as User).disabledAt);
+      if (active.length <= 1)
+        throw new AuthError("Cannot disable the last active admin.");
+    }
+
+    const updated: User = {
+      ...current,
       disabledAt: disabled ? new Date().toISOString() : null,
     };
-    await writeAll(users);
-    return users[i];
+    tx.set(ref, updated);
+    return updated;
   });
 }
 
@@ -164,55 +165,50 @@ export async function upsertFirebaseUser(input: {
   const phone = phoneRaw ? normalizePhone(phoneRaw) : null;
   const name = input.name?.trim() ?? "";
 
-  return serialise(async () => {
-    const users = await readAll();
-    let idx = users.findIndex((u) => u.firebaseUid === firebaseUid);
-    if (idx === -1 && phone) idx = users.findIndex((u) => u.phone === phone);
-    if (idx === -1 && emailRaw)
-      idx = users.findIndex((u) => u.email.toLowerCase() === emailRaw);
+  // Matched on firebaseUid first, then phone, then email — a customer who
+  // signed up by email and later uses Google should land on the same account.
+  const existing =
+    (await findOneBy("firebaseUid", firebaseUid)) ??
+    (phone ? await findOneBy("phone", phone) : null) ??
+    (emailRaw ? await findOneBy("email", emailRaw) : null);
 
-    if (idx !== -1) {
-      const existing = users[idx];
-      users[idx] = {
-        ...existing,
-        firebaseUid,
-        phone: phone ?? existing.phone,
-        email: emailRaw || existing.email,
-        name: name || existing.name,
-      };
-      await writeAll(users);
-      return users[idx];
-    }
-
-    const email =
-      emailRaw ||
-      (phone ? `phone+${phone}@phone.crimsondeli.com` : `uid+${firebaseUid}@firebase.crimsondeli.com`);
-    const passwordHash = await hashPassword(randomUUID());
-    const user: User = {
-      id: randomUUID(),
-      email,
-      name: name || (phone ? `Customer ${phone.slice(-4)}` : "Customer"),
-      phone,
+  if (existing) {
+    const updated: User = {
+      ...existing,
       firebaseUid,
-      role: "customer",
-      passwordHash,
-      createdAt: new Date().toISOString(),
-      disabledAt: null,
+      phone: phone ?? existing.phone,
+      email: emailRaw || existing.email,
+      name: name || existing.name,
     };
-    await writeAll([...users, user]);
-    return user;
-  });
+    await col().doc(existing.id).set(updated);
+    return updated;
+  }
+
+  const email =
+    emailRaw ||
+    (phone ? `phone+${phone}@phone.crimsondeli.com` : `uid+${firebaseUid}@firebase.crimsondeli.com`);
+  const passwordHash = await hashPassword(randomUUID());
+  const user: User = {
+    id: randomUUID(),
+    email,
+    name: name || (phone ? `Customer ${phone.slice(-4)}` : "Customer"),
+    phone,
+    firebaseUid,
+    role: "customer",
+    passwordHash,
+    createdAt: new Date().toISOString(),
+    disabledAt: null,
+  };
+  await col().doc(user.id).set(user);
+  return user;
 }
 
 export async function setUserPassword(id: string, password: string): Promise<void> {
   if (password.length < 8)
     throw new AuthError("Password must be at least 8 characters.");
   const passwordHash = await hashPassword(password);
-  await serialise(async () => {
-    const users = await readAll();
-    const i = users.findIndex((u) => u.id === id);
-    if (i === -1) throw new AuthError("User not found.");
-    users[i] = { ...users[i], passwordHash };
-    await writeAll(users);
-  });
+  const ref = col().doc(id);
+  const doc = await ref.get();
+  if (!doc.exists) throw new AuthError("User not found.");
+  await ref.update({ passwordHash });
 }

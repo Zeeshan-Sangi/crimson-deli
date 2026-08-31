@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ROLES, type Role } from "@/lib/auth/types";
+import ActionMenu from "./ActionMenu";
+import PortalPasswordInput from "./PortalPasswordInput";
 
 type StaffUser = {
   id: string;
@@ -23,6 +25,10 @@ export default function StaffWorkspace({
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [resetting, setResetting] = useState<StaffUser | null>(null);
+  const [resetPw, setResetPw] = useState("");
+  const [resetError, setResetError] = useState<string | null>(null);
+  const resetRef = useRef<HTMLDialogElement>(null);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", role: "staff" as Role, password: "" });
 
@@ -59,11 +65,32 @@ export default function StaffWorkspace({
     }
   }
 
-  async function resetPassword(u: StaffUser) {
-    const next = window.prompt(`New password for ${u.email} (min 8 characters):`);
-    if (!next) return;
-    await send({ id: u.id, password: next }, "PATCH", u.id);
+  /**
+   * Opened from the row menu. window.prompt used to do this — an unstyled
+   * native dialog that showed the new password in clear text and blocked the
+   * page while it was open.
+   */
+  async function submitReset(e: React.FormEvent) {
+    e.preventDefault();
+    if (!resetting) return;
+    if (resetPw.length < 8) {
+      setResetError("Password must be at least 8 characters.");
+      return;
+    }
+    setResetError(null);
+    const ok = await send({ id: resetting.id, password: resetPw }, "PATCH", resetting.id);
+    if (ok) {
+      setResetting(null);
+      setResetPw("");
+    }
   }
+
+  useEffect(() => {
+    const el = resetRef.current;
+    if (!el) return;
+    if (resetting && !el.open) el.showModal();
+    if (!resetting && el.open) el.close();
+  }, [resetting]);
 
   return (
     <>
@@ -105,7 +132,11 @@ export default function StaffWorkspace({
             </label>
             <label>
               Password (min 8 characters)
-              <input type="text" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} />
+              <PortalPasswordInput
+                value={form.password}
+                onChange={(v) => setForm({ ...form, password: v })}
+                autoComplete="new-password"
+              />
             </label>
             <button type="submit" className="portal-btn portal-btn-primary" disabled={busy === "new"}>
               {busy === "new" ? "Saving…" : "Create account"}
@@ -153,19 +184,29 @@ export default function StaffWorkspace({
                         {u.disabledAt ? "Disabled" : "Active"}
                       </span>
                     </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                      <button type="button" className="portal-btn" onClick={() => resetPassword(u)} disabled={busy === u.id}>
-                        Reset password
-                      </button>{" "}
-                      <button
-                        type="button"
-                        className="portal-btn"
-                        disabled={self || busy === u.id}
-                        onClick={() => send({ id: u.id, disabled: !u.disabledAt }, "PATCH", u.id)}
-                        title={self ? "You cannot disable your own account" : undefined}
-                      >
-                        {u.disabledAt ? "Enable" : "Disable"}
-                      </button>
+                    <td style={{ textAlign: "right" }}>
+                      <ActionMenu
+                        label={`Actions for ${u.name}`}
+                        actions={[
+                          {
+                            label: "Reset password",
+                            disabled: busy === u.id,
+                            onSelect: () => {
+                              setResetPw("");
+                              setResetError(null);
+                              setResetting(u);
+                            },
+                          },
+                          {
+                            label: u.disabledAt ? "Enable account" : "Disable account",
+                            danger: !u.disabledAt,
+                            disabled: self || busy === u.id,
+                            title: self ? "You cannot disable your own account" : undefined,
+                            onSelect: () =>
+                              send({ id: u.id, disabled: !u.disabledAt }, "PATCH", u.id),
+                          },
+                        ]}
+                      />
                     </td>
                   </tr>
                 );
@@ -174,6 +215,62 @@ export default function StaffWorkspace({
           </table>
         </div>
       </section>
+
+      <dialog
+        ref={resetRef}
+        className="portal-modal"
+        aria-labelledby="reset-pw-title"
+        onClose={() => setResetting(null)}
+        onClick={(e) => {
+          if (e.target === resetRef.current) setResetting(null);
+        }}
+      >
+        {resetting && (
+          <div className="portal-modal__panel">
+            <div className="portal-modal__head">
+              <div>
+                <h2 id="reset-pw-title">Reset password</h2>
+                <p>{resetting.email}</p>
+              </div>
+              <button
+                type="button"
+                className="portal-modal__close"
+                aria-label="Close"
+                onClick={() => setResetting(null)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form className="portal-form" onSubmit={submitReset}>
+              {resetError && <p className="portal-note">{resetError}</p>}
+              <label>
+                New password (min 8 characters)
+                <PortalPasswordInput
+                  value={resetPw}
+                  onChange={setResetPw}
+                  autoComplete="new-password"
+                />
+              </label>
+              <p className="portal-muted" style={{ fontSize: 13, margin: 0 }}>
+                Tell them the new password yourself — it is not emailed.
+              </p>
+              <div className="portal-modal__actions">
+                <button
+                  type="submit"
+                  className="portal-btn portal-btn-primary"
+                  disabled={busy === resetting.id}
+                >
+                  {busy === resetting.id ? "Saving…" : "Set password"}
+                </button>
+                <button type="button" className="portal-btn" onClick={() => setResetting(null)}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </dialog>
     </>
   );
 }
