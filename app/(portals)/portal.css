@@ -1025,6 +1025,48 @@
   outline-offset: 2px;
 }
 
+/* ------------------------------------------------- plain (customer) shell */
+
+/* No sidebar, so the main column reclaims the space PortalShell reserves. */
+.crm-main--plain {
+  margin-left: 0;
+}
+
+.crm-content--plain {
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.crm-plain__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: var(--p-primary);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.crm-plain__brand img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.crm-plain__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .crm-plain__back span { display: none; }
+}
+
 /* ----------------------------------------------------------- action menu */
 
 .portal-kebab {

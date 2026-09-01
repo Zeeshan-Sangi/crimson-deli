@@ -6,7 +6,6 @@ import { CartProvider } from "@/lib/cart/CartContext";
 
 // A URL that matches no route at all lands here, outside the (site) group, so
 // this file pulls in the storefront chrome and stylesheets itself.
-import "@/styles/crimson/legacy.css";
 import "@/styles/crimson/reveal.css";
 import "@/styles/crimson/expose.css";
 

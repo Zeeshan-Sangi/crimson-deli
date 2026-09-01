@@ -1,0 +1,34 @@
+/* Marquee strip styles, previously borrowed from bootstrap + main.css. Scoped
+   here so the storefront no longer has to ship 430KB of legacy CSS for one
+   component. */
+
+.cd-marquee {
+  background: var(--cd-crimson, #900000);
+  padding: 12px 0;
+  overflow: hidden;
+}
+
+/* Reduced-motion fallback: a static, centred row instead of a moving strip. */
+.cd-marquee__static {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.cd-marquee__item {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.cd-marquee__item img {
+  display: block;
+  height: 34px;
+  width: auto;
+}
+
+.cd-marquee__slide {
+  width: fit-content;
+}

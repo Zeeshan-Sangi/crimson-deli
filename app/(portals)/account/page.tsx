@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PortalShell from "@/components/portal/PortalShell";
+import AccountShell from "@/components/portal/AccountShell";
 import AccountWorkspace from "@/components/portal/AccountWorkspace";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { listOrders, ordersForUser } from "@/lib/orders/store";
@@ -27,11 +28,19 @@ export default async function AccountPage() {
     ? (await listOrders()).slice(0, 5)
     : (await ordersForUser(user.id)).slice(0, 5);
 
+  // Staff keep the operations sidebar; a customer has nothing to put in it, so
+  // they get a plain page with a way back to the shop instead.
+  const Shell = isStaff ? PortalShell : AccountShell;
+
   return (
-    <PortalShell
+    <Shell
       user={user}
       title="My account"
-      subtitle="Your sign-in details and password."
+      subtitle={
+        isStaff
+          ? "Your sign-in details and password."
+          : "Your details, password and order history."
+      }
     >
       <div className="crm-grid-2">
         <section className="crm-card">
@@ -105,6 +114,6 @@ export default async function AccountPage() {
           </p>
         </section>
       </div>
-    </PortalShell>
+    </Shell>
   );
 }
