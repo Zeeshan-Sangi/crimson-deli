@@ -1,8 +1,9 @@
 /**
  * Single source of truth for storefront chrome details.
  *
- * Address and phone confirmed by the client 2026-08-28; CLAUDE.md and the
- * interim pages in `public/site/` were corrected to match.
+ * Address confirmed by the client 2026-08-28. Phone taken from the store's own
+ * Facebook and Instagram posts on 2026-09-01, which list (215) 595-2136 — the
+ * previous (215) 718-7553 appears nowhere in the store's public listings.
  */
 export const siteConfig = {
   name: "Crimson Deli",
@@ -11,8 +12,8 @@ export const siteConfig = {
   get address() {
     return `${this.street}, ${this.cityStateZip}`;
   },
-  phone: "(215) 718-7553",
-  phoneHref: "tel:+12157187553",
+  phone: "(215) 595-2136",
+  phoneHref: "tel:+12155952136",
   email: "info@crimsondeli.com",
   doordashUrl:
     "https://www.doordash.com/convenience/store/crimson-deli-inc.-philadelphia-28047799/",
@@ -22,10 +23,11 @@ export const siteConfig = {
    * appears automatically.
    */
   social: {
-    facebook: "",
+    facebook: "https://www.facebook.com/CrimsonDeli/",
+    // No X account yet — a blank URL renders no icon.
     x: "",
-    instagram: "",
-    pinterest: "",
+    instagram: "https://www.instagram.com/crimsondeli.1/",
+    pinterest: "https://www.pinterest.com/crimsondeli1/",
   },
 } as const;
 
