@@ -1,9 +1,9 @@
 /**
  * Single source of truth for storefront chrome details.
  *
- * Address confirmed by the client 2026-08-28. Phone taken from the store's own
- * Facebook and Instagram posts on 2026-09-01, which list (215) 595-2136 — the
- * previous (215) 718-7553 appears nowhere in the store's public listings.
+ * Address confirmed by the client 2026-08-28. Phone confirmed by the client
+ * 2026-09-01 and matches the store's own Facebook and Instagram posts.
+ * This is the only number the site uses.
  */
 export const siteConfig = {
   name: "Crimson Deli",
@@ -12,7 +12,7 @@ export const siteConfig = {
   get address() {
     return `${this.street}, ${this.cityStateZip}`;
   },
-  phone: "(215) 595-2136",
+  phone: "+1 (215) 595-2136",
   phoneHref: "tel:+12155952136",
   email: "info@crimsondeli.com",
   doordashUrl:

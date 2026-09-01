@@ -74,7 +74,7 @@ function phoneErrorMessage(err: unknown): string {
   if (code === "auth/billing-not-enabled")
     return "Phone sign-in needs billing enabled on the Firebase project.";
   if (code === "auth/invalid-phone-number")
-    return "That phone number does not look right. Include the country code, e.g. +1 215 555 0123.";
+    return "That phone number does not look right. Include the country code — +1 for the US.";
   if (code === "auth/too-many-requests")
     return "Too many attempts from this device. Wait a few minutes and try again.";
   if (code === "auth/unauthorized-domain")

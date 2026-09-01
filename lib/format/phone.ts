@@ -1,9 +1,9 @@
 /**
  * Display formatting for US phone numbers.
  *
- * Numbers are stored exactly as the customer typed them, so the same table can
- * show "2155550188" next to "(215) 718-7553". Everything user-facing goes
- * through here instead.
+ * Numbers are stored exactly as the customer typed them, so one table could
+ * otherwise show the same number formatted two different ways. Everything
+ * user-facing goes through here instead.
  */
 export function formatPhone(raw: string | null | undefined): string {
   if (!raw) return "";

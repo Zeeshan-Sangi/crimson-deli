@@ -1,26 +1,37 @@
+import type { Order } from "@/lib/orders/types";
 import { siteConfig } from "@/lib/site-config";
 
-/**
- * Outbound email — interim implementation.
- *
- * The site has no mail provider wired yet (the contact form still hands off to
- * the visitor's own client via `mailto:`). Until Resend or SendGrid is put
- * behind a Cloud Function, this logs the message to the server console so the
- * reset flow is testable end to end in development.
- *
- * To go live, implement `deliver()` against the provider and nothing else in
- * the reset flow needs to change.
- */
-
 type Email = {
-  to: string;
+  to: string | string[];
   subject: string;
   text: string;
 };
 
+const DEFAULT_FROM = "Crimson Deli <no-reply@crimsondeli.com>";
+
 /** True once a provider is configured — the flow warns loudly when it is not. */
 export function mailerConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
+}
+
+function formatCents(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+function siteUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configured) return configured.replace(/\/$/, "");
+  return "http://localhost:3000";
+}
+
+/** Where new-order alerts go. Defaults to the store inbox. */
+export function orderNotificationEmail(): string {
+  const configured = process.env.ORDER_NOTIFY_EMAIL?.trim();
+  return configured || siteConfig.email;
+}
+
+function resendFrom(): string {
+  return process.env.RESEND_FROM?.trim() || DEFAULT_FROM;
 }
 
 /**
@@ -31,14 +42,12 @@ async function deliver(email: Email): Promise<void> {
   const key = process.env.RESEND_API_KEY;
 
   if (!key) {
-    // Dev fallback. Deliberately noisy: a silent no-op here would look like a
-    // working reset flow while every email vanished.
     console.warn(
       [
         "",
         "──────────────────────────────────────────────────────────────",
         " EMAIL NOT SENT — no mail provider configured (RESEND_API_KEY).",
-        ` To:      ${email.to}`,
+        ` To:      ${Array.isArray(email.to) ? email.to.join(", ") : email.to}`,
         ` Subject: ${email.subject}`,
         "",
         email.text,
@@ -49,9 +58,7 @@ async function deliver(email: Email): Promise<void> {
     return;
   }
 
-  // Resend's shared sender works without a verified domain, which is what lets
-  // this run before crimsondeli.com DNS is set up.
-  const from = process.env.RESEND_FROM || "Crimson Deli <onboarding@resend.dev>";
+  const to = Array.isArray(email.to) ? email.to : [email.to];
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -60,16 +67,14 @@ async function deliver(email: Email): Promise<void> {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      from,
-      to: [email.to],
+      from: resendFrom(),
+      to,
       subject: email.subject,
       text: email.text,
     }),
   });
 
   if (!res.ok) {
-    // The body carries Resend's reason (unverified domain, bad key, and so on)
-    // and the caller logs it — without this the failure is invisible.
     const detail = await res.text().catch(() => "");
     throw new Error(`Resend rejected the email (${res.status}): ${detail.slice(0, 300)}`);
   }
@@ -99,5 +104,51 @@ export async function sendPasswordResetEmail(input: {
       "",
       `${siteConfig.name} · ${siteConfig.address} · ${siteConfig.phone}`,
     ].join("\n"),
+  });
+}
+
+/** Alerts the store inbox when a customer places a pickup order online. */
+export async function sendOrderNotificationEmail(order: Order): Promise<void> {
+  const lines = order.items.map((item) => {
+    const unit =
+      item.priceCents === null ? "price at store" : formatCents(item.priceCents);
+    return `  · ${item.qty}× ${item.name} — ${unit}`;
+  });
+
+  const total =
+    order.totalCents === null
+      ? "Total: confirmed at the counter"
+      : `Total: ${formatCents(order.totalCents)} (pay at store)`;
+
+  const trackUrl = `${siteUrl()}/order/${order.trackingToken}`;
+  const teamUrl = `${siteUrl()}/team`;
+
+  await deliver({
+    to: orderNotificationEmail(),
+    subject: `New order ${order.orderNumber} — ${order.customer.name}`,
+    text: [
+      `New pickup order on ${siteConfig.name}`,
+      "",
+      `Order:   ${order.orderNumber}`,
+      `Status:  ${order.status}`,
+      "",
+      "Customer",
+      `  Name:  ${order.customer.name}`,
+      `  Phone: ${order.customer.phone}`,
+      order.customer.email ? `  Email: ${order.customer.email}` : null,
+      "",
+      "Items",
+      ...lines,
+      "",
+      total,
+      order.notes ? `Notes: ${order.notes}` : null,
+      "",
+      `Track: ${trackUrl}`,
+      `Team board: ${teamUrl}`,
+      "",
+      `${siteConfig.name} · ${siteConfig.address} · ${siteConfig.phone}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
   });
 }
