@@ -1738,7 +1738,7 @@
   color: var(--cd-muted);
 }
 
-.cd-about-cta a {
+.cd-about-cta p a {
   color: var(--cd-crimson);
   font-weight: 700;
   text-decoration: none;
@@ -1746,15 +1746,62 @@
 
 /* ---- contact ---- */
 
+.cd-contact-form .cd-form-field label.visually-hidden + input,
+.cd-contact-form .cd-form-field label.visually-hidden + textarea {
+  margin-top: 0;
+}
+
+.cd-contact-form__submit {
+  margin-top: 16px;
+}
+
+.cd-contact-hours {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cd-ink);
+}
+
+.cd-contact-hours svg {
+  color: var(--cd-crimson);
+}
+
+.contact-store-card__body .cd-product__fine a {
+  color: var(--cd-crimson);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.contact-store-card__body .cd-product__fine a:hover {
+  text-decoration: underline;
+}
+
 .cd-contact-layout {
   display: grid;
   gap: 28px;
   align-items: stretch;
 }
 
+.cd-contact-layout .contact-store-card__image {
+  flex: 0 0 280px;
+  height: 280px;
+  min-height: 280px;
+}
+
+@media (min-width: 992px) {
+  .cd-contact-layout .contact-store-card__image {
+    flex: 0 0 340px;
+    height: 340px;
+    min-height: 340px;
+  }
+}
+
 @media (min-width: 992px) {
   .cd-contact-layout {
     grid-template-columns: 1fr 1.1fr;
+    align-items: center;
   }
 }
 

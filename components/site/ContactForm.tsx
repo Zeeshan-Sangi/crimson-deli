@@ -69,15 +69,42 @@ export default function ContactForm() {
   }
 
   return (
-    <form className="cd-form" onSubmit={handleSubmit} noValidate>
+    <form className="cd-form cd-contact-form" onSubmit={handleSubmit} noValidate>
       <div className="cd-form-grid cd-form-grid--2">
-        <Field label="Your name" id="contact-name" value={fields.name} onChange={set("name")} error={errors.name} autoComplete="name" />
-        <Field label="Your email" id="contact-email" type="email" value={fields.email} onChange={set("email")} error={errors.email} autoComplete="email" />
-        <Field label="Phone (optional)" id="contact-phone" type="tel" value={fields.phone} onChange={set("phone")} autoComplete="tel" />
-        <Field label="Subject (optional)" id="contact-subject" value={fields.subject} onChange={set("subject")} />
+        <Field
+          id="contact-name"
+          label="Your name"
+          value={fields.name}
+          onChange={set("name")}
+          error={errors.name}
+          autoComplete="name"
+        />
+        <Field
+          id="contact-email"
+          label="Your email"
+          type="email"
+          value={fields.email}
+          onChange={set("email")}
+          error={errors.email}
+          autoComplete="email"
+        />
+        <Field
+          id="contact-phone"
+          label="Phone (optional)"
+          type="tel"
+          value={fields.phone}
+          onChange={set("phone")}
+          autoComplete="tel"
+        />
+        <Field
+          id="contact-subject"
+          label="Subject (optional)"
+          value={fields.subject}
+          onChange={set("subject")}
+        />
 
         <div className="cd-form-field" style={{ gridColumn: "1 / -1" }}>
-          <label htmlFor="contact-message">Message</label>
+          <label htmlFor="contact-message" className="visually-hidden">Message</label>
           <textarea
             id="contact-message"
             name="message"
@@ -91,17 +118,12 @@ export default function ContactForm() {
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="cd-btn-solid"
-        style={{ marginTop: 16 }}
-        disabled={busy}
-      >
+      <button type="submit" className="cd-btn-solid cd-contact-form__submit" disabled={busy}>
         {busy ? "Sending…" : "Send message"} <ArrowRight size={16} aria-hidden="true" />
       </button>
 
       {sendError && (
-        <p className="cd-form-error" role="alert" style={{ marginTop: 12 }}>
+        <p className="cd-form-error" role="alert">
           {sendError}
         </p>
       )}
@@ -135,10 +157,11 @@ function Field({
 }) {
   return (
     <div className="cd-form-field">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id} className="visually-hidden">{label}</label>
       <input
         id={id}
         type={type}
+        placeholder={label}
         value={value}
         onChange={onChange}
         autoComplete={autoComplete}

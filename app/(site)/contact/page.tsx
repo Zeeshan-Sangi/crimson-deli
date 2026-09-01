@@ -37,53 +37,50 @@ export default async function ContactPage() {
               <ContactForm />
             </div>
 
-            <div className="cd-contact-card">
-              <div className="cd-contact-card__image">
-                <img
-                  src="/assets/img/crimson/storefront-cover.webp"
-                  alt="Crimson Deli storefront on Ogontz Avenue"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="cd-contact-card__body">
-                <h3>{siteConfig.name}</h3>
-                <p>{siteConfig.address}</p>
-
-                <a
-                  href={MAP_URL}
-                  target="_blank"
-                  rel="noopener"
-                  className="cd-contact-map-link"
-                >
-                  View on map
-                </a>
-
-                <div className="cd-contact-links">
-                  <a href={`mailto:${siteConfig.email}`}>
-                    <Mail size={16} aria-hidden="true" /> {siteConfig.email}
-                  </a>
-                  <a href={siteConfig.phoneHref}>
-                    <Phone size={16} aria-hidden="true" /> {siteConfig.phone}
-                  </a>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600, color: "var(--cd-ink)" }}>
-                    <Clock size={16} aria-hidden="true" style={{ color: "var(--cd-crimson)" }} /> {hoursLine}
-                  </span>
+            <div className="contact-store-col">
+              <div className="contact-store-card">
+                <div className="contact-store-card__image">
+                  <img
+                    src="/assets/img/crimson/storefront-cover.webp"
+                    alt="Crimson Deli storefront on Ogontz Avenue"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
+                <div className="contact-store-card__body">
+                  <h3>{siteConfig.name}</h3>
+                  <p>{siteConfig.address}</p>
 
-                <p className="cd-product__fine">
-                  Fresh food is pickup only, so collect it at the counter. Everyday
-                  essentials are on our shelves in-store, or order them for delivery on{" "}
                   <a
-                    href={siteConfig.doordashUrl}
+                    href={MAP_URL}
                     target="_blank"
                     rel="noopener"
-                    style={{ color: "var(--cd-crimson)", fontWeight: 700 }}
+                    className="cd-contact-map-link"
                   >
-                    DoorDash
+                    View on map
                   </a>
-                  .
-                </p>
+
+                  <div className="cd-contact-links">
+                    <a href={`mailto:${siteConfig.email}`}>
+                      <Mail size={16} aria-hidden="true" /> {siteConfig.email}
+                    </a>
+                    <a href={siteConfig.phoneHref}>
+                      <Phone size={16} aria-hidden="true" /> {siteConfig.phone}
+                    </a>
+                    <span className="cd-contact-hours">
+                      <Clock size={16} aria-hidden="true" /> {hoursLine}
+                    </span>
+                  </div>
+
+                  <p className="cd-product__fine">
+                    Fresh food is pickup only, so collect it at the counter. Everyday
+                    essentials are on our shelves in-store, or order them for delivery on{" "}
+                    <a href={siteConfig.doordashUrl} target="_blank" rel="noopener">
+                      DoorDash
+                    </a>
+                    .
+                  </p>
+                </div>
               </div>
             </div>
           </div>

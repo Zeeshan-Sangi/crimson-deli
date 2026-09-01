@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendOrderNotificationEmail } from "@/lib/auth/mailer";
+import { sendOrderConfirmationEmail, sendOrderNotificationEmail } from "@/lib/auth/mailer";
 import {
   OrderValidationError,
   createOrder,
@@ -49,10 +49,19 @@ export async function POST(request: Request) {
     }
     const order = await createOrder(body, user.id);
 
+    const customerEmail =
+      body.customer?.email?.trim() || user.email?.trim() || "";
+
     // Email the store inbox; never fail the order if mail is down.
     void sendOrderNotificationEmail(order).catch((err) => {
       console.error("[orders] notification email failed", err);
     });
+
+    if (customerEmail) {
+      void sendOrderConfirmationEmail(order, customerEmail).catch((err) => {
+        console.error("[orders] customer confirmation email failed", err);
+      });
+    }
 
     return NextResponse.json(
       {

@@ -97,6 +97,7 @@ export async function POST(request: Request) {
       name: seed.name,
       role: seed.role,
       password: process.env[seed.passwordEnv]!,
+      trustedEmail: true,
     });
     // Deliberately no password in the response — whoever set the env var
     // already knows it, and anyone else must not learn it from here.

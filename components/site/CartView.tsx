@@ -1,13 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { formatCents, useCart } from "@/lib/cart/CartContext";
 import { PRICE_PLACEHOLDER } from "@/lib/data/food-menu";
 import { siteConfig } from "@/lib/site-config";
 import { X } from "lucide-react";
 
-export default function CartView({ signedIn = false }: { signedIn?: boolean }) {
-  const { lines, count, subtotalCents, ready, setQty, remove, clear } = useCart();
+type MenuPrices = Record<string, { name: string; priceCents: number | null }>;
+
+export default function CartView({
+  signedIn = false,
+  menu,
+}: {
+  signedIn?: boolean;
+  menu?: MenuPrices;
+}) {
+  const { lines, count, subtotalCents, ready, setQty, remove, clear , syncPrices } = useCart();
+
+  // Runs again once `ready` flips: the provider loads the stored cart in its
+  // own effect, so on first pass there is nothing here to correct yet.
+  useEffect(() => {
+    if (ready && menu) syncPrices(menu);
+  }, [ready, menu, syncPrices]);
 
   if (!ready) {
     return <p className="cd-product__meta">Loading your cart…</p>;

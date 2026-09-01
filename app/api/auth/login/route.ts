@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { authenticate } from "@/lib/auth/store";
+import { authenticate, needsEmailVerification, sessionUserFrom } from "@/lib/auth/store";
 import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
 import { clientIp, consume, reset } from "@/lib/security/rate-limit";
 
@@ -37,14 +37,20 @@ export async function POST(request: Request) {
     );
   }
 
+  if (needsEmailVerification(user)) {
+    return NextResponse.json(
+      {
+        error: "Verify your email before signing in.",
+        needsVerification: true,
+        email: user.email,
+      },
+      { status: 403 },
+    );
+  }
+
   reset(key);
 
-  const cookie = await createSessionCookie({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  });
+  const cookie = await createSessionCookie(sessionUserFrom(user));
 
   const res = NextResponse.json({
     user: { name: user.name, email: user.email, role: user.role },

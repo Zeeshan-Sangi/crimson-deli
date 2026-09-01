@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { createEmailVerifyCode } from "@/lib/auth/email-verify";
+import { sendEmailVerificationEmail } from "@/lib/auth/mailer";
 import { AuthError, createUser } from "@/lib/auth/store";
-import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
 import { clientIp, consume } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -45,18 +46,14 @@ export async function POST(request: Request) {
       role: "customer",
     });
 
-    const cookie = await createSessionCookie({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    });
+    const code = await createEmailVerifyCode(user.id, user.email);
+    await sendEmailVerificationEmail({ to: user.email, name: user.name, code });
 
-    const res = NextResponse.json({
-      user: { name: user.name, email: user.email, role: user.role },
+    return NextResponse.json({
+      needsVerification: true,
+      email: user.email,
+      message: "Check your email for a 6-digit verification code.",
     });
-    res.cookies.set(SESSION_COOKIE, cookie, sessionCookieOptions);
-    return res;
   } catch (err) {
     if (err instanceof AuthError) {
       return NextResponse.json({ error: err.message }, { status: 400 });

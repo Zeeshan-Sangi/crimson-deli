@@ -48,6 +48,16 @@ type CartValue = {
   setQty: (lineKey: string, qty: number) => void;
   remove: (lineKey: string) => void;
   clear: () => void;
+  /**
+   * Re-points stored lines at the menu's current name and price.
+   *
+   * A cart lives in localStorage, so a line keeps whatever price it was added
+   * at — days later that can be wrong, or still say "no price" for an item the
+   * store has since priced. The server recomputes every total at checkout, so
+   * this only ever corrected the display, but showing a customer a figure they
+   * will not be charged is its own problem.
+   */
+  syncPrices: (menu: Record<string, { name: string; priceCents: number | null }>) => void;
 };
 
 const STORAGE_KEY = "crimson-cart-v2";
@@ -148,14 +158,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clear = useCallback(() => setLines([]), []);
 
+  const syncPrices = useCallback(
+    (menu: Record<string, { name: string; priceCents: number | null }>) => {
+      setLines((prev) => {
+        let changed = false;
+        const next = prev.map((l) => {
+          const current = menu[l.slug];
+          if (!current) return l;
+          // Ice cream lines carry a size-derived price, so only the name is
+          // refreshed for those — the size price is computed, not stored.
+          const priceCents = l.size ? l.priceCents : current.priceCents;
+          if (priceCents === l.priceCents && current.name === l.name) return l;
+          changed = true;
+          return { ...l, priceCents, name: l.size ? l.name : current.name };
+        });
+        return changed ? next : prev;
+      });
+    },
+    [],
+  );
+
   const value = useMemo<CartValue>(() => {
     const count = lines.reduce((n, l) => n + l.qty, 0);
     const anyUnpriced = lines.some((l) => l.priceCents === null);
     const subtotalCents = anyUnpriced
       ? null
       : lines.reduce((sum, l) => sum + (l.priceCents ?? 0) * l.qty, 0);
-    return { lines, count, subtotalCents, ready, add, setQty, remove, clear };
-  }, [lines, ready, add, setQty, remove, clear]);
+    return { lines, count, subtotalCents, ready, add, setQty, remove, clear, syncPrices };
+  }, [lines, ready, add, setQty, remove, clear, syncPrices]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

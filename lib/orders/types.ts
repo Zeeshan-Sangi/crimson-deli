@@ -49,6 +49,8 @@ export type Order = {
   items: OrderItem[];
   /** Null when any line has no known price yet — never guess a total. */
   subtotalCents: number | null;
+  /** Sales tax in cents. Zero when tax is included in prices or the rate is 0. */
+  taxCents: number | null;
   totalCents: number | null;
   paymentMethod: "prepaid" | "pay_at_store";
   paymentStatus: "unpaid" | "paid" | "refunded";

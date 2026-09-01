@@ -43,6 +43,7 @@ export async function POST(request: Request) {
       name: body.name ?? "",
       role: body.role as Role,
       password: body.password ?? "",
+      trustedEmail: true,
     });
     await writeAudit({
       action: "staff.create",

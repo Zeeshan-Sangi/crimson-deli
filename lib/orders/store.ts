@@ -8,6 +8,7 @@ import {
   isIceCreamItem,
 } from "@/lib/data/food-menu";
 import { getSettings, storeOpenState } from "@/lib/settings/store";
+import { computeOrderTotals } from "@/lib/settings/tax";
 import {
   NEXT_STATUS,
   type CreateOrderInput,
@@ -132,6 +133,8 @@ export async function createOrder(
     ? null
     : items.reduce((sum, i) => sum + (i.priceCents ?? 0) * i.qty, 0);
 
+  const { taxCents, totalCents } = computeOrderTotals(subtotalCents, settings.checkout);
+
   const db = getAdminDb();
   const now = new Date().toISOString();
 
@@ -153,7 +156,8 @@ export async function createOrder(
       status: "received",
       items,
       subtotalCents,
-      totalCents: subtotalCents,
+      taxCents,
+      totalCents,
       paymentMethod: "pay_at_store",
       paymentStatus: "unpaid",
       customer: { name, phone, email, uid },

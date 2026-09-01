@@ -13,7 +13,10 @@ export default function SignupForm() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [phase, setPhase] = useState<"form" | "verify">("form");
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
@@ -21,6 +24,7 @@ export default function SignupForm() {
     if (busy) return;
     setBusy(true);
     setError(null);
+    setMessage(null);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -32,6 +36,11 @@ export default function SignupForm() {
         setError(data.error ?? "Could not create your account.");
         return;
       }
+      if (data.needsVerification) {
+        setPhase("verify");
+        setMessage(data.message ?? "Check your email for a verification code.");
+        return;
+      }
       router.push("/account");
       router.refresh();
     } catch {
@@ -39,6 +48,122 @@ export default function SignupForm() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function onVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/auth/verify-email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? "Could not verify that code.");
+        return;
+      }
+      router.push("/account");
+      router.refresh();
+    } catch {
+      setError("Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onResend() {
+    if (busy || !email.trim()) return;
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/auth/verify-email", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? "Could not send a new code.");
+        return;
+      }
+      setMessage(data.message ?? "A new code is on its way.");
+    } catch {
+      setError("Could not reach the server.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (phase === "verify") {
+    return (
+      <>
+        <p className="auth-footnote" style={{ marginBottom: 16 }}>
+          We sent a 6-digit code to <strong>{email}</strong>. Enter it below to finish signing up.
+        </p>
+
+        <form className="auth-form" onSubmit={onVerify}>
+          <input
+            type="text"
+            className="auth-input"
+            placeholder="Verification code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="\d{6}"
+            maxLength={6}
+            required
+            autoFocus
+          />
+
+          {error && (
+            <p className="auth-error" role="alert">
+              {error}
+            </p>
+          )}
+          {message && (
+            <p className="auth-footnote" role="status">
+              {message}
+            </p>
+          )}
+
+          <button type="submit" className="auth-submit" disabled={busy}>
+            {busy ? "Verifying…" : "Verify & finish"}
+          </button>
+        </form>
+
+        <button
+          type="button"
+          className="auth-submit auth-submit--secondary"
+          onClick={onResend}
+          disabled={busy}
+          style={{ marginTop: 12 }}
+        >
+          Send a new code
+        </button>
+
+        <p className="auth-footnote">
+          <button
+            type="button"
+            className="auth-linkbtn"
+            onClick={() => {
+              setPhase("form");
+              setCode("");
+              setError(null);
+              setMessage(null);
+            }}
+          >
+            ← Back to sign up
+          </button>
+        </p>
+      </>
+    );
   }
 
   return (

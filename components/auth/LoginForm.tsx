@@ -30,6 +30,10 @@ export default function LoginForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        if (data.needsVerification && data.email) {
+          router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+          return;
+        }
         setError(data.error ?? "Could not sign in.");
         return;
       }

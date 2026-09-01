@@ -23,6 +23,28 @@ function toUser(doc: FirebaseFirestore.QueryDocumentSnapshot): User | null {
     ...(data as User),
     phone: (data as User).phone ?? null,
     firebaseUid: (data as User).firebaseUid ?? null,
+    sessionVersion: (data as User).sessionVersion ?? 0,
+  };
+}
+
+/** Email/password accounts must verify; Firebase and legacy users are exempt. */
+export function needsEmailVerification(user: User): boolean {
+  return user.emailVerifiedAt === null && !user.firebaseUid;
+}
+
+export function sessionUserFrom(user: User): {
+  id: string;
+  email: string;
+  name: string;
+  role: Role;
+  sv: number;
+} {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    sv: user.sessionVersion ?? 0,
   };
 }
 
@@ -68,6 +90,8 @@ export async function createUser(input: {
   role: Role;
   password: string;
   phone?: string | null;
+  /** Staff/admin accounts skip the email OTP step. */
+  trustedEmail?: boolean;
 }): Promise<User> {
   const email = input.email.trim().toLowerCase();
   const name = input.name.trim();
@@ -100,6 +124,8 @@ export async function createUser(input: {
       passwordHash,
       createdAt: new Date().toISOString(),
       disabledAt: null,
+      emailVerifiedAt: input.trustedEmail ? new Date().toISOString() : null,
+      sessionVersion: 0,
     };
     tx.set(col().doc(user.id), user);
     return user;
@@ -179,6 +205,7 @@ export async function upsertFirebaseUser(input: {
       phone: phone ?? existing.phone,
       email: emailRaw || existing.email,
       name: name || existing.name,
+      emailVerifiedAt: existing.emailVerifiedAt ?? new Date().toISOString(),
     };
     await col().doc(existing.id).set(updated);
     return updated;
@@ -198,6 +225,8 @@ export async function upsertFirebaseUser(input: {
     passwordHash,
     createdAt: new Date().toISOString(),
     disabledAt: null,
+    emailVerifiedAt: new Date().toISOString(),
+    sessionVersion: 0,
   };
   await col().doc(user.id).set(user);
   return user;
@@ -210,5 +239,22 @@ export async function setUserPassword(id: string, password: string): Promise<voi
   const ref = col().doc(id);
   const doc = await ref.get();
   if (!doc.exists) throw new AuthError("User not found.");
-  await ref.update({ passwordHash });
+  const current = doc.data() as User;
+  await ref.update({
+    passwordHash,
+    sessionVersion: (current.sessionVersion ?? 0) + 1,
+  });
+}
+
+export async function markEmailVerified(id: string): Promise<User> {
+  const ref = col().doc(id);
+  const doc = await ref.get();
+  if (!doc.exists) throw new AuthError("User not found.");
+  const current = doc.data() as User;
+  const updated: User = {
+    ...current,
+    emailVerifiedAt: new Date().toISOString(),
+  };
+  await ref.set(updated);
+  return updated;
 }

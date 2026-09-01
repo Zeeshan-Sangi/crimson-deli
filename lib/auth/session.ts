@@ -52,6 +52,7 @@ type Payload = SessionUser & { exp: number };
 export async function createSessionCookie(user: SessionUser): Promise<string> {
   const payload: Payload = {
     ...user,
+    sv: user.sv,
     exp: Math.floor(Date.now() / 1000) + MAX_AGE_SECONDS,
   };
   const body = b64url(enc.encode(JSON.stringify(payload)));
@@ -83,6 +84,7 @@ export async function readSessionCookie(
       email: payload.email,
       name: payload.name,
       role: payload.role,
+      sv: typeof payload.sv === "number" ? payload.sv : 0,
     };
   } catch {
     return null;

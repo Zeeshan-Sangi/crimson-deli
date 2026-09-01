@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { upsertFirebaseUser } from "@/lib/auth/store";
+import { upsertFirebaseUser, sessionUserFrom } from "@/lib/auth/store";
 import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
 import { getAdminAuth } from "@/lib/firebase/admin";
 
@@ -39,12 +39,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "This account is disabled." }, { status: 403 });
     }
 
-    const cookie = await createSessionCookie({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    });
+    const cookie = await createSessionCookie(sessionUserFrom(user));
 
     const res = NextResponse.json({
       user: { name: user.name, email: user.email, role: user.role },

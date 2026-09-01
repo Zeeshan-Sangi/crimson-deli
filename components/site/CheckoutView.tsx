@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatCents, useCart } from "@/lib/cart/CartContext";
 import { PRICE_PLACEHOLDER } from "@/lib/data/food-menu";
 import { formatPhone } from "@/lib/format/phone";
+import { computeOrderTotals, formatTaxRateLabel } from "@/lib/settings/tax";
 import { siteConfig } from "@/lib/site-config";
 
 type Details = { name: string; phone: string; email: string; notes: string };
@@ -14,12 +15,24 @@ export default function CheckoutView({
   defaultName = "",
   defaultPhone = "",
   defaultEmail = "",
+  taxRate = 0,
+  taxIncludedInPrice = false,
+  menu,
 }: {
   defaultName?: string;
   defaultPhone?: string;
   defaultEmail?: string;
+  taxRate?: number;
+  taxIncludedInPrice?: boolean;
+  menu?: Record<string, { name: string; priceCents: number | null }>;
 }) {
-  const { lines, count, subtotalCents, ready, clear } = useCart();
+  const { lines, count, subtotalCents, ready, clear, syncPrices } = useCart();
+
+  // Waits for `ready` — the stored cart arrives in a later effect than this one.
+  useEffect(() => {
+    if (ready && menu) syncPrices(menu);
+  }, [ready, menu, syncPrices]);
+
   // Prefilled from the signed-in account — ordering requires one, so these are
   // details the store already holds.
   const [details, setDetails] = useState<Details>({
@@ -96,6 +109,13 @@ export default function CheckoutView({
       setSubmitting(false);
     }
   }
+
+  const { taxCents, totalCents } = computeOrderTotals(subtotalCents, {
+    taxRate,
+    taxIncludedInPrice,
+  });
+  const showTax =
+    subtotalCents !== null && !taxIncludedInPrice && taxRate > 0 && taxCents !== null;
 
   if (!ready) return <p className="cd-product__meta">Loading your order…</p>;
 
@@ -239,10 +259,22 @@ export default function CheckoutView({
             <span>Items</span>
             <span>{count}</span>
           </div>
+          {subtotalCents !== null && (
+            <div className="cd-summary-row">
+              <span>Subtotal</span>
+              <span>{formatCents(subtotalCents)}</span>
+            </div>
+          )}
+          {showTax && (
+            <div className="cd-summary-row">
+              <span>Tax ({formatTaxRateLabel(taxRate)})</span>
+              <span>{formatCents(taxCents!)}</span>
+            </div>
+          )}
           <div className="cd-summary-row cd-summary-row--total">
             <span>Total</span>
             <span>
-              {subtotalCents === null ? "Confirmed at store" : formatCents(subtotalCents)}
+              {totalCents === null ? "Confirmed at store" : formatCents(totalCents)}
             </span>
           </div>
 

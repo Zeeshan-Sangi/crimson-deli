@@ -13,6 +13,10 @@ export type User = {
   passwordHash: string;
   createdAt: string;
   disabledAt: string | null;
+  /** When set, email/password sign-in requires verification. Null = pending. */
+  emailVerifiedAt?: string | null;
+  /** Bumped on password change so old session cookies stop working. */
+  sessionVersion?: number;
 };
 
 /** What travels in the session cookie. Deliberately small. */
@@ -21,6 +25,8 @@ export type SessionUser = {
   email: string;
   name: string;
   role: Role;
+  /** Must match the user's sessionVersion in the store. */
+  sv: number;
 };
 
 /** Which roles may enter each portal area. */
