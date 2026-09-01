@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { sendOrderConfirmationEmail, sendOrderNotificationEmail } from "@/lib/auth/mailer";
 import {
   OrderValidationError,
@@ -52,16 +52,25 @@ export async function POST(request: Request) {
     const customerEmail =
       body.customer?.email?.trim() || user.email?.trim() || "";
 
-    // Email the store inbox; never fail the order if mail is down.
-    void sendOrderNotificationEmail(order).catch((err) => {
-      console.error("[orders] notification email failed", err);
-    });
+    // `after` rather than a bare `void`: on serverless the function can be torn
+    // down the moment the response is returned, so a detached promise may never
+    // run. This still keeps mail off the critical path — the order is saved and
+    // answered first, and a mail failure never fails the order.
+    after(async () => {
+      try {
+        await sendOrderNotificationEmail(order);
+      } catch (err) {
+        console.error("[orders] notification email failed", err);
+      }
 
-    if (customerEmail) {
-      void sendOrderConfirmationEmail(order, customerEmail).catch((err) => {
-        console.error("[orders] customer confirmation email failed", err);
-      });
-    }
+      if (customerEmail) {
+        try {
+          await sendOrderConfirmationEmail(order, customerEmail);
+        } catch (err) {
+          console.error("[orders] customer confirmation email failed", err);
+        }
+      }
+    });
 
     return NextResponse.json(
       {

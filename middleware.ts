@@ -1,37 +1,52 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { apiAccess } from "@/lib/auth/access";
 import { SESSION_COOKIE, readSessionCookie } from "@/lib/auth/session";
 import { AREA_ROLES, type Role } from "@/lib/auth/types";
 
 /**
- * Role guards for the portals.
+ * Role guards for portals and sensitive APIs.
  *
- * The storefront is entirely public and is not matched here. Everything under
- * /account, /team and /admin requires a signed session with the right role
- * (CLAUDE.md §4). The cookie is signed, so a tampered role fails verification
- * and is treated as signed-out.
- *
- * This is defence in depth, not the only check: route handlers that read or
- * write data call requireRole() as well, because middleware alone cannot
- * protect against a request that never passes through it.
+ * Storefront pages stay public. Portal routes and staff/admin APIs require a
+ * signed session with the right role. Route handlers still call requireRole()
+ * as defence in depth.
  */
 
-/** Where each role lands when it has no business in the area it asked for. */
 function homeFor(role: Role): string {
   if (role === "admin") return "/admin";
   if (role === "staff") return "/team";
   return "/account";
 }
 
-function areaFor(pathname: string): Role[] | null {
+function portalRoles(pathname: string): Role[] | null {
   for (const [prefix, roles] of Object.entries(AREA_ROLES)) {
     if (pathname === prefix || pathname.startsWith(`${prefix}/`)) return roles;
   }
   return null;
 }
 
+function forbiddenApi(): NextResponse {
+  return NextResponse.json({ error: "Forbidden." }, { status: 403 });
+}
+
+function unauthorizedApi(): NextResponse {
+  return NextResponse.json({ error: "Please sign in." }, { status: 401 });
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const allowed = areaFor(pathname);
+  const method = request.method;
+
+  const apiRule = apiAccess(pathname, method);
+  if (apiRule !== null) {
+    const user = await readSessionCookie(request.cookies.get(SESSION_COOKIE)?.value);
+    if (!user) return unauthorizedApi();
+    if (apiRule !== "authenticated" && !apiRule.includes(user.role)) {
+      return forbiddenApi();
+    }
+    return NextResponse.next();
+  }
+
+  const allowed = portalRoles(pathname);
   if (!allowed) return NextResponse.next();
 
   const user = await readSessionCookie(request.cookies.get(SESSION_COOKIE)?.value);
@@ -43,7 +58,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Staff may read contact messages; everything else under /admin stays admin-only.
   if (
     pathname === "/admin/messages" &&
     (user.role === "staff" || user.role === "admin")
@@ -62,5 +76,17 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/account/:path*", "/team/:path*", "/admin/:path*"],
+  matcher: [
+    "/account/:path*",
+    "/team/:path*",
+    "/admin/:path*",
+    "/api/staff/:path*",
+    "/api/settings",
+    "/api/orders",
+    "/api/orders/:path*",
+    "/api/products",
+    "/api/messages",
+    "/api/reviews",
+    "/api/account",
+  ],
 };

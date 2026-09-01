@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:staff": "node scripts/seed-staff.mjs"
+    "seed:admin": "node --env-file=.env.local scripts/seed-staff.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.3",

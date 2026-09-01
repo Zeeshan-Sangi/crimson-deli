@@ -1,3 +1,6 @@
+import { homeForRole as resolveHome } from "@/lib/auth/access";
+import type { Role } from "@/lib/auth/types";
+
 export async function completeFirebaseSignIn(idToken: string): Promise<{
   ok: boolean;
   user?: { name: string; email: string; role: string };
@@ -14,8 +17,5 @@ export async function completeFirebaseSignIn(idToken: string): Promise<{
 }
 
 export function homeForRole(role: string, next: string): string {
-  if (next) return next;
-  if (role === "admin") return "/admin";
-  if (role === "staff") return "/team";
-  return "/account";
+  return resolveHome(role as Role, next);
 }

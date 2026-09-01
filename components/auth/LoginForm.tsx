@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { getClientAuth, isFirebaseClientConfigured } from "@/lib/firebase/client";
 import FirebaseAuthButtons from "./FirebaseAuthButtons";
 import PasswordInput from "./PasswordInput";
-import { homeForRole } from "./firebase-session";
+import { completeFirebaseSignIn, homeForRole } from "./firebase-session";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -16,6 +18,27 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  async function signInWithFirebaseEmail() {
+    if (!isFirebaseClientConfigured()) return false;
+    const auth = getClientAuth();
+    if (!auth) return false;
+
+    try {
+      const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const idToken = await result.user.getIdToken();
+      const session = await completeFirebaseSignIn(idToken);
+      if (!session.ok || !session.user) {
+        setError(session.error ?? "Could not sign in.");
+        return true;
+      }
+      router.push(homeForRole(session.user.role, next));
+      router.refresh();
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,6 +57,7 @@ export default function LoginForm() {
           router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
           return;
         }
+        if (res.status === 401 && (await signInWithFirebaseEmail())) return;
         setError(data.error ?? "Could not sign in.");
         return;
       }
