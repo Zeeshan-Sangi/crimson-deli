@@ -23,8 +23,14 @@ export function mailerConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
 }
 
+/**
+ * Sends through Resend's REST API directly rather than their SDK — one fetch
+ * call does not justify another dependency.
+ */
 async function deliver(email: Email): Promise<void> {
-  if (!mailerConfigured()) {
+  const key = process.env.RESEND_API_KEY;
+
+  if (!key) {
     // Dev fallback. Deliberately noisy: a silent no-op here would look like a
     // working reset flow while every email vanished.
     console.warn(
@@ -43,9 +49,30 @@ async function deliver(email: Email): Promise<void> {
     return;
   }
 
-  // TODO: real provider. Shape kept close to Resend's REST API so wiring it up
-  // is a matter of dropping in the fetch below and testing.
-  throw new Error("RESEND_API_KEY is set but the provider is not implemented yet.");
+  // Resend's shared sender works without a verified domain, which is what lets
+  // this run before crimsondeli.com DNS is set up.
+  const from = process.env.RESEND_FROM || "Crimson Deli <onboarding@resend.dev>";
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${key}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [email.to],
+      subject: email.subject,
+      text: email.text,
+    }),
+  });
+
+  if (!res.ok) {
+    // The body carries Resend's reason (unverified domain, bad key, and so on)
+    // and the caller logs it — without this the failure is invisible.
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Resend rejected the email (${res.status}): ${detail.slice(0, 300)}`);
+  }
 }
 
 export async function sendPasswordResetEmail(input: {
