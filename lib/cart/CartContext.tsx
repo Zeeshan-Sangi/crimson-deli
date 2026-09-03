@@ -11,6 +11,7 @@ import {
 import {
   ICE_CREAM_SIZES,
   type IceCreamSize,
+  iceCreamCupImage,
   iceCreamPriceCents,
   isIceCreamItem,
 } from "@/lib/data/food-menu";
@@ -135,7 +136,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           lineKey,
           slug: item.slug,
           name: cartLineName(item, size),
-          imageUrl: item.imageUrl,
+          imageUrl: size ? iceCreamCupImage(item.slug, size) : item.imageUrl,
           priceCents: cartLinePrice(item, size),
           qty,
           size,

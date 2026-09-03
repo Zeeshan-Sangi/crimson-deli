@@ -162,7 +162,7 @@ export default function ProductsWorkspace({
             <tbody>
               {products.map((p) => (
                 <tr key={p.slug}>
-                  <td>
+                  <td data-label="Item">
                     <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                       <img
                         src={p.imageUrl}
@@ -183,15 +183,15 @@ export default function ProductsWorkspace({
                       </div>
                     </div>
                   </td>
-                  <td>{categories.find((c) => c.slug === p.categorySlug)?.name ?? "N/A"}</td>
-                  <td>
+                  <td data-label="Category">{categories.find((c) => c.slug === p.categorySlug)?.name ?? "N/A"}</td>
+                  <td data-label="Price">
                     {p.priceCents === null ? (
                       <span className="portal-badge portal-badge-preparing">No price</span>
                     ) : (
                       `$${(p.priceCents / 100).toFixed(2)}`
                     )}
                   </td>
-                  <td>
+                  <td data-label="Availability">
                     {p.hidden ? (
                       <span className="portal-badge portal-badge-new">Hidden</span>
                     ) : (
@@ -202,7 +202,7 @@ export default function ProductsWorkspace({
                       </span>
                     )}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td data-cell="actions" style={{ textAlign: "right" }}>
                     {confirming === p.slug ? (
                       /* Inline confirm rather than window.confirm: a native dialog
                          blocks the page and looks nothing like the portal. */

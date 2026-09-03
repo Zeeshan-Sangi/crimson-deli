@@ -1,10 +1,18 @@
 import Link from "next/link";
 import type { FoodItem } from "@/lib/data/types";
-import { formatFoodPrice } from "@/lib/data/food-menu";
+import {
+  formatFoodPrice,
+  ICE_CREAM_SIZES,
+  isIceCreamItem,
+} from "@/lib/data/food-menu";
 import { Clock, Store } from "lucide-react";
 
 /** Fresh food card — Phase 2 brand styling. */
 export default function FoodCard({ item, delay }: { item: FoodItem; delay?: string }) {
+  const priceLabel = isIceCreamItem(item)
+    ? `${formatFoodPrice(ICE_CREAM_SIZES.small.priceCents)} / ${formatFoodPrice(ICE_CREAM_SIZES.large.priceCents)}`
+    : formatFoodPrice(item.priceCents);
+
   return (
     <article className="cd-food-card wow fadeInUp" data-wow-delay={delay}>
       <Link href={`/food/${item.slug}`} className="cd-food-card__thumb">
@@ -29,7 +37,7 @@ export default function FoodCard({ item, delay }: { item: FoodItem; delay?: stri
         <p className="cd-food-card__desc">{item.description}</p>
 
         <div className="cd-food-card__foot">
-          <span className="cd-food-card__price">{formatFoodPrice(item.priceCents)}</span>
+          <span className="cd-food-card__price">{priceLabel}</span>
           <Link href={`/food/${item.slug}`} className="cd-btn-solid cd-food-card__btn">
             View &amp; order
           </Link>
@@ -38,3 +46,4 @@ export default function FoodCard({ item, delay }: { item: FoodItem; delay?: stri
     </article>
   );
 }
+

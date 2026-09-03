@@ -872,88 +872,147 @@
   overflow-x: auto;
 }
 
+/* ---- drawer controls (inert on desktop) ---- */
+
+.crm-navtoggle {
+  display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius-sm);
+  background: var(--p-surface);
+  color: var(--p-fg);
+  cursor: pointer;
+}
+
+.crm-navtoggle:hover {
+  border-color: var(--p-primary);
+  color: var(--p-primary);
+}
+
+.crm-navtoggle:focus-visible {
+  outline: 2px solid var(--p-primary);
+  outline-offset: 2px;
+}
+
+.crm-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.26s ease;
+}
+
+.crm-sidebar__close {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 4;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--p-radius-sm);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+}
+
+.crm-sidebar__close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.crm-sidebar__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crm-sidebar,
+  .crm-scrim {
+    transition: none;
+  }
+}
+
 @media (max-width: 900px) {
+  /* Off-canvas drawer. The strip this replaced put nine destinations in a
+     horizontal scroller, so everything past "Orders" was invisible with no
+     affordance saying it was there. */
   .crm-sidebar {
-    position: sticky;
+    position: fixed;
     top: 0;
-    width: 100%;
-    height: auto;
-    min-height: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    overflow-x: auto;
-    overflow-y: visible;
-    padding: 12px;
-    z-index: 20;
+    left: 0;
+    width: min(84vw, 300px);
+    height: 100vh;
+    height: 100dvh;
+    transform: translateX(-100%);
+    transition: transform 0.26s ease;
+    box-shadow: none;
+    z-index: 60;
+  }
+
+  .crm-sidebar[data-open="true"] {
+    transform: translateX(0);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.34);
+  }
+
+  .crm-sidebar__cutout {
+    display: none;
+  }
+
+  .crm-sidebar__close {
+    display: inline-flex;
+  }
+
+  .crm-scrim[data-open="true"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .crm-navtoggle {
+    display: inline-flex;
   }
 
   .crm-main {
     margin-left: 0;
     height: auto;
-    min-height: 0;
+    min-height: 100dvh;
     overflow: visible;
-  }
-
-  .crm-sidebar__cutout {
-    top: auto;
-    bottom: -62%;
-    right: -20%;
-    width: 140%;
-    height: 78%;
-  }
-
-  .crm-sidebar__bolt {
-    display: none;
-  }
-
-  .crm-brand {
-    flex-direction: row;
-    padding: 0 8px 0 0;
-    white-space: nowrap;
-  }
-
-  .crm-brand img {
-    width: 36px;
-    height: 36px;
-  }
-
-  .crm-nav {
-    display: flex;
-    gap: 8px;
-    flex: 1;
-    overflow-y: visible;
-  }
-
-  .crm-nav__group {
-    display: flex;
-    gap: 4px;
-  }
-
-  .crm-nav__title {
-    display: none;
-  }
-
-  .crm-nav__link {
-    white-space: nowrap;
-  }
-
-  .crm-sidebar__back {
-    display: none;
-  }
-
-  .crm-content {
-    padding: 16px 12px 32px;
-    overflow-y: visible;
-    min-height: auto;
   }
 
   .crm-topbar {
     padding: 12px 16px;
+    gap: 12px;
   }
 
   .crm-topbar::before {
     display: none;
+  }
+
+  /* Title sits next to the menu button; the account block wraps to its own
+     row so neither gets crushed. */
+  .crm-topbar__heading {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .crm-topbar__right {
+    flex: 0 0 auto;
+  }
+
+  .crm-content {
+    padding: 16px 12px 40px;
+    overflow-y: visible;
+    min-height: auto;
   }
 }
 
@@ -1337,4 +1396,216 @@
   .portal-modal__close {
     transition: none;
   }
+}
+
+/* ===========================================================================
+   Mobile
+   ---------------------------------------------------------------------------
+   Desktop keeps the fixed crimson rail. Below 900px it becomes a drawer, and
+   below 720px the data tables stop being tables and stack into cards. The
+   label/value tables in Settings and the account page are deliberately left
+   alone — they are already two narrow columns, and stacking them would split
+   each label from its value.
+   ======================================================================== */
+
+/* ---- data tables become cards ---- */
+
+@media (max-width: 720px) {
+  /* The horizontal scroller is no longer needed once rows stack, and leaving
+     it on would clip the action menus. */
+  .crm-table-wrap {
+    overflow-x: visible;
+  }
+
+  .crm-table-wrap .portal-table,
+  .crm-table-wrap .portal-table tbody,
+  .crm-table-wrap .portal-table tr,
+  .crm-table-wrap .portal-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .crm-table-wrap .portal-table {
+    font-size: 14px;
+  }
+
+  .crm-table-wrap .portal-table thead {
+    /* Headers move onto each cell as data-label, so the row of them is dead
+       weight — but it must stay reachable for screen readers. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .crm-table-wrap .portal-table tr {
+    margin-bottom: 10px;
+    padding: 2px 14px;
+    border: 1px solid var(--p-border);
+    border-radius: var(--p-radius);
+    background: var(--p-surface);
+  }
+
+  /* The label sits in a gutter rather than being a grid/flex sibling. As a
+     track it became its own item, which pushed every cell that holds more than
+     one node — "Marcus Bell" plus the phone span — onto a second row starting
+     back under the label. Out of flow, the cell's content stays one block
+     however many children it has. */
+  .crm-table-wrap .portal-table td {
+    display: block;
+    position: relative;
+    padding: 10px 0 10px 104px;
+    border-bottom: 1px solid var(--p-border);
+    text-align: left;
+    overflow-wrap: anywhere;
+    min-height: 42px;
+  }
+
+  .crm-table-wrap .portal-table tr td:last-child {
+    border-bottom: 0;
+  }
+
+  .crm-table-wrap .portal-table td[data-label]::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 92px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--p-muted);
+  }
+
+  /* The trailing action cell has no header to echo, so it spans the card. */
+  .crm-table-wrap .portal-table td[data-cell="actions"] {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    min-height: 0;
+    text-align: right;
+  }
+
+  /* Empty states and the order detail panel already span every column. */
+  .crm-table-wrap .portal-table td[colspan] {
+    display: block;
+    padding: 14px 0;
+    padding-left: 0;
+    border-bottom: 0;
+    min-height: 0;
+  }
+
+  .crm-table-wrap .portal-table td[colspan]::before {
+    content: none;
+  }
+
+  .crm-table-wrap .portal-table tr:has(td[colspan]) {
+    padding: 0 14px;
+  }
+
+  /* Filters stack instead of squeezing onto one line. */
+  .crm-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .crm-toolbar input[type="search"],
+  .crm-toolbar input[type="text"],
+  .crm-toolbar select {
+    width: 100%;
+  }
+
+  .crm-card {
+    padding: 16px 14px;
+  }
+
+  .crm-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* ---- topbar and account block ---- */
+
+@media (max-width: 620px) {
+  .crm-topbar__heading h1 {
+    font-size: 20px;
+  }
+
+  .crm-topbar__heading p {
+    font-size: 13px;
+  }
+
+  /* Name and role are the first things worth dropping — the avatar still says
+     who is signed in, and Sign out has to stay reachable. */
+  .crm-user__meta {
+    display: none;
+  }
+
+  .crm-user {
+    padding-left: 8px;
+    gap: 6px;
+  }
+
+  .portal-modal {
+    width: calc(100vw - 20px);
+    max-height: calc(100dvh - 32px);
+  }
+
+  .portal-modal__panel {
+    max-height: calc(100dvh - 32px);
+    padding: 16px;
+  }
+
+  .portal-modal__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .portal-modal__actions .portal-btn {
+    width: 100%;
+  }
+}
+
+/* ---- touch targets ---- */
+
+@media (pointer: coarse) {
+  .portal-kebab {
+    width: 40px;
+    height: 40px;
+  }
+
+  .crm-nav__link {
+    min-height: 44px;
+  }
+}
+
+/* iOS zooms the page in when a focused field is under 16px. */
+@media (max-width: 720px) {
+  .portal-form input,
+  .portal-form select,
+  .portal-form textarea,
+  .crm-toolbar input,
+  .crm-toolbar select {
+    font-size: 16px;
+  }
+}
+
+/* Nothing in the portals should ever scroll the page sideways. `.crm-content`
+   is deliberately left out of the max-width here: it already caps at 1440px,
+   and repeating the property would override that cap on desktop. */
+.crm,
+.crm-main {
+  max-width: 100%;
+}
+
+.crm-content,
+.crm-card {
+  overflow-wrap: break-word;
 }

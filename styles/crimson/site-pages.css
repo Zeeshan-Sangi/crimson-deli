@@ -1990,3 +1990,462 @@
   font-weight: 700;
 }
 
+
+/* ── Policy documents (/privacy, /terms) ───────────────────────────── */
+
+.cd-legal {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.cd-legal__toc {
+  position: sticky;
+  top: calc(var(--cd-header-h, 0px) + 16px);
+  /* A long contents list is taller than the viewport, and a sticky box that
+     cannot fit scrolls its own top out of reach. Cap it and let it scroll. */
+  max-height: calc(100vh - var(--cd-header-h, 0px) - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 18px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius);
+  background: var(--cd-surface);
+}
+
+.cd-legal__toc h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cd-muted);
+}
+
+.cd-legal__toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: cd-toc;
+}
+
+.cd-legal__toc ol li {
+  counter-increment: cd-toc;
+}
+
+.cd-legal__toc ol a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: var(--cd-radius-sm);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--cd-muted);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cd-legal__toc ol a::before {
+  content: counter(cd-toc) ". ";
+  font-weight: 700;
+}
+
+.cd-legal__toc ol a:hover {
+  background: var(--cd-cream);
+  color: var(--cd-ink);
+}
+
+.cd-legal__toc li.is-active a {
+  background: var(--cd-cream);
+  color: var(--cd-crimson);
+  font-weight: 700;
+}
+
+.cd-legal__toc-foot {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--cd-border);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--cd-muted);
+}
+
+.cd-legal__toc-foot a {
+  color: var(--cd-crimson);
+  font-weight: 700;
+}
+
+.cd-legal__body {
+  min-width: 0;
+  padding: 28px 32px 32px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius);
+  background: var(--cd-surface);
+}
+
+.cd-legal__effective {
+  margin: 0 0 14px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--cd-muted);
+}
+
+.cd-legal__effective strong {
+  color: var(--cd-crimson);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+}
+
+.cd-legal__intro {
+  margin: 0 0 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--cd-border);
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--cd-ink);
+}
+
+.cd-legal__section {
+  scroll-margin-top: calc(var(--cd-header-h, 0px) + 16px);
+}
+
+.cd-legal__section + .cd-legal__section {
+  margin-top: 30px;
+}
+
+.cd-legal__section h2 {
+  margin: 0 0 12px;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--cd-ink);
+}
+
+.cd-legal__num {
+  color: var(--cd-crimson);
+  font-weight: 800;
+}
+
+.cd-legal__section p,
+.cd-legal__section li {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--cd-muted);
+}
+
+.cd-legal__section p {
+  margin: 0 0 12px;
+}
+
+.cd-legal__section p:last-child {
+  margin-bottom: 0;
+}
+
+.cd-legal__section ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  /* Tailwind's preflight strips list markers globally. A policy document reads
+     as prose without them, so put the bullets back for these lists only. */
+  list-style: disc outside;
+}
+
+.cd-legal__section li {
+  margin-bottom: 7px;
+}
+
+.cd-legal__section li::marker {
+  color: var(--cd-crimson);
+}
+
+@media (max-width: 991px) {
+  .cd-legal {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .cd-legal__toc {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .cd-legal__body {
+    padding: 24px 20px 26px;
+  }
+}
+
+/* ── FAQs (/faq) ───────────────────────────────────────────────────── */
+
+.cd-faq-intro {
+  max-width: 720px;
+  margin: 0 auto 36px;
+  text-align: center;
+}
+
+.cd-faq-intro h2 {
+  margin: 6px 0 12px;
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--cd-ink);
+}
+
+.cd-faq-intro p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--cd-muted);
+}
+
+.cd-faq-intro a {
+  color: var(--cd-crimson);
+  font-weight: 700;
+}
+
+.cd-faq {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+  margin-bottom: 48px;
+}
+
+.cd-faq__cats {
+  position: sticky;
+  top: calc(var(--cd-header-h, 0px) + 16px);
+  max-height: calc(100vh - var(--cd-header-h, 0px) - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 14px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius);
+  background: var(--cd-surface);
+}
+
+.cd-faq__cats-label {
+  margin: 0 0 10px;
+  padding-left: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cd-muted);
+}
+
+.cd-faq__cats-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+}
+
+.cd-faq__cat-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: var(--cd-radius-sm);
+  background: transparent;
+  color: var(--cd-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cd-faq__cat-btn:hover {
+  background: var(--cd-cream);
+}
+
+.cd-faq__cat-btn.is-active {
+  background: var(--cd-crimson);
+  color: #fff;
+}
+
+.cd-faq__cat-title {
+  line-height: 1.3;
+}
+
+.cd-faq__cat-count {
+  flex-shrink: 0;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--cd-cream);
+  color: var(--cd-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cd-faq__cat-btn.is-active .cd-faq__cat-count {
+  background: rgba(255, 255, 255, 0.24);
+  color: #fff;
+}
+
+.cd-faq__panel {
+  min-width: 0;
+  padding: 26px 28px 28px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius);
+  background: var(--cd-surface);
+}
+
+.cd-faq__panel-head {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cd-border);
+}
+
+.cd-faq__panel-head h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--cd-ink);
+}
+
+.cd-faq__panel-head p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cd-muted);
+}
+
+.cd-faq__list {
+  display: grid;
+  gap: 2px;
+}
+
+.cd-faq__item {
+  border-bottom: 1px solid var(--cd-border);
+}
+
+.cd-faq__item:last-child {
+  border-bottom: 0;
+}
+
+.cd-faq__trigger {
+  position: relative;
+  width: 100%;
+  padding: 15px 40px 15px 0;
+  border: 0;
+  background: transparent;
+  color: var(--cd-ink);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.cd-faq__trigger:hover {
+  color: var(--cd-crimson);
+}
+
+/* Plus that becomes a minus, drawn rather than shipped as an icon. */
+.cd-faq__trigger::before,
+.cd-faq__trigger::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  background: var(--cd-crimson);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.cd-faq__trigger::before {
+  width: 13px;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.cd-faq__trigger::after {
+  width: 2px;
+  height: 13px;
+  transform: translate(-5.5px, -50%);
+}
+
+.cd-faq__item.is-open .cd-faq__trigger {
+  color: var(--cd-crimson);
+}
+
+.cd-faq__item.is-open .cd-faq__trigger::after {
+  opacity: 0;
+  transform: translate(-5.5px, -50%) rotate(90deg);
+}
+
+/* 0fr → 1fr animates to the content's real height, which a max-height guess
+   cannot do without either clipping long answers or easing against dead space. */
+.cd-faq__anim {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease;
+}
+
+.cd-faq__item.is-open .cd-faq__anim {
+  grid-template-rows: 1fr;
+}
+
+.cd-faq__anim-inner {
+  overflow: hidden;
+}
+
+.cd-faq__answer {
+  padding: 0 40px 18px 0;
+}
+
+.cd-faq__answer p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--cd-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cd-faq__anim,
+  .cd-faq__trigger::before,
+  .cd-faq__trigger::after {
+    transition: none;
+  }
+}
+
+@media (max-width: 991px) {
+  .cd-faq {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .cd-faq__cats {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .cd-faq__cats-list {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 575px) {
+  .cd-faq-intro h2 {
+    font-size: 27px;
+  }
+
+  .cd-faq__panel {
+    padding: 20px 18px 22px;
+  }
+
+  .cd-faq__trigger {
+    font-size: 15px;
+  }
+}

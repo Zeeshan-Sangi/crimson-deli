@@ -29,6 +29,7 @@ const columns = [
     links: [
       { href: "/about", label: "About" },
       { href: "/contact", label: "Contact" },
+      { href: "/faq", label: "FAQs" },
       { href: "/login", label: "Staff login" },
     ],
   },
@@ -112,6 +113,8 @@ export default function SiteFooter() {
                 ))}
               </div>
             )}
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms &amp; Conditions</Link>
             <Link href="/contact">Contact</Link>
             <Link href="/about">About</Link>
           </div>

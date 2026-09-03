@@ -127,28 +127,28 @@ export default function MessagesWorkspace({ messages }: { messages: ContactMessa
 
               {filtered.map((m) => (
                 <tr key={m.id}>
-                  <td>
+                  <td data-label="From">
                     <strong>{m.name}</strong>
                     <span className="portal-muted d-block" style={{ fontSize: 13 }}>
                       {m.email}
                       {m.phone ? ` · ${formatPhone(m.phone)}` : ""}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Subject">
                     <strong>{m.subject}</strong>
                     <span className="portal-muted d-block" style={{ fontSize: 13 }}>
                       {open === m.id ? m.body : `${m.body.slice(0, 90)}${m.body.length > 90 ? "…" : ""}`}
                     </span>
                   </td>
-                  <td style={{ whiteSpace: "nowrap" }}>{when(m.createdAt)}</td>
-                  <td>
+                  <td data-label="When" style={{ whiteSpace: "nowrap" }}>{when(m.createdAt)}</td>
+                  <td data-label="Status">
                     <span
                       className={`portal-badge ${m.handledAt ? "portal-badge-packed" : "portal-badge-new"}`}
                     >
                       {m.handledAt ? "Handled" : "Open"}
                     </span>
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td data-cell="actions" style={{ textAlign: "right" }}>
                     {confirming === m.id ? (
                       <div className="crm-actions crm-actions--confirm">
                         <span className="portal-muted" style={{ fontSize: 13 }}>

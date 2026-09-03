@@ -8,6 +8,10 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* Height of the sticky header, so sticky sidebars and scroll-margin can sit
+     clear of it instead of being covered. The top strip only appears at 992px,
+     which is why this changes at that breakpoint. */
+  --cd-header-h: 66px;
 }
 
 .cd-site > main {
@@ -33,6 +37,10 @@
 @media (min-width: 992px) {
   .cd-site-header__top {
     display: block;
+  }
+
+  .cd-site {
+    --cd-header-h: 102px;
   }
 }
 

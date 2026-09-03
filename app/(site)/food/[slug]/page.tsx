@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Breadcrumb from "@/components/site/Breadcrumb";
 import AddToCart from "@/components/site/AddToCart";
 import FoodCard from "@/components/site/FoodCard";
+import IceCreamProductHero from "@/components/site/IceCreamProductHero";
 import { foodCategories, formatFoodPrice, isIceCreamItem } from "@/lib/data/food-menu";
 import { getVisibleProduct, listAvailableProducts } from "@/lib/products/store";
 import { listForProduct, summaryForProduct } from "@/lib/reviews/store";
@@ -53,44 +54,50 @@ export default async function FoodDetailPage({
 
       <section className="cd-product cd-section--white">
         <div className="cd-page-wrap">
-          <div className="cd-product__grid">
-            <div className="cd-product__media">
-              <img src={item.imageUrl} alt={item.name} decoding="async" />
-            </div>
+          {isIceCreamItem(item) ? (
+            <IceCreamProductHero
+              item={item}
+              categoryName={category?.name}
+              reviewSummary={reviewSummary}
+            />
+          ) : (
+            <div className="cd-product__grid">
+              <div className="cd-product__media">
+                <img src={item.imageUrl} alt={item.name} decoding="async" />
+              </div>
 
-            <div>
-              <span className="cd-product__eyebrow">PICKUP ONLY</span>
-              <h2 className="cd-product__title">{item.name}</h2>
+              <div>
+                <span className="cd-product__eyebrow">PICKUP ONLY</span>
+                <h2 className="cd-product__title">{item.name}</h2>
 
-              {reviewSummary.count > 0 && (
-                <p className="cd-product__rating">
-                  <Stars value={reviewSummary.average ?? 0} />
-                  <span>
-                    {reviewSummary.average?.toFixed(1)} · {reviewSummary.count} review
-                    {reviewSummary.count === 1 ? "" : "s"}
-                  </span>
-                </p>
-              )}
-              {!isIceCreamItem(item) && (
+                {reviewSummary.count > 0 && (
+                  <p className="cd-product__rating">
+                    <Stars value={reviewSummary.average ?? 0} />
+                    <span>
+                      {reviewSummary.average?.toFixed(1)} · {reviewSummary.count} review
+                      {reviewSummary.count === 1 ? "" : "s"}
+                    </span>
+                  </p>
+                )}
                 <p className="cd-product__price">{formatFoodPrice(item.priceCents)}</p>
-              )}
 
-              <p className="cd-product__meta">
-                Availability:{" "}
-                <strong>{item.available ? "In store" : "Sold out"}</strong>
-                {category && <> · {category.name}</>}
-              </p>
+                <p className="cd-product__meta">
+                  Availability:{" "}
+                  <strong>{item.available ? "In store" : "Sold out"}</strong>
+                  {category && <> · {category.name}</>}
+                </p>
 
-              <p className="cd-product__desc">{item.description}</p>
+                <p className="cd-product__desc">{item.description}</p>
 
-              <AddToCart item={item} />
+                <AddToCart item={item} />
 
-              <p className="cd-product__fine">
-                Made fresh at the counter and collected in-store. We do not deliver fresh
-                food. Prices are confirmed by the store at pickup.
-              </p>
+                <p className="cd-product__fine">
+                  Made fresh at the counter and collected in-store. We do not deliver fresh
+                  food. Prices are confirmed by the store at pickup.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           <ProductTabs
             productSlug={item.slug}

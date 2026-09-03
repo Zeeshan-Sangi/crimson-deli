@@ -162,12 +162,12 @@ export default function StaffWorkspace({
                 const self = u.id === currentUserId;
                 return (
                   <tr key={u.id}>
-                    <td>
+                    <td data-label="Name">
                       <strong>{u.name}</strong>
                       {self && <span className="portal-muted"> (you)</span>}
                     </td>
-                    <td>{u.email}</td>
-                    <td>
+                    <td data-label="Email">{u.email}</td>
+                    <td data-label="Role">
                       <select
                         value={u.role}
                         disabled={self || busy === u.id}
@@ -179,12 +179,12 @@ export default function StaffWorkspace({
                         ))}
                       </select>
                     </td>
-                    <td>
+                    <td data-label="Status">
                       <span className={`portal-badge ${u.disabledAt ? "portal-badge-done" : "portal-badge-packed"}`}>
                         {u.disabledAt ? "Disabled" : "Active"}
                       </span>
                     </td>
-                    <td style={{ textAlign: "right" }}>
+                    <td data-cell="actions" style={{ textAlign: "right" }}>
                       <ActionMenu
                         label={`Actions for ${u.name}`}
                         actions={[

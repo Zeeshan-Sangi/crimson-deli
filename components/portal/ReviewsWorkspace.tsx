@@ -145,20 +145,20 @@ export default function ReviewsWorkspace({
 
               {filtered.map((r) => (
                 <tr key={r.id}>
-                  <td>
+                  <td data-label="Item">
                     <strong>{productNames[r.productSlug] ?? r.productSlug}</strong>
                   </td>
-                  <td style={{ whiteSpace: "nowrap" }}>
+                  <td data-label="Rating" style={{ whiteSpace: "nowrap" }}>
                     <span className="portal-badge portal-badge-packed">{r.rating}★</span>
                   </td>
-                  <td>
+                  <td data-label="Review">
                     <strong>{r.name}</strong>
                     <span className="portal-muted d-block" style={{ fontSize: 13 }}>
                       {r.body}
                     </span>
                   </td>
-                  <td style={{ whiteSpace: "nowrap" }}>{when(r.createdAt)}</td>
-                  <td style={{ textAlign: "right" }}>
+                  <td data-label="When" style={{ whiteSpace: "nowrap" }}>{when(r.createdAt)}</td>
+                  <td data-cell="actions" style={{ textAlign: "right" }}>
                     {confirming === r.id ? (
                       <div className="crm-actions crm-actions--confirm">
                         <span className="portal-muted" style={{ fontSize: 13 }}>

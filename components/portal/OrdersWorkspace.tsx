@@ -156,25 +156,25 @@ export default function OrdersWorkspace({ orders }: { orders: Order[] }) {
                      under the row that was clicked, not at the foot of the table. */
                   <Fragment key={o.id}>
                     <tr>
-                      <td>
+                      <td data-label="Order">
                         <strong>{o.orderNumber}</strong>
                       </td>
-                      <td>{when(o.createdAt)}</td>
-                      <td>
+                      <td data-label="When">{when(o.createdAt)}</td>
+                      <td data-label="Customer">
                         {o.customer.name}
                         <span className="portal-muted d-block">{formatPhone(o.customer.phone)}</span>
                       </td>
-                      <td>
+                      <td data-label="Items">
                         {o.items.reduce((n, i) => n + i.qty, 0)} item
                         {o.items.reduce((n, i) => n + i.qty, 0) === 1 ? "" : "s"}
                       </td>
-                      <td>
+                      <td data-label="Status">
                         <span className={`portal-badge ${STATUS_BADGE[o.status]}`}>
                           {STATUS_LABEL[o.status]}
                         </span>
                       </td>
-                      <td>{money(o.totalCents)}</td>
-                      <td style={{ textAlign: "right" }}>
+                      <td data-label="Total">{money(o.totalCents)}</td>
+                      <td data-cell="actions" style={{ textAlign: "right" }}>
                         {confirming === o.id ? (
                           <div className="crm-actions crm-actions--confirm">
                             <span className="portal-muted" style={{ fontSize: 13 }}>

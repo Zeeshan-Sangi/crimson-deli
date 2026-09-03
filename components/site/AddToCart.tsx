@@ -14,12 +14,26 @@ import {
 import type { FoodItem } from "@/lib/data/types";
 
 /** Quantity stepper + add-to-cart for a single fresh food item. */
-export default function AddToCart({ item }: { item: FoodItem }) {
+export default function AddToCart({
+  item,
+  size: controlledSize,
+  onSizeChange,
+}: {
+  item: FoodItem;
+  size?: IceCreamSize;
+  onSizeChange?: (size: IceCreamSize) => void;
+}) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const [size, setSize] = useState<IceCreamSize>("small");
+  const [internalSize, setInternalSize] = useState<IceCreamSize>("small");
   const sized = isIceCreamItem(item);
+  const size = controlledSize ?? internalSize;
+
+  function setSize(next: IceCreamSize) {
+    if (onSizeChange) onSizeChange(next);
+    else setInternalSize(next);
+  }
 
   const unitPriceCents = sized ? iceCreamPriceCents(size) : item.priceCents;
 
