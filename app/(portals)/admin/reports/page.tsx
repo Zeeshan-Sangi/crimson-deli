@@ -187,16 +187,16 @@ export default async function AdminReportsPage() {
               <tbody>
                 {audit.map((e) => (
                   <tr key={e.id}>
-                    <td>
+                    <td data-label="When">
                       {new Date(e.at).toLocaleString("en-US", {
                         timeZone: "America/New_York",
                         dateStyle: "medium",
                         timeStyle: "short",
                       })}
                     </td>
-                    <td><code>{e.action}</code></td>
-                    <td>{e.entity.label ?? e.entity.id}</td>
-                    <td>{e.actor.email}</td>
+                    <td data-label="Action"><code>{e.action}</code></td>
+                    <td data-label="Item">{e.entity.label ?? e.entity.id}</td>
+                    <td data-label="By">{e.actor.email}</td>
                   </tr>
                 ))}
               </tbody>

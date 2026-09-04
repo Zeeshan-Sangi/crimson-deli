@@ -60,7 +60,9 @@ export default function SettingsWorkspace({
             </div>
           </div>
 
-          <table className="portal-table">
+          {/* crm-hours gives the narrow-screen rule something to target: four
+              columns, two of them time inputs, do not fit on a phone. */}
+          <table className="portal-table crm-hours">
             <tbody>
               {DAYS.map((day) => {
                 const h = store.hours[day];

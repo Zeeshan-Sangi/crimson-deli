@@ -41,8 +41,12 @@ export default function AccountShell({
             {subtitle && <p>{subtitle}</p>}
           </div>
           <div className="crm-topbar__right">
-            <Link href="/" className="portal-btn crm-plain__back">
-              <ArrowLeft size={14} aria-hidden="true" /> Back to shop
+            {/* The label is a span so the narrow-screen rule can drop it, and
+                aria-label carries the name once it does — the arrow is
+                decorative, so without it the button would be unnamed. */}
+            <Link href="/" className="portal-btn crm-plain__back" aria-label="Back to shop">
+              <ArrowLeft size={14} aria-hidden="true" />
+              <span>Back to shop</span>
             </Link>
             <UserMenu user={user} />
           </div>

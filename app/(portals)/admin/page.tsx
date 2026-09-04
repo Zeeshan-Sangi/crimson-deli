@@ -131,16 +131,16 @@ export default async function AdminDashboard() {
                 <tbody>
                   {orders.slice(0, 6).map((o) => (
                     <tr key={o.id}>
-                      <td>
+                      <td data-label="Order">
                         <strong>{o.orderNumber}</strong>
                       </td>
-                      <td>{o.customer.name}</td>
-                      <td>
+                      <td data-label="Customer">{o.customer.name}</td>
+                      <td data-label="Status">
                         <span className={`portal-badge ${STATUS_BADGE[o.status]}`}>
                           {STATUS_LABEL[o.status]}
                         </span>
                       </td>
-                      <td>{money(o.totalCents)}</td>
+                      <td data-label="Total">{money(o.totalCents)}</td>
                     </tr>
                   ))}
                 </tbody>

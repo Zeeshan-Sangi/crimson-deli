@@ -727,7 +727,7 @@
 
 .crm-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -794,7 +794,10 @@
 
 .crm-grid-2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  /* min() so the track can fall below its floor on a narrow screen — a bare
+     minmax(320px, 1fr) stays 320px wide inside a 296px content box and pushes
+     the page sideways. */
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -1460,7 +1463,7 @@
     padding: 10px 0 10px 104px;
     border-bottom: 1px solid var(--p-border);
     text-align: left;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     min-height: 42px;
   }
 
@@ -1608,4 +1611,100 @@
 .crm-content,
 .crm-card {
   overflow-wrap: break-word;
+}
+
+/* ---- narrow-screen polish ---- */
+
+@media (max-width: 620px) {
+  /* Two tiles per row still fit, but 28px broke "$1,204.50" across two lines
+     mid-number. Smaller type plus nowrap keeps a money figure whole. */
+  .crm-stats {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .crm-stat {
+    padding: 14px 14px;
+  }
+
+  .crm-stat__value {
+    font-size: 21px;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  /* A 280px floor per column left the empty "Packed" lane as most of a
+     screen to scroll past once the board is stacked. */
+  .team-col {
+    min-height: 0;
+  }
+
+  .team-col-body:empty {
+    padding: 0;
+  }
+
+  /* Long values — an email in the account profile, an actor address in the
+     audit log — wrap rather than widening the row. */
+  .portal-table td {
+    overflow-wrap: break-word;
+  }
+
+  /* Settings hours: four columns including two time inputs is the tightest
+     row in the portals. */
+  .portal-table input[type="time"] {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* Opening hours: the tightest row in the portals — a day label, two time
+   inputs and a Closed toggle. On a phone the row becomes two lines instead of
+   four columns fighting over 360px. */
+@media (max-width: 620px) {
+  .crm-hours,
+  .crm-hours tbody,
+  .crm-hours tr,
+  .crm-hours td {
+    display: block;
+    width: 100%;
+  }
+
+  .crm-hours tr {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--p-border);
+  }
+
+  .crm-hours tr:last-child {
+    border-bottom: 0;
+  }
+
+  .crm-hours td {
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  /* Day name, then the controls beneath it. */
+  .crm-hours td:first-child {
+    width: auto !important;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .crm-hours td:nth-child(2),
+  .crm-hours td:nth-child(3) {
+    display: inline-block;
+    width: calc(50% - 5px);
+  }
+
+  .crm-hours td:nth-child(2) {
+    margin-right: 8px;
+  }
+
+  .crm-hours td:nth-child(4) {
+    margin-top: 10px;
+  }
+
+  .crm-hours input[type="time"] {
+    width: 100%;
+  }
 }
