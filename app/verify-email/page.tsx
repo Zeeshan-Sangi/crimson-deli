@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "Verify email",
   description: "Verify your Crimson Deli account email.",
 };

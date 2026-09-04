@@ -8,6 +8,7 @@ import { listAvailableProducts } from "@/lib/products/store";
 import { getSettings } from "@/lib/settings/store";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "Checkout",
   description: "Place a fresh food pickup order at Crimson Deli, Ogontz Avenue.",
 };

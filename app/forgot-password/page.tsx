@@ -4,6 +4,7 @@ import AuthShell from "@/components/auth/AuthShell";
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "Reset your password",
   description: "Send yourself a link to reset your Crimson Deli password.",
 };

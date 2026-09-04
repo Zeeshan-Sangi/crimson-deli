@@ -7,6 +7,7 @@ import { peekResetToken } from "@/lib/auth/reset-tokens";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "Choose a new password",
   description: "Set a new password for your Crimson Deli account.",
 };

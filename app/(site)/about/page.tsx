@@ -7,6 +7,7 @@ import { summariseHours } from "@/lib/settings/format";
 import { getSettings } from "@/lib/settings/store";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About",
   description:
     "Crimson Deli on Ogontz Avenue serves fresh food made in-store for pickup, plus everyday essentials in-store or delivered on DoorDash.",

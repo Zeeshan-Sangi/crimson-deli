@@ -7,12 +7,15 @@ import { listAvailableProducts } from "@/lib/products/store";
 import { formatHoursLine } from "@/lib/settings/format";
 import { getSettings } from "@/lib/settings/store";
 import { siteConfig } from "@/lib/site-config";
+import { JsonLd } from "@/components/site/JsonLd";
+import { localBusinessJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const MAP_QUERY = encodeURIComponent(siteConfig.address);
 const MAP_EMBED = `https://www.google.com/maps?q=${MAP_QUERY}&output=embed`;
 const MAP_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${MAP_QUERY}`;
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/" },
   description:
     "Hoagies, deli sandwiches, fruit bowls and smoothies made fresh at Crimson Deli on Ogontz Avenue. Order yours for pickup, or shop everyday essentials in-store and on DoorDash.",
 };
@@ -66,6 +69,10 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* The single biggest local-SEO signal for a neighborhood store: name,
+          address, phone and live opening hours in one machine-readable block. */}
+      <JsonLd data={localBusinessJsonLd(store.hours)} />
+      <JsonLd data={websiteJsonLd()} />
       <section className="cd-hero">
         <div className="cd-hero__inner">
           <p className="cd-hero__eyebrow wow fadeInUp" data-wow-delay="0.5s">

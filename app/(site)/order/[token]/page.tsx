@@ -8,6 +8,7 @@ import { siteConfig } from "@/lib/site-config";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "Order status",
   description: "Track the status of your Crimson Deli pickup order.",
 };

@@ -5,6 +5,8 @@ import AddToCart from "@/components/site/AddToCart";
 import FoodCard from "@/components/site/FoodCard";
 import IceCreamProductHero from "@/components/site/IceCreamProductHero";
 import { foodCategories, formatFoodPrice, isIceCreamItem } from "@/lib/data/food-menu";
+import { BreadcrumbJsonLd, JsonLd } from "@/components/site/JsonLd";
+import { menuItemJsonLd } from "@/lib/seo";
 import { getVisibleProduct, listAvailableProducts } from "@/lib/products/store";
 import { listForProduct, summaryForProduct } from "@/lib/reviews/store";
 import ProductTabs from "@/components/site/ProductTabs";
@@ -23,6 +25,13 @@ export async function generateMetadata({
   return {
     title: item.name,
     description: item.description,
+    alternates: { canonical: `/food/${item.slug}` },
+    openGraph: {
+      title: item.name,
+      description: item.description,
+      type: "article",
+      images: [{ url: item.imageUrl }],
+    },
   };
 }
 
@@ -47,6 +56,13 @@ export default async function FoodDetailPage({
 
   return (
     <>
+      <JsonLd data={menuItemJsonLd(item)} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Fresh Food", path: "/food" },
+          { name: item.name, path: `/food/${item.slug}` },
+        ]}
+      />
       <Breadcrumb
         title={item.name}
         trail={[{ label: "Fresh Food", href: "/food" }, { label: item.name }]}

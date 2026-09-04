@@ -25,6 +25,7 @@ export async function generateMetadata({
   return {
     title: `${found.name} · Everyday Essentials`,
     description: `${found.name} at Crimson Deli, on our shelves in-store or delivered on DoorDash.`,
+    alternates: { canonical: `/store/${found.slug}` },
   };
 }
 

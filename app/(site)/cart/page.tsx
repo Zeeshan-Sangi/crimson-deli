@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { listAvailableProducts } from "@/lib/products/store";
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: "Cart",
   description: "Your fresh food pickup order from Crimson Deli.",
 };

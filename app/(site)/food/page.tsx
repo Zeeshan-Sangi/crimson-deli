@@ -5,6 +5,7 @@ import { foodCategories } from "@/lib/data/food-menu";
 import { listAvailableProducts } from "@/lib/products/store";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/food" },
   title: "Fresh Food",
   description:
     "Hoagies, deli sandwiches, fruit bowls, smoothies, coffee and ice cream, all made fresh at Crimson Deli. Pickup only.",

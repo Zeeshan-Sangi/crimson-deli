@@ -12,6 +12,7 @@ import {
 import { Truck } from "lucide-react";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/store" },
   title: "Everyday Essentials",
   description:
     "Snacks, drinks, dairy, frozen and household items on our shelves at Crimson Deli, or ordered for delivery on DoorDash.",

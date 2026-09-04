@@ -7,6 +7,7 @@ import { getSettings } from "@/lib/settings/store";
 import { Clock, Mail, Phone } from "lucide-react";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact",
   description: `Call Crimson Deli on ${siteConfig.phone}, email ${siteConfig.email}, or visit us at ${siteConfig.address}.`,
 };
