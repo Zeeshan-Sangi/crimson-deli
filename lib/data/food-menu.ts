@@ -183,8 +183,12 @@ export const foodItems: FoodItem[] = [
   },
 ];
 
-/** Placeholder shown wherever the store has not given us a real price yet. */
-export const PRICE_PLACEHOLDER = "TODO: real price";
+/**
+ * Shown wherever an item has no price yet. This string reaches customers in the
+ * cart and at checkout, so it is the same wording the admin dashboard and the
+ * terms page already use — it must never read like a developer note.
+ */
+export const UNPRICED_LABEL = "Priced at store";
 
 export type IceCreamSize = "small" | "large";
 
@@ -210,7 +214,7 @@ export function iceCreamPriceCents(size: IceCreamSize): number {
 }
 
 export function formatFoodPrice(priceCents: number | null): string {
-  if (priceCents === null) return PRICE_PLACEHOLDER;
+  if (priceCents === null) return UNPRICED_LABEL;
   return `$${(priceCents / 100).toFixed(2)}`;
 }
 

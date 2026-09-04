@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatCents, useCart } from "@/lib/cart/CartContext";
-import { PRICE_PLACEHOLDER } from "@/lib/data/food-menu";
+import { UNPRICED_LABEL } from "@/lib/data/food-menu";
 import { formatPhone } from "@/lib/format/phone";
 import { computeOrderTotals, formatTaxRateLabel } from "@/lib/settings/tax";
 import { siteConfig } from "@/lib/site-config";
@@ -248,7 +248,7 @@ export default function CheckoutView({
                 </div>
                 <span>
                   {line.priceCents === null
-                    ? PRICE_PLACEHOLDER
+                    ? UNPRICED_LABEL
                     : formatCents(line.priceCents * line.qty)}
                 </span>
               </div>

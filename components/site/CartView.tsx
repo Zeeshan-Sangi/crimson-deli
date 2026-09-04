@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { formatCents, useCart } from "@/lib/cart/CartContext";
-import { PRICE_PLACEHOLDER } from "@/lib/data/food-menu";
+import { UNPRICED_LABEL } from "@/lib/data/food-menu";
 import { siteConfig } from "@/lib/site-config";
 import { X } from "lucide-react";
 
@@ -68,7 +68,7 @@ export default function CartView({
                   </td>
                   <td>
                     {line.priceCents === null
-                      ? PRICE_PLACEHOLDER
+                      ? UNPRICED_LABEL
                       : formatCents(line.priceCents)}
                   </td>
                   <td>

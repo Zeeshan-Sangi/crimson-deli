@@ -144,11 +144,40 @@ export async function authenticate(
 }
 
 export async function setUserRole(id: string, role: Role): Promise<User> {
-  const doc = await col().doc(id).get();
-  if (!doc.exists) throw new AuthError("User not found.");
-  const updated = { ...(doc.data() as User), role };
-  await col().doc(id).set(updated);
-  return updated;
+  const db = getAdminDb();
+  // Transactional for the same reason as setUserDisabled: the last-admin check
+  // is a read-then-write, and two admins demoting each other at once must not
+  // both pass it.
+  return db.runTransaction(async (tx) => {
+    const ref = col().doc(id);
+    const doc = await tx.get(ref);
+    if (!doc.exists) throw new AuthError("User not found.");
+    const current = doc.data() as User;
+
+    // Demoting the only admin who can still sign in locks everyone out of
+    // /admin and /api/staff for good — there is no public bootstrap route to
+    // recover through. An already-disabled admin is not holding the door open,
+    // so demoting one of those stays allowed.
+    if (current.role === "admin" && role !== "admin" && !current.disabledAt) {
+      const admins = await tx.get(col().where("role", "==", "admin"));
+      const active = admins.docs.filter((d) => !(d.data() as User).disabledAt);
+      if (active.length <= 1)
+        throw new AuthError("Cannot change the role of the last active admin.");
+    }
+
+    const changed = current.role !== role;
+    const updated: User = {
+      ...current,
+      role,
+      // getCurrentUser reads the role out of the session cookie, so without a
+      // bump here a demoted admin keeps every admin route until that cookie
+      // expires. Only on a real change, or saving the same role would sign the
+      // user out of their other devices for nothing.
+      sessionVersion: (current.sessionVersion ?? 0) + (changed ? 1 : 0),
+    };
+    tx.set(ref, updated);
+    return updated;
+  });
 }
 
 export async function setUserDisabled(id: string, disabled: boolean): Promise<User> {
