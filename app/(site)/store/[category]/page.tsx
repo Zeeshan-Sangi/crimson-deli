@@ -29,6 +29,10 @@ export async function generateMetadata({
   };
 }
 
+// What the store carries is edited in /admin/essentials, so this is read
+// per request rather than frozen into the build.
+export const dynamic = "force-dynamic";
+
 export default async function StoreCategoryPage({
   params,
 }: {

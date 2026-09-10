@@ -7,6 +7,7 @@ import StorePagination, { paginateProducts, storePageUrl } from "@/components/si
 import {
   categoryImage,
   getCatalog,
+  listVisibleProducts,
   stockedCategories,
 } from "@/lib/data/convenience";
 import { Truck } from "lucide-react";
@@ -52,6 +53,10 @@ function PopularItem({
   );
 }
 
+// What the store carries is edited in /admin/essentials, so this is read
+// per request rather than frozen into the build.
+export const dynamic = "force-dynamic";
+
 export default async function StorePage({
   searchParams,
 }: {
@@ -59,7 +64,8 @@ export default async function StorePage({
 }) {
   const { page: pageParam } = await searchParams;
   const requestedPage = parseInt(pageParam ?? "1", 10);
-  const { products, doordashUrl } = await getCatalog();
+  const { doordashUrl } = await getCatalog();
+  const products = await listVisibleProducts();
   const categories = await stockedCategories();
   const { items, page, totalPages, start, end } = paginateProducts(
     products,

@@ -4,7 +4,7 @@ import PortalShell from "@/components/portal/PortalShell";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { listOrders } from "@/lib/orders/store";
 import { foodItems } from "@/lib/data/food-menu";
-import { getCatalog } from "@/lib/data/convenience";
+import { listVisibleProducts } from "@/lib/data/convenience";
 import type { Order, OrderStatus } from "@/lib/orders/types";
 
 export const dynamic = "force-dynamic";
@@ -48,7 +48,7 @@ function topItems(orders: Order[]) {
 export default async function AdminDashboard() {
   const user = (await getCurrentUser())!;
   const orders = await listOrders();
-  const catalog = await getCatalog();
+  const listedEssentials = (await listVisibleProducts()).length;
 
   const today = orders.filter((o) => isToday(o.createdAt));
   const open = orders.filter((o) =>
@@ -186,7 +186,7 @@ export default async function AdminDashboard() {
               </tr>
               <tr>
                 <td>Convenience products</td>
-                <td style={{ textAlign: "right", fontWeight: 700 }}>{catalog.count}</td>
+                <td style={{ textAlign: "right", fontWeight: 700 }}>{listedEssentials}</td>
               </tr>
               <tr>
                 <td>Sold out</td>

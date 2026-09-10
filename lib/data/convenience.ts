@@ -1,3 +1,4 @@
+import { hiddenEssentialSlugs } from "@/lib/products/essentials";
 import type { ConvenienceCatalog, ConvenienceProduct } from "./types";
 
 /**
@@ -23,6 +24,20 @@ export async function getCatalog(): Promise<ConvenienceCatalog> {
   const mod = await import("@/public/data/convenience-catalog.json");
   cached = (mod.default ?? mod) as unknown as ConvenienceCatalog;
   return cached;
+}
+
+/**
+ * The catalogue minus anything the store has marked as not carried.
+ *
+ * `getCatalog()` stays the raw file so /admin/essentials can list every item,
+ * including the hidden ones it needs to offer back.
+ */
+export async function listVisibleProducts(): Promise<ConvenienceProduct[]> {
+  const [{ products }, hidden] = await Promise.all([
+    getCatalog(),
+    hiddenEssentialSlugs(),
+  ]);
+  return products.filter((p) => !hidden.has(p.slug));
 }
 
 /** Store departments, in the order the storefront lists them. */
@@ -51,7 +66,7 @@ export function getCategory(slug: string): ConvenienceCategory | undefined {
 }
 
 export async function productsInCategory(slug: string): Promise<ConvenienceProduct[]> {
-  const { products } = await getCatalog();
+  const products = await listVisibleProducts();
   return products.filter((p) => p.cat === slug);
 }
 
@@ -71,9 +86,9 @@ export async function stockedCategories(): Promise<
     .filter((c) => c.count > 0);
 }
 
-/** How many catalogued products sit in each department. */
+/** How many listed products sit in each department. */
 export async function categoryCounts(): Promise<Record<string, number>> {
-  const { products } = await getCatalog();
+  const products = await listVisibleProducts();
   return products.reduce<Record<string, number>>((acc, p) => {
     acc[p.cat] = (acc[p.cat] ?? 0) + 1;
     return acc;

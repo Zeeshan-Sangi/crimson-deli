@@ -8,6 +8,7 @@ import {
   Gauge,
   Receipt,
   Sandwich,
+  ShoppingBasket,
   SlidersHorizontal,
   Star,
   Mail,
@@ -33,6 +34,12 @@ const GROUPS: { title: string; items: Item[] }[] = [
     title: "Catalog",
     items: [
       { href: "/admin/products", label: "Products", icon: Sandwich, roles: ["admin"] },
+      {
+        href: "/admin/essentials",
+        label: "Everyday essentials",
+        icon: ShoppingBasket,
+        roles: ["admin"],
+      },
       { href: "/admin/reviews", label: "Reviews", icon: Star, roles: ["admin"] },
     ],
   },
