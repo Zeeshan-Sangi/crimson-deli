@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { NEXT_STATUS, type Order, type OrderStatus } from "@/lib/orders/types";
+import { NEXT_STATUS, orderItemKey, type Order, type OrderStatus } from "@/lib/orders/types";
 import ActionMenu, { type MenuAction } from "./ActionMenu";
 import { formatPhone } from "@/lib/format/phone";
 
@@ -237,7 +237,7 @@ export default function OrdersWorkspace({ orders }: { orders: Order[] }) {
                               <h3 style={{ fontSize: 13, margin: "0 0 8px" }}>Items</h3>
                               <ul style={{ margin: 0, paddingLeft: 18 }}>
                                 {o.items.map((i) => (
-                                  <li key={`${i.productSlug}-${i.size ?? ""}`} style={{ fontSize: 13 }}>
+                                  <li key={orderItemKey(i)} style={{ fontSize: 13 }}>
                                     {i.qty} × {i.name}{" "}
                                     <span className="portal-muted">
                                       ({i.priceCents === null

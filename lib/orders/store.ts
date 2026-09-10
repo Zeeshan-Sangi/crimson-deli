@@ -4,8 +4,15 @@ import { listProducts } from "@/lib/products/store";
 import {
   ICE_CREAM_SIZES,
   type IceCreamSize,
+  cleanMods,
+  flavorGroupsFor,
+  flavorSuffix,
+  hasMods,
   iceCreamPriceCents,
+  ingredientsFor,
   isIceCreamItem,
+  modsPriceCents,
+  modsSuffix,
 } from "@/lib/data/food-menu";
 import { getSettings, storeOpenState } from "@/lib/settings/store";
 import { computeOrderTotals } from "@/lib/settings/tax";
@@ -118,12 +125,63 @@ export async function createOrder(
       throw new OrderValidationError(`Size is not valid for ${product.name}.`);
     }
 
+    // The picker on the product page is the polite version of this check; this
+    // is the one that decides what the kitchen is told to make.
+    const groups = flavorGroupsFor(product);
+    let flavors: Record<string, string | string[]> | undefined;
+
+    if (groups.length > 0) {
+      const chosen: Record<string, string | string[]> = {};
+      for (const group of groups) {
+        const raw = line.flavors?.[group.key];
+        const picked = Array.isArray(raw)
+          ? raw.filter((v): v is string => typeof v === "string")
+          : typeof raw === "string"
+            ? [raw]
+            : [];
+        const valid = [...new Set(picked)].filter((v) => group.options.includes(v));
+        if (valid.length === 0) {
+          throw new OrderValidationError(
+            `Choose a ${group.label.toLowerCase()} for ${product.name}.`,
+          );
+        }
+        if (!group.multi && valid.length > 1) {
+          throw new OrderValidationError(
+            `Choose one ${group.label.toLowerCase()} for ${product.name}.`,
+          );
+        }
+        chosen[group.key] = group.multi ? valid : valid[0]!;
+      }
+      flavors = chosen;
+      name = `${name}${flavorSuffix(product.slug, chosen)}`;
+    } else if (line.flavors && Object.keys(line.flavors).length > 0) {
+      throw new OrderValidationError(`Flavors are not valid for ${product.name}.`);
+    }
+
+    // Ingredient changes are re-read from the product, never trusted from the
+    // cart: an extra's price is decided here, and one the store has since
+    // dropped must not reach the kitchen.
+    const askedForMods =
+      (line.mods?.removed?.length ?? 0) > 0 || (line.mods?.added?.length ?? 0) > 0;
+    if (askedForMods && ingredientsFor(product).length === 0)
+      throw new OrderValidationError(`${product.name} cannot be customised.`);
+
+    const cleanedMods = cleanMods(product, line.mods);
+    const mods = hasMods(cleanedMods) ? cleanedMods : undefined;
+
+    if (mods) {
+      if (priceCents !== null) priceCents += modsPriceCents(product, mods);
+      name = `${name}${modsSuffix(product, mods)}`;
+    }
+
     return {
       productSlug: product.slug,
       name,
       priceCents,
       qty,
       size,
+      flavors,
+      mods,
     };
   });
 

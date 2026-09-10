@@ -26,7 +26,32 @@ export type OrderItem = {
   qty: number;
   /** Ice cream cup size chosen at checkout. */
   size?: "small" | "large";
+  /** Ingredients taken off and extras added on, by ingredient key. */
+  mods?: { removed: string[]; added: string[] };
+  /**
+   * Flavors chosen at checkout, keyed by flavor group — e.g. a gelati carries
+   * `{ base: "Vanilla", flavor: ["Cherry", "Mango"] }`. Also spelled out in
+   * `name`, so anything that only prints the name still shows the flavor.
+   */
+  flavors?: Record<string, string | string[]>;
 };
+
+/**
+ * Stable list key for an order line: the same product in two cup sizes, or in
+ * two water ice flavors, is two lines and must not share a React key.
+ */
+export function orderItemKey(item: OrderItem): string {
+  const modParts = [
+    ...(item.mods?.removed ?? []).map((k) => `-${k}`),
+    ...(item.mods?.added ?? []).map((k) => `+${k}`),
+  ];
+  const flavorParts = Object.values(item.flavors ?? {}).flatMap((v) =>
+    Array.isArray(v) ? v : [v],
+  );
+  return [item.productSlug, item.size, ...flavorParts, ...modParts]
+    .filter(Boolean)
+    .join(":");
+}
 
 export type OrderCustomer = {
   name: string;
@@ -66,7 +91,13 @@ export type Order = {
 
 /** What the checkout form sends. Prices and totals are NOT trusted from here. */
 export type CreateOrderInput = {
-  items: { productSlug: string; qty: number; size?: "small" | "large" }[];
+  items: {
+    productSlug: string;
+    qty: number;
+    size?: "small" | "large";
+    flavors?: Record<string, string | string[]>;
+    mods?: { removed: string[]; added: string[] };
+  }[];
   customer: { name: string; phone: string; email?: string };
   notes?: string;
 };

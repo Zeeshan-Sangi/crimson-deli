@@ -4,7 +4,7 @@ import Breadcrumb from "@/components/site/Breadcrumb";
 import AddToCart from "@/components/site/AddToCart";
 import FoodCard from "@/components/site/FoodCard";
 import IceCreamProductHero from "@/components/site/IceCreamProductHero";
-import { foodCategories, formatFoodPrice, isIceCreamItem } from "@/lib/data/food-menu";
+import { foodCategories, isIceCreamItem } from "@/lib/data/food-menu";
 import { BreadcrumbJsonLd, JsonLd } from "@/components/site/JsonLd";
 import { menuItemJsonLd } from "@/lib/seo";
 import { getVisibleProduct, listAvailableProducts } from "@/lib/products/store";
@@ -95,8 +95,9 @@ export default async function FoodDetailPage({
                     </span>
                   </p>
                 )}
-                <p className="cd-product__price">{formatFoodPrice(item.priceCents)}</p>
-
+                {/* The price is printed by AddToCart, which is the one that
+                    knows the chosen size and any extras — a second, fixed one
+                    here would sit above it contradicting it. */}
                 <p className="cd-product__meta">
                   Availability:{" "}
                   <strong>{item.available ? "In store" : "Sold out"}</strong>

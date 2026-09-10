@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { flavorGroupsFor, ingredientsToText } from "@/lib/data/food-menu";
 import type { FoodCategory, FoodItem } from "@/lib/data/types";
 import ActionMenu, { type MenuAction } from "./ActionMenu";
 
@@ -11,6 +12,12 @@ type Draft = {
   price: string;
   categorySlug: string;
   imageUrl: string;
+  /** One comma-separated flavor list per flavor group, keyed by group key. */
+  flavors: Record<string, string>;
+  /** What the item comes with, one per line. */
+  comesWith: string;
+  /** Paid extras, one per line, price optional. */
+  extras: string;
 };
 
 const EMPTY_DRAFT: Draft = {
@@ -19,7 +26,15 @@ const EMPTY_DRAFT: Draft = {
   price: "",
   categorySlug: "",
   imageUrl: "",
+  flavors: {},
+  comesWith: "",
+  extras: "",
 };
+
+/** "Cherry, Mango" → ["Cherry", "Mango"]. The server trims and de-duplicates. */
+function parseFlavors(text: string): string[] {
+  return text.split(/[,\n]/);
+}
 
 export default function ProductsWorkspace({
   products,
@@ -45,6 +60,9 @@ export default function ProductsWorkspace({
   const editingProduct = creating
     ? null
     : products.find((p) => p.slug === editing) ?? null;
+  // Which flavor lists this item asks the customer for. Empty for everything
+  // except water ice and gelati.
+  const flavorGroups = editingProduct ? flavorGroupsFor(editingProduct) : [];
 
   /**
    * Drives the native dialog from React state. `showModal()` rather than the
@@ -98,6 +116,10 @@ export default function ProductsWorkspace({
       price: p.priceCents === null ? "" : (p.priceCents / 100).toFixed(2),
       categorySlug: p.categorySlug,
       imageUrl: p.imageUrl,
+      flavors: Object.fromEntries(
+        flavorGroupsFor(p).map((g) => [g.key, g.options.join(", ")]),
+      ),
+      ...ingredientsToText(p),
     });
     setEditing(p.slug);
   }
@@ -111,9 +133,20 @@ export default function ProductsWorkspace({
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const { flavors, comesWith, extras, ...fields } = draft;
     const ok = creating
-      ? await request("POST", draft, "new")
-      : await save(editingProduct!.slug, draft);
+      ? await request("POST", fields, "new")
+      : await save(editingProduct!.slug, {
+          ...fields,
+          ingredients: { comesWith, extras },
+          ...(flavorGroups.length > 0
+            ? {
+                flavorOptions: Object.fromEntries(
+                  flavorGroups.map((g) => [g.key, parseFlavors(flavors[g.key] ?? "")]),
+                ),
+              }
+            : {}),
+        });
     if (ok) setEditing(null);
   }
 
@@ -337,6 +370,57 @@ export default function ProductsWorkspace({
                   ))}
                 </select>
               </label>
+              {flavorGroups.map((group) => (
+                <label key={group.key}>
+                  {group.label} — what the customer can choose, separated by commas
+                  <textarea
+                    rows={2}
+                    value={draft.flavors[group.key] ?? ""}
+                    placeholder="Watermelon, Mango, Cherry"
+                    onChange={(e) =>
+                      setDraft({
+                        ...draft,
+                        flavors: { ...draft.flavors, [group.key]: e.target.value },
+                      })
+                    }
+                  />
+                </label>
+              ))}
+
+              {flavorGroups.length > 0 && (
+                <p className="portal-muted" style={{ fontSize: 12, margin: "-4px 0 0" }}>
+                  This is the list customers pick from when they order. Clear the box to go
+                  back to the standard list.
+                </p>
+              )}
+
+              {!creating && (
+                <>
+                  <label>
+                    Comes with — one per line, customers can take these off
+                    <textarea
+                      rows={3}
+                      value={draft.comesWith}
+                      placeholder={"Turkey\nLettuce\nTomato"}
+                      onChange={(e) => setDraft({ ...draft, comesWith: e.target.value })}
+                    />
+                  </label>
+                  <label>
+                    Extras customers can add — one per line, price after the name
+                    <textarea
+                      rows={3}
+                      value={draft.extras}
+                      placeholder={"Extra cheese 1.00\nBacon 1.50\nAvocado 2"}
+                      onChange={(e) => setDraft({ ...draft, extras: e.target.value })}
+                    />
+                  </label>
+                  <p className="portal-muted" style={{ fontSize: 12, margin: "-4px 0 0" }}>
+                    Leave both boxes empty and the item is not customisable. A line with no
+                    price is a free extra.
+                  </p>
+                </>
+              )}
+
               <label>
                 Image path {creating && <span className="portal-muted">(optional)</span>}
                 <input

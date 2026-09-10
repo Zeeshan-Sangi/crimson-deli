@@ -2,16 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import { Plus, ShoppingBag, X } from "lucide-react";
 import { useCart } from "@/lib/cart/CartContext";
 import {
   formatFoodPrice,
   ICE_CREAM_SIZES,
+  type FlavorChoices,
   type IceCreamSize,
+  extraIngredients,
+  flavorGroupsFor,
+  flavorsComplete,
   iceCreamPriceCents,
+  includedIngredients,
+  isCustomisable,
   isIceCreamItem,
+  modsPriceCents,
 } from "@/lib/data/food-menu";
-import type { FoodItem } from "@/lib/data/types";
+import type { FoodItem, ItemMods } from "@/lib/data/types";
 
 /** Quantity stepper + add-to-cart for a single fresh food item. */
 export default function AddToCart({
@@ -27,18 +34,86 @@ export default function AddToCart({
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [internalSize, setInternalSize] = useState<IceCreamSize>("small");
+  const [flavors, setFlavors] = useState<FlavorChoices>({});
+  const [flavorPrompt, setFlavorPrompt] = useState(false);
+  const [mods, setMods] = useState<ItemMods>({ removed: [], added: [] });
   const sized = isIceCreamItem(item);
   const size = controlledSize ?? internalSize;
+
+  // Water ice and gelati are made to order, so nothing is pre-selected: an
+  // unnoticed default would send the kitchen a flavor nobody asked for.
+  const flavorGroups = flavorGroupsFor(item);
+  const flavorsChosen = flavorsComplete(item, flavors);
+
+  const comesWith = includedIngredients(item);
+  const extras = extraIngredients(item);
+  const customisable = isCustomisable(item);
+
+  function toggleRemoved(key: string) {
+    setMods((prev) => ({
+      ...prev,
+      removed: prev.removed.includes(key)
+        ? prev.removed.filter((k) => k !== key)
+        : [...prev.removed, key],
+    }));
+    setAdded(false);
+  }
+
+  function toggleAdded(key: string) {
+    setMods((prev) => ({
+      ...prev,
+      added: prev.added.includes(key)
+        ? prev.added.filter((k) => k !== key)
+        : [...prev.added, key],
+    }));
+    setAdded(false);
+  }
 
   function setSize(next: IceCreamSize) {
     if (onSizeChange) onSizeChange(next);
     else setInternalSize(next);
   }
 
-  const unitPriceCents = sized ? iceCreamPriceCents(size) : item.priceCents;
+  function chooseFlavor(groupKey: string, option: string, multi?: boolean) {
+    setFlavors((prev) => {
+      if (!multi) return { ...prev, [groupKey]: option };
+      const current = prev[groupKey];
+      const list = Array.isArray(current)
+        ? [...current]
+        : typeof current === "string" && current
+          ? [current]
+          : [];
+      const i = list.indexOf(option);
+      if (i >= 0) list.splice(i, 1);
+      else list.push(option);
+      return { ...prev, [groupKey]: list };
+    });
+    setFlavorPrompt(false);
+    setAdded(false);
+  }
+
+  function isFlavorSelected(groupKey: string, option: string): boolean {
+    const picked = flavors[groupKey];
+    if (Array.isArray(picked)) return picked.includes(option);
+    return picked === option;
+  }
+
+  const basePriceCents = sized ? iceCreamPriceCents(size) : item.priceCents;
+  // The price moves as extras go on, so the customer sees the cost of a change
+  // before they commit to it — not at the counter.
+  const unitPriceCents =
+    basePriceCents === null ? null : basePriceCents + modsPriceCents(item, mods);
 
   function handleAdd() {
-    add(item, qty, sized ? { size } : undefined);
+    if (!flavorsChosen) {
+      setFlavorPrompt(true);
+      return;
+    }
+    add(item, qty, {
+      ...(sized ? { size } : {}),
+      ...(flavorGroups.length > 0 ? { flavors } : {}),
+      ...(customisable ? { mods } : {}),
+    });
     setAdded(true);
   }
 
@@ -68,6 +143,131 @@ export default function AddToCart({
             })}
           </div>
         </>
+      )}
+
+      {flavorGroups.map((group) => (
+        <div key={group.key}>
+          <p className="cd-product__meta" style={{ marginBottom: 8 }}>
+            <strong>{group.label}</strong>
+            {group.multi ? (
+              <span style={{ fontWeight: 500, color: "var(--cd-muted)" }}>
+                {" "}
+                · pick one or more
+              </span>
+            ) : null}
+          </p>
+          <div
+            className="cd-size-group"
+            role={group.multi ? "group" : "radiogroup"}
+            aria-label={group.label}
+          >
+            {group.options.map((option) => {
+              const selected = isFlavorSelected(group.key, option);
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  role={group.multi ? "checkbox" : "radio"}
+                  aria-checked={selected}
+                  onClick={() => chooseFlavor(group.key, option, group.multi)}
+                  className="cd-size-btn"
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {flavorPrompt && !flavorsChosen && (
+        <p className="cd-product__fine" role="alert" style={{ color: "var(--cd-crimson)" }}>
+          Choose {flavorGroups.some((g) => g.multi) ? "at least one flavor" : flavorGroups.length > 1 ? "both options" : "a flavor"} before adding this
+          to your cart.
+        </p>
+      )}
+
+      {customisable && (
+        <div className="cd-customise">
+          <p className="cd-customise__title">Make it your own</p>
+
+          {comesWith.length > 0 && (
+            <>
+              <p className="cd-product__meta" style={{ marginBottom: 8 }}>
+                <strong>Comes with</strong>
+                <span style={{ fontWeight: 500, color: "var(--cd-muted)" }}>
+                  {" "}
+                  · tap to take something off
+                </span>
+              </p>
+              <div className="cd-size-group">
+                {comesWith.map((ingredient) => {
+                  const off = mods.removed.includes(ingredient.key);
+                  return (
+                    <button
+                      key={ingredient.key}
+                      type="button"
+                      className="cd-mod-btn"
+                      data-off={off ? "true" : "false"}
+                      aria-pressed={!off}
+                      aria-label={
+                        off ? `Put ${ingredient.name} back` : `Remove ${ingredient.name}`
+                      }
+                      onClick={() => toggleRemoved(ingredient.key)}
+                    >
+                      {ingredient.name}
+                      {off ? (
+                        <Plus size={14} aria-hidden="true" />
+                      ) : (
+                        <X size={14} aria-hidden="true" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {extras.length > 0 && (
+            <>
+              <p className="cd-product__meta" style={{ marginBottom: 8 }}>
+                <strong>Add extras</strong>
+              </p>
+              <div className="cd-size-group">
+                {extras.map((ingredient) => {
+                  const on = mods.added.includes(ingredient.key);
+                  return (
+                    <button
+                      key={ingredient.key}
+                      type="button"
+                      className="cd-mod-btn"
+                      data-on={on ? "true" : "false"}
+                      aria-pressed={on}
+                      aria-label={`${on ? "Remove" : "Add"} ${ingredient.name}${
+                        ingredient.priceCents > 0
+                          ? `, ${formatFoodPrice(ingredient.priceCents)}`
+                          : ""
+                      }`}
+                      onClick={() => toggleAdded(ingredient.key)}
+                    >
+                      {on ? (
+                        <X size={14} aria-hidden="true" />
+                      ) : (
+                        <Plus size={14} aria-hidden="true" />
+                      )}
+                      {ingredient.name}
+                      {ingredient.priceCents > 0 && (
+                        <span className="cd-mod-btn__price">
+                          +{formatFoodPrice(ingredient.priceCents)}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
       )}
 
       <p className="cd-product__price">{formatFoodPrice(unitPriceCents)}</p>

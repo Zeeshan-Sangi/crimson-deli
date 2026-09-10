@@ -935,6 +935,59 @@
   color: #fff;
 }
 
+/* ---- make it your own ---- */
+
+.cd-customise {
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius-sm);
+  background: var(--cd-cream, #fdf7f4);
+}
+
+.cd-customise__title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--cd-ink);
+}
+
+.cd-mod-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--cd-border);
+  border-radius: 999px;
+  background: var(--cd-surface);
+  color: var(--cd-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+
+/* Taken off the item: struck through and faded, but still on screen so it can
+   be put back — a chip that vanished would leave the customer nothing to undo. */
+.cd-mod-btn[data-off="true"] {
+  opacity: 0.55;
+  text-decoration: line-through;
+  text-decoration-color: var(--cd-crimson);
+}
+
+.cd-mod-btn[data-on="true"] {
+  background: var(--cd-crimson);
+  border-color: var(--cd-crimson);
+  color: #fff;
+}
+
+.cd-mod-btn__price {
+  font-weight: 700;
+  opacity: 0.8;
+}
+
 .cd-qty-row {
   display: flex;
   flex-wrap: wrap;

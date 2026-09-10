@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Breadcrumb from "@/components/site/Breadcrumb";
 import { getOrderByToken } from "@/lib/orders/store";
-import { type OrderStatus } from "@/lib/orders/types";
+import { orderItemKey, type OrderStatus } from "@/lib/orders/types";
 import { siteConfig } from "@/lib/site-config";
 
 export const dynamic = "force-dynamic";
@@ -110,7 +110,7 @@ export default async function OrderStatusPage({
             <h2 className="cd-order__subhead">Your items</h2>
             <ul className="cd-order__items">
               {order.items.map((item) => (
-                <li key={`${item.productSlug}-${item.size ?? "default"}`}>
+                <li key={orderItemKey(item)}>
                   {item.qty} × {item.name}
                 </li>
               ))}

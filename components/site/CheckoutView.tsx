@@ -79,6 +79,8 @@ export default function CheckoutView({
             productSlug: l.slug,
             qty: l.qty,
             size: l.size,
+            flavors: l.flavors,
+            mods: l.mods,
           })),
           customer: {
             name: details.name.trim(),

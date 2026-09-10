@@ -10,12 +10,19 @@ import {
 } from "react";
 import {
   ICE_CREAM_SIZES,
+  type FlavorChoices,
   type IceCreamSize,
+  cleanMods,
+  flavorSuffix,
+  flavorValues,
+  hasMods,
   iceCreamCupImage,
   iceCreamPriceCents,
   isIceCreamItem,
+  modsPriceCents,
+  modsSuffix,
 } from "@/lib/data/food-menu";
-import type { FoodItem } from "@/lib/data/types";
+import type { FoodItem, ItemMods } from "@/lib/data/types";
 
 /**
  * Cart for fresh food only.
@@ -24,7 +31,7 @@ import type { FoodItem } from "@/lib/data/types";
  * DoorDash. So this only ever holds `FoodItem`s, all of them pickup.
  */
 export type CartLine = {
-  /** Unique row id — slug, or slug:size for ice cream variants. */
+  /** Unique row id — slug, plus the size and flavors that make this variant. */
   lineKey: string;
   slug: string;
   name: string;
@@ -33,10 +40,16 @@ export type CartLine = {
   priceCents: number | null;
   qty: number;
   size?: IceCreamSize;
+  /** Flavors chosen for items that ask for them (water ice, gelati). */
+  flavors?: FlavorChoices;
+  /** Ingredients taken off and extras added on. */
+  mods?: ItemMods;
 };
 
 type AddOptions = {
   size?: IceCreamSize;
+  flavors?: FlavorChoices;
+  mods?: ItemMods;
 };
 
 type CartValue = {
@@ -64,20 +77,48 @@ type CartValue = {
 const STORAGE_KEY = "crimson-cart-v2";
 const CartContext = createContext<CartValue | null>(null);
 
-function lineKeyFor(slug: string, size?: IceCreamSize): string {
-  return size ? `${slug}:${size}` : slug;
+function lineKeyFor(
+  slug: string,
+  size?: IceCreamSize,
+  flavors?: FlavorChoices,
+  mods?: ItemMods,
+): string {
+  // Two cherry water ices and one mango are two rows, not one, and so is a
+  // hoagie with no tomato next to a plain one — everything the customer chose
+  // is part of the row identity, just like the cup size is.
+  const parts = [
+    slug,
+    size,
+    ...flavorValues(slug, flavors),
+    ...(mods?.removed ?? []).map((k) => `-${k}`),
+    ...(mods?.added ?? []).map((k) => `+${k}`),
+  ].filter(Boolean);
+  return parts.join(":");
 }
 
-function cartLineName(item: FoodItem, size?: IceCreamSize): string {
-  if (isIceCreamItem(item) && size) {
-    return `${item.name} (${ICE_CREAM_SIZES[size].label})`;
-  }
-  return item.name;
+function cartLineName(
+  item: FoodItem,
+  size?: IceCreamSize,
+  flavors?: FlavorChoices,
+  mods?: ItemMods,
+): string {
+  const base =
+    isIceCreamItem(item) && size
+      ? `${item.name} (${ICE_CREAM_SIZES[size].label})`
+      : item.name;
+  return `${base}${flavorSuffix(item.slug, flavors)}${modsSuffix(item, mods)}`;
 }
 
-function cartLinePrice(item: FoodItem, size?: IceCreamSize): number | null {
-  if (isIceCreamItem(item) && size) return iceCreamPriceCents(size);
-  return item.priceCents;
+function cartLinePrice(
+  item: FoodItem,
+  size?: IceCreamSize,
+  mods?: ItemMods,
+): number | null {
+  const base = isIceCreamItem(item) && size ? iceCreamPriceCents(size) : item.priceCents;
+  // Extras cannot be added to a price nobody has given us yet — the store
+  // confirms the whole line at pickup in that case.
+  if (base === null) return null;
+  return base + modsPriceCents(item, mods);
 }
 
 function readStored(): CartLine[] {
@@ -121,7 +162,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const add = useCallback((item: FoodItem, qty = 1, options?: AddOptions) => {
     const size = isIceCreamItem(item) ? options?.size ?? "small" : options?.size;
-    const lineKey = lineKeyFor(item.slug, size);
+    const flavors = options?.flavors;
+    const cleaned = cleanMods(item, options?.mods);
+    const mods = hasMods(cleaned) ? cleaned : undefined;
+    const lineKey = lineKeyFor(item.slug, size, flavors, mods);
 
     setLines((prev) => {
       const existing = prev.find((l) => l.lineKey === lineKey);
@@ -135,11 +179,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         {
           lineKey,
           slug: item.slug,
-          name: cartLineName(item, size),
+          name: cartLineName(item, size, flavors, mods),
           imageUrl: size ? iceCreamCupImage(item.slug, size) : item.imageUrl,
-          priceCents: cartLinePrice(item, size),
+          priceCents: cartLinePrice(item, size, mods),
           qty,
           size,
+          flavors,
+          mods,
         },
       ];
     });
@@ -168,10 +214,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           if (!current) return l;
           // Ice cream lines carry a size-derived price, so only the name is
           // refreshed for those — the size price is computed, not stored.
-          const priceCents = l.size ? l.priceCents : current.priceCents;
-          if (priceCents === l.priceCents && current.name === l.name) return l;
+          // A line whose name and price spell out a size, flavors or changed
+          // ingredients keeps both: the menu only knows the plain product.
+          const variant = Boolean(l.size) || Boolean(l.flavors) || hasMods(l.mods);
+          const priceCents = variant ? l.priceCents : current.priceCents;
+          const name = variant ? l.name : current.name;
+          if (priceCents === l.priceCents && name === l.name) return l;
           changed = true;
-          return { ...l, priceCents, name: l.size ? l.name : current.name };
+          return { ...l, priceCents, name };
         });
         return changed ? next : prev;
       });

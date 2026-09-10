@@ -1,6 +1,6 @@
 import { getAdminDb } from "@/lib/firebase/admin";
-import { foodCategories, foodItems } from "@/lib/data/food-menu";
-import type { FoodItem } from "@/lib/data/types";
+import { FLAVOR_GROUPS, foodCategories, foodItems } from "@/lib/data/food-menu";
+import type { FoodItem, ItemIngredient } from "@/lib/data/types";
 
 /**
  * Fresh food products — Firestore-backed, one document per slug.
@@ -84,7 +84,7 @@ function slugify(name: string): string {
     .slice(0, 60);
 }
 
-const DEFAULT_IMAGE = "/assets/img/crimson/products/deli-sandwich.webp";
+const DEFAULT_IMAGE = "/assets/img/crimson/products/deli-sandwich.png";
 
 export type NewProduct = {
   name: string;
@@ -150,7 +150,106 @@ export type ProductPatch = {
   categorySlug?: string;
   available?: boolean;
   hidden?: boolean;
+  /** Flavor lists, keyed by flavor group. An empty list restores the default. */
+  flavorOptions?: Record<string, string[]>;
+  /**
+   * What the item comes with and what can be added, as the store typed them.
+   * Two lists in, one ordered list out. An empty pair turns customising off.
+   */
+  ingredients?: { comesWith?: string; extras?: string };
 };
+
+const MAX_INGREDIENTS = 40;
+const MAX_INGREDIENT_LENGTH = 60;
+
+/**
+ * Reads the two ingredient boxes from /admin/products.
+ *
+ * "Comes with" is one name per line. "Extras" is a name with an optional price
+ * after it — `Extra cheese 1.00`, `Bacon $1.50` and `Avocado, 2` all work —
+ * because a store writing a list should not have to learn a syntax.
+ */
+function parseIngredients(input: { comesWith?: string; extras?: string }): ItemIngredient[] {
+  const out: ItemIngredient[] = [];
+  const seen = new Set<string>();
+
+  const lines = (text: string | undefined) =>
+    (text ?? "")
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+  const push = (rawName: string, priceCents: number, included: boolean) => {
+    const name = rawName.trim().replace(/\s+/g, " ");
+    if (!name) return;
+    if (name.length > MAX_INGREDIENT_LENGTH)
+      throw new ProductError(`"${name.slice(0, 20)}…" is too long for an ingredient.`);
+    const key = slugify(name);
+    if (!key) throw new ProductError(`"${name}" cannot be used as an ingredient name.`);
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ key, name, included, priceCents });
+  };
+
+  for (const line of lines(input.comesWith)) push(line, 0, true);
+
+  for (const line of lines(input.extras)) {
+    // A trailing number is the charge; everything before it is the name.
+    const match = line.match(/^(.*?)[\s,|]*\$?(\d+(?:\.\d{1,2})?)$/);
+    const name = match ? match[1] : line;
+    const dollars = match ? Number(match[2]) : 0;
+    if (!Number.isFinite(dollars) || dollars < 0)
+      throw new ProductError(`"${line}" does not have a valid price.`);
+    push(name, Math.round(dollars * 100), false);
+  }
+
+  if (out.length > MAX_INGREDIENTS)
+    throw new ProductError(`An item cannot list more than ${MAX_INGREDIENTS} ingredients.`);
+  return out;
+}
+
+
+const MAX_FLAVORS = 40;
+const MAX_FLAVOR_LENGTH = 60;
+
+/**
+ * Cleans a submitted flavor list: trimmed, de-duplicated, order preserved.
+ *
+ * These strings end up on order slips and in `lineKey`s, so an empty entry or a
+ * stray duplicate would show up as a blank or repeated button on the menu.
+ */
+function cleanFlavorOptions(
+  slug: string,
+  input: Record<string, string[]>,
+): Record<string, string[]> {
+  const groups = FLAVOR_GROUPS[slug] ?? [];
+  if (groups.length === 0)
+    throw new ProductError("This item does not ask the customer for a flavor.");
+
+  const cleaned: Record<string, string[]> = {};
+  for (const [key, values] of Object.entries(input)) {
+    const group = groups.find((g) => g.key === key);
+    if (!group) throw new ProductError(`Unknown flavor list: ${key}.`);
+    if (!Array.isArray(values)) throw new ProductError(`${group.label} must be a list.`);
+
+    const seen = new Set<string>();
+    const list: string[] = [];
+    for (const value of values) {
+      const flavor = String(value ?? "").trim().replace(/\s+/g, " ");
+      if (!flavor) continue;
+      if (flavor.length > MAX_FLAVOR_LENGTH)
+        throw new ProductError(`"${flavor.slice(0, 20)}…" is too long for ${group.label}.`);
+      const dedupeKey = flavor.toLowerCase();
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+      list.push(flavor);
+    }
+    if (list.length > MAX_FLAVORS)
+      throw new ProductError(`${group.label} cannot hold more than ${MAX_FLAVORS} flavors.`);
+    cleaned[key] = list;
+  }
+  return cleaned;
+}
 
 export async function updateProduct(
   slug: string,
@@ -178,6 +277,22 @@ export async function updateProduct(
 
     if (patch.available !== undefined) next.available = patch.available;
     if (patch.hidden !== undefined) next.hidden = patch.hidden;
+
+    if (patch.ingredients !== undefined) {
+      const list = parseIngredients(patch.ingredients);
+      next.ingredients = list.length > 0 ? list : undefined;
+    }
+
+    if (patch.flavorOptions !== undefined) {
+      const cleaned = cleanFlavorOptions(slug, patch.flavorOptions);
+      const merged = { ...(existing.flavorOptions ?? {}), ...cleaned };
+      // An emptied list means "go back to the menu file", so it is dropped
+      // rather than stored as an item with no flavors to choose from.
+      for (const key of Object.keys(merged)) {
+        if (merged[key].length === 0) delete merged[key];
+      }
+      next.flavorOptions = Object.keys(merged).length > 0 ? merged : undefined;
+    }
 
     if (patch.price !== undefined) {
       const raw = patch.price.trim();

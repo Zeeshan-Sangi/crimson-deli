@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { Order, OrderStatus } from "@/lib/orders/types";
+import { orderItemKey, type Order, type OrderStatus } from "@/lib/orders/types";
 import { formatPhone } from "@/lib/format/phone";
 
 const COLUMNS: { key: OrderStatus; label: string; advanceLabel: string }[] = [
@@ -172,7 +172,7 @@ export default function TeamBoard() {
                     </div>
                     <ul>
                       {o.items.map((it) => (
-                        <li key={it.productSlug}>
+                        <li key={orderItemKey(it)}>
                           {it.qty} × {it.name}
                         </li>
                       ))}
