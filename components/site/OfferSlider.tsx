@@ -13,7 +13,7 @@ const OFFERS = [
   },
   {
     slug: "deli-sandwich",
-    img: "/assets/img/crimson/offers/offer-deli-sandwich.webp",
+    img: "/assets/img/crimson/offers/offer-deli-sandwich.png",
     alt: "Deli Sandwich, made fresh daily at Crimson Deli",
   },
   {

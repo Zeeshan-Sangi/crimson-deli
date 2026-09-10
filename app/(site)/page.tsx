@@ -42,7 +42,7 @@ const WHY = [
   {
     title: "Made fresh in-store",
     note: "Hoagies, sandwiches, fruit bowls and smoothies are prepared at the counter when you order.",
-    img: "/assets/img/crimson/products/deli-sandwich.webp",
+    img: "/assets/img/crimson/products/deli-sandwich.png",
     alt: "A Crimson Deli sandwich made fresh at the counter",
   },
   {
