@@ -3,8 +3,11 @@ import Link from "next/link";
 import PortalShell from "@/components/portal/PortalShell";
 import AccountShell from "@/components/portal/AccountShell";
 import AccountWorkspace from "@/components/portal/AccountWorkspace";
+import ReorderButton from "@/components/site/ReorderButton";
+import { CartProvider } from "@/lib/cart/CartContext";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { listOrders, ordersForUser } from "@/lib/orders/store";
+import { listAvailableProducts } from "@/lib/products/store";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +30,11 @@ export default async function AccountPage() {
   const recent = isStaff
     ? (await listOrders()).slice(0, 5)
     : (await ordersForUser(user.id)).slice(0, 5);
+
+  // Reordering rebuilds the lines from today's menu, so the customer's list
+  // needs the menu alongside it. Staff see store-wide orders here, which are
+  // other people's — there is nothing for them to reorder.
+  const menu = isStaff ? [] : await listAvailableProducts();
 
   // Staff keep the operations sidebar; a customer has nothing to put in it, so
   // they get a plain page with a way back to the shop instead.
@@ -85,6 +93,9 @@ export default async function AccountPage() {
             )}
           </div>
 
+          {/* The storefront layout owns the cart provider; this page is in the
+              portal tree, so it mounts its own around the reorder buttons. Both
+              read and write the same stored cart. */}
           {recent.length === 0 ? (
             <p className="crm-empty">
               {isStaff
@@ -92,6 +103,7 @@ export default async function AccountPage() {
                 : "No orders yet. Anything you order while signed in shows up here."}
             </p>
           ) : (
+            <CartProvider>
             <table className="portal-table">
               <tbody>
                 {recent.map((o) => (
@@ -101,10 +113,16 @@ export default async function AccountPage() {
                     <td style={{ textAlign: "right" }}>
                       <span className="portal-badge">{o.status.replace("_", " ")}</span>
                     </td>
+                    {!isStaff && (
+                      <td style={{ textAlign: "right" }}>
+                        <ReorderButton items={o.items} menu={menu} />
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
+            </CartProvider>
           )}
 
           <p className="portal-muted" style={{ fontSize: 12, marginTop: 12 }}>
