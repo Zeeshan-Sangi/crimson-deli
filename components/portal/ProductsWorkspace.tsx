@@ -159,7 +159,11 @@ export default function ProductsWorkspace({
 
   return (
     <>
-      {error && <p className="portal-note">{error}</p>}
+      {error && !editing && (
+        <p className="portal-note" role="alert">
+          {error}
+        </p>
+      )}
 
       {unpriced > 0 && (
         <div className="portal-note" style={{ marginTop: 0 }}>
@@ -332,6 +336,14 @@ export default function ProductsWorkspace({
             </div>
 
             <form className="portal-form" onSubmit={onSubmit}>
+              {/* A modal dialog makes everything behind it inert, so a failed
+                  save has to report itself in here to be seen or announced. */}
+              {error && (
+                <p className="portal-note" role="alert">
+                  {error}
+                </p>
+              )}
+
               <label>
                 Name
                 <input

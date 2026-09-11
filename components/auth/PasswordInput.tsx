@@ -6,6 +6,8 @@ import { Eye, EyeOff } from "lucide-react";
 type Props = {
   value: string;
   onChange: (value: string) => void;
+  /** Visible label. A placeholder alone leaves the field unnamed once typed in. */
+  label: string;
   placeholder?: string;
   autoComplete: "current-password" | "new-password";
   required?: boolean;
@@ -22,7 +24,8 @@ type Props = {
 export default function PasswordInput({
   value,
   onChange,
-  placeholder = "Password",
+  label,
+  placeholder,
   autoComplete,
   required,
   minLength,
@@ -31,7 +34,11 @@ export default function PasswordInput({
   const id = useId();
 
   return (
-    <div className="auth-password">
+    <div className="auth-field">
+      <label className="auth-label" htmlFor={id}>
+        {label}
+      </label>
+      <div className="auth-password">
       <input
         id={id}
         type={shown ? "text" : "password"}
@@ -54,6 +61,7 @@ export default function PasswordInput({
       >
         {shown ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
       </button>
+      </div>
     </div>
   );
 }

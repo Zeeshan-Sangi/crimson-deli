@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getClientAuth, isFirebaseClientConfigured } from "@/lib/firebase/client";
 import FirebaseAuthButtons from "./FirebaseAuthButtons";
@@ -11,6 +11,7 @@ import { completeFirebaseSignIn, homeForRole } from "./firebase-session";
 
 export default function LoginForm() {
   const router = useRouter();
+  const emailId = useId();
   const params = useSearchParams();
   const next = params.get("next") || "";
 
@@ -73,18 +74,25 @@ export default function LoginForm() {
   return (
     <>
       <form className="auth-form" onSubmit={onSubmit}>
-        <input
-          type="email"
-          className="auth-input"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="username"
-          required
-          autoFocus
-        />
+        <div className="auth-field">
+          <label className="auth-label" htmlFor={emailId}>
+            Email address
+          </label>
+          <input
+            id={emailId}
+            type="email"
+            className="auth-input"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+            required
+            autoFocus
+          />
+        </div>
 
         <PasswordInput
+          label="Password"
           value={password}
           onChange={setPassword}
           autoComplete="current-password"

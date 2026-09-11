@@ -62,18 +62,20 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
       <form className="auth-form" onSubmit={onSubmit}>
         <PasswordInput
+          label="New password"
           value={password}
           onChange={setPassword}
-          placeholder="New password (min 8 characters)"
+          placeholder="At least 8 characters"
           autoComplete="new-password"
           required
           minLength={8}
         />
 
         <PasswordInput
+          label="Confirm new password"
           value={confirm}
           onChange={setConfirm}
-          placeholder="Confirm new password"
+          placeholder="Type it again"
           autoComplete="new-password"
           required
           minLength={8}

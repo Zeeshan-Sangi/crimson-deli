@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 export default function ForgotPasswordForm() {
+  const emailId = useId();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,16 +65,22 @@ export default function ForgotPasswordForm() {
       </p>
 
       <form className="auth-form" onSubmit={onSubmit}>
-        <input
-          type="email"
-          className="auth-input"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          required
-          autoFocus
-        />
+        <div className="auth-field">
+          <label className="auth-label" htmlFor={emailId}>
+            Email address
+          </label>
+          <input
+            id={emailId}
+            type="email"
+            className="auth-input"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+            autoFocus
+          />
+        </div>
 
         {error && (
           <p className="auth-error" role="alert">

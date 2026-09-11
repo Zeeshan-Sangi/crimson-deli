@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 export default function VerifyEmailForm({ defaultEmail = "" }: { defaultEmail?: string }) {
+  const emailId = useId();
+  const codeId = useId();
   const router = useRouter();
   const [email, setEmail] = useState(defaultEmail);
   const [code, setCode] = useState("");
@@ -69,28 +71,40 @@ export default function VerifyEmailForm({ defaultEmail = "" }: { defaultEmail?: 
       </p>
 
       <form className="auth-form" onSubmit={onVerify}>
-        <input
-          type="email"
-          className="auth-input"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          required
-          autoFocus
-        />
-        <input
-          type="text"
-          className="auth-input"
-          placeholder="Verification code"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          pattern="\d{6}"
-          maxLength={6}
-          required
-        />
+        <div className="auth-field">
+          <label className="auth-label" htmlFor={emailId}>
+            Email address
+          </label>
+          <input
+            id={emailId}
+            type="email"
+            className="auth-input"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+            autoFocus
+          />
+        </div>
+        <div className="auth-field">
+          <label className="auth-label" htmlFor={codeId}>
+            Verification code
+          </label>
+          <input
+            id={codeId}
+            type="text"
+            className="auth-input"
+            placeholder="6-digit code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="\d{6}"
+            maxLength={6}
+            required
+          />
+        </div>
 
         {error && (
           <p className="auth-error" role="alert">

@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 import FirebaseAuthButtons from "./FirebaseAuthButtons";
 import PasswordInput from "./PasswordInput";
 
 export default function SignupForm() {
+  const nameId = useId();
+  const phoneId = useId();
+  const emailId = useId();
+  const codeId = useId();
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -108,19 +112,25 @@ export default function SignupForm() {
         </p>
 
         <form className="auth-form" onSubmit={onVerify}>
-          <input
-            type="text"
-            className="auth-input"
-            placeholder="Verification code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            pattern="\d{6}"
-            maxLength={6}
-            required
-            autoFocus
-          />
+          <div className="auth-field">
+            <label className="auth-label" htmlFor={codeId}>
+              Verification code
+            </label>
+            <input
+              id={codeId}
+              type="text"
+              className="auth-input"
+              placeholder="6-digit code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="\d{6}"
+              maxLength={6}
+              required
+              autoFocus
+            />
+          </div>
 
           {error && (
             <p className="auth-error" role="alert">
@@ -168,46 +178,66 @@ export default function SignupForm() {
 
   return (
     <>
-      <FirebaseAuthButtons phoneLayout="full" onError={setError} />
+      <FirebaseAuthButtons onError={setError} />
 
       <div className="auth-divider">
         <span>Or sign up with email</span>
       </div>
 
       <form className="auth-form" onSubmit={onSubmit}>
-        <input
-          type="text"
-          className="auth-input"
-          placeholder="Full name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          autoComplete="name"
-          required
-        />
+        <div className="auth-field">
+          <label className="auth-label" htmlFor={nameId}>
+            Full name
+          </label>
+          <input
+            id={nameId}
+            type="text"
+            className="auth-input"
+            placeholder="Jane Carter"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoComplete="name"
+            required
+          />
+        </div>
 
-        <input
-          type="tel"
-          className="auth-input"
-          placeholder="Phone number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          autoComplete="tel"
-          required
-        />
+        <div className="auth-field">
+          <label className="auth-label" htmlFor={phoneId}>
+            Phone number
+          </label>
+          <input
+            id={phoneId}
+            type="tel"
+            className="auth-input"
+            placeholder="(215) 555-0123"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            autoComplete="tel"
+            required
+          />
+        </div>
 
-        <input
-          type="email"
-          className="auth-input"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          required
-        />
+        <div className="auth-field">
+          <label className="auth-label" htmlFor={emailId}>
+            Email address
+          </label>
+          <input
+            id={emailId}
+            type="email"
+            className="auth-input"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+          />
+        </div>
 
         <PasswordInput
+          label="Password"
           value={password}
           onChange={setPassword}
+          placeholder="At least 8 characters"
           autoComplete="new-password"
           required
           minLength={8}
