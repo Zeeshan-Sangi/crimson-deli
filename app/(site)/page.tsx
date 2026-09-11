@@ -119,10 +119,14 @@ export default async function HomePage() {
         <div className="cd-page-wrap">
           <div className="cd-split">
             <div>
+              {/* The mobile LCP. The hero burger is hidden below 992px, so on a
+                  phone this is the first real image on the page — lazy-loading
+                  it cost 3.5s while desktop, which paints the burger, sat at
+                  0.6s. */}
               <img
                 src="/assets/img/crimson/storefront-cover.webp"
                 alt="Crimson Deli storefront"
-                loading="lazy"
+                fetchPriority="high"
                 decoding="async"
               />
             </div>
