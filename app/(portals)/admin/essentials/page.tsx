@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PortalShell from "@/components/portal/PortalShell";
 import EssentialsWorkspace from "@/components/portal/EssentialsWorkspace";
-import { getCurrentUser } from "@/lib/auth/current-user";
+import { requirePageRole } from "@/lib/auth/current-user";
 import { convenienceCategories, getCatalog } from "@/lib/data/convenience";
 import { hiddenEssentialSlugs } from "@/lib/products/essentials";
 
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Everyday essentials · Admin" };
 
 export default async function AdminEssentialsPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageRole(["admin"]);
   const [{ products }, hidden] = await Promise.all([
     getCatalog(),
     hiddenEssentialSlugs(),

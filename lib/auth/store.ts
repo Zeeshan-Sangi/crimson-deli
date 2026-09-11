@@ -200,6 +200,11 @@ export async function setUserDisabled(id: string, disabled: boolean): Promise<Us
     const updated: User = {
       ...current,
       disabledAt: disabled ? new Date().toISOString() : null,
+      // Disabling also retires the session version, the way a password or
+      // role change does. `disabledAt` alone stops the account only while the
+      // flag is set: re-enabling it would bring every cookie issued before the
+      // suspension back to life, including one that was taken.
+      sessionVersion: (current.sessionVersion ?? 0) + (disabled ? 1 : 0),
     };
     tx.set(ref, updated);
     return updated;

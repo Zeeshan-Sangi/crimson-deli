@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PortalShell from "@/components/portal/PortalShell";
 import SettingsWorkspace from "@/components/portal/SettingsWorkspace";
-import { getCurrentUser } from "@/lib/auth/current-user";
+import { requirePageRole } from "@/lib/auth/current-user";
 import { getSettings, storeOpenState } from "@/lib/settings/store";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Settings · Admin" };
 
 export default async function AdminSettingsPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageRole(["admin"]);
   const settings = await getSettings();
   const open = storeOpenState(settings);
 

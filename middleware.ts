@@ -4,11 +4,17 @@ import { SESSION_COOKIE, readSessionCookie } from "@/lib/auth/session";
 import { AREA_ROLES, type Role } from "@/lib/auth/types";
 
 /**
- * Role guards for portals and sensitive APIs.
+ * First-pass role guards for portals and sensitive APIs.
  *
  * Storefront pages stay public. Portal routes and staff/admin APIs require a
- * signed session with the right role. Route handlers still call requireRole()
- * as defence in depth.
+ * signed session with the right role.
+ *
+ * This runs at the edge, where Firestore is out of reach, so it can only read
+ * what the cookie claims — and a cookie lives for twelve hours, which is long
+ * enough for an account to be disabled or demoted behind it (CD-MW-01). It is
+ * therefore a cheap first pass and never the only check: portal pages call
+ * requirePageRole() and route handlers call requireRole(), and both of those
+ * re-read the stored user on every request.
  */
 
 function homeFor(role: Role): string {

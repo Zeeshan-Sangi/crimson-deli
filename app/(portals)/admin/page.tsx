@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PortalShell from "@/components/portal/PortalShell";
-import { getCurrentUser } from "@/lib/auth/current-user";
+import { requirePageRole } from "@/lib/auth/current-user";
 import { listOrders } from "@/lib/orders/store";
 import { foodItems } from "@/lib/data/food-menu";
 import { listVisibleProducts } from "@/lib/data/convenience";
@@ -46,7 +46,7 @@ function topItems(orders: Order[]) {
 }
 
 export default async function AdminDashboard() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageRole(["admin"]);
   const orders = await listOrders();
   const listedEssentials = (await listVisibleProducts()).length;
 

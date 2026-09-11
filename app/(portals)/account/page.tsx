@@ -5,7 +5,7 @@ import AccountShell from "@/components/portal/AccountShell";
 import AccountWorkspace from "@/components/portal/AccountWorkspace";
 import ReorderButton from "@/components/site/ReorderButton";
 import { CartProvider } from "@/lib/cart/CartContext";
-import { getCurrentUser } from "@/lib/auth/current-user";
+import { requirePageRole } from "@/lib/auth/current-user";
 import { listOrders, ordersForUser } from "@/lib/orders/store";
 import { listAvailableProducts } from "@/lib/products/store";
 
@@ -21,7 +21,7 @@ function when(iso: string) {
 }
 
 export default async function AccountPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageRole(["customer", "staff", "admin"]);
 
   // A customer must only ever see their own orders here — this page is open to
   // every signed-in role, and it used to show the five most recent orders

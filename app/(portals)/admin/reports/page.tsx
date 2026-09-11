@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PortalShell from "@/components/portal/PortalShell";
-import { getCurrentUser } from "@/lib/auth/current-user";
+import { requirePageRole } from "@/lib/auth/current-user";
 import { listOrders } from "@/lib/orders/store";
 import { listProducts } from "@/lib/products/store";
 import { listAudit } from "@/lib/audit/log";
@@ -37,7 +37,7 @@ function byDay(orders: Order[]) {
 }
 
 export default async function AdminReportsPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageRole(["admin"]);
   const orders = await listOrders();
   const products = await listProducts();
   const audit = await listAudit(12);

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PortalShell from "@/components/portal/PortalShell";
 import OrdersWorkspace from "@/components/portal/OrdersWorkspace";
-import { getCurrentUser } from "@/lib/auth/current-user";
+import { requirePageRole } from "@/lib/auth/current-user";
 import { listOrders } from "@/lib/orders/store";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Orders · Admin" };
 
 export default async function AdminOrdersPage() {
-  const user = (await getCurrentUser())!;
+  const user = await requirePageRole(["admin"]);
   const orders = await listOrders();
 
   return (
