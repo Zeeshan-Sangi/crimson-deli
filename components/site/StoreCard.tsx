@@ -39,7 +39,7 @@ export default function StoreCard({
           </a>
         </h3>
         <p className="cd-store-card__meta">
-          {label} · Delivered by DoorDash. Price may vary.
+          {label} · In-store price. DoorDash charges its own for delivery.
         </p>
         <div className="cd-store-card__foot">
           <span className="cd-store-card__price">{product.price}</span>

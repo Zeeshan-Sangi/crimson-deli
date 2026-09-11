@@ -8,9 +8,9 @@ import type { ConvenienceCatalog, ConvenienceProduct } from "./types";
  * server so the catalog is in the HTML on first paint. Cached per process —
  * the file only changes on deploy.
  *
- * NOTE: prices in this file came from the DoorDash listing and are marked up.
- * The store's own in-store price list is what belongs here; until that
- * arrives these are shown as DoorDash prices and labelled as such.
+ * Prices are the store's own, read from the Alberta POS price list (the PRICE
+ * column, not unit cost). DoorDash marks its own up on top of these, which is
+ * why the card says the number is the in-store one.
  */
 let cached: ConvenienceCatalog | null = null;
 
