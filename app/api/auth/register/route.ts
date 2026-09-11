@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createEmailVerifyCode } from "@/lib/auth/email-verify";
 import { sendEmailVerificationEmail } from "@/lib/auth/mailer";
 import { AuthError, createUser } from "@/lib/auth/store";
-import { clientIp, consume } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   const ip = await clientIp();
   const key = `register:${ip}:${email.trim().toLowerCase()}`;
-  const limit = consume(key, 5, 10 * 60 * 1000);
+  const limit = await consumeShared(key, 5, 10 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many attempts. Try again shortly." },

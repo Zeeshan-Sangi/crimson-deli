@@ -8,7 +8,7 @@ import {
   listMessages,
   setMessageHandled,
 } from "@/lib/messages/store";
-import { clientIp, consume } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   }
 
   const ip = await clientIp();
-  const limit = consume(`contact:${ip}`, 5, 60 * 60 * 1000);
+  const limit = await consumeShared(`contact:${ip}`, 5, 60 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "You've sent a few already. Please call the store instead." },

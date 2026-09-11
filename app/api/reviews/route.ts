@@ -9,7 +9,7 @@ import {
   listForProduct,
   summaryForProduct,
 } from "@/lib/reviews/store";
-import { clientIp, consume } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   }
 
   const ip = await clientIp();
-  const limit = consume(`review:${ip}`, 5, 60 * 60 * 1000);
+  const limit = await consumeShared(`review:${ip}`, 5, 60 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "That's a lot of reviews at once. Try again a bit later." },

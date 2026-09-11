@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { findByEmail } from "@/lib/auth/store";
 import { createResetToken } from "@/lib/auth/reset-tokens";
 import { sendPasswordResetEmail } from "@/lib/auth/mailer";
-import { clientIp, consume } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   }
 
   const ip = await clientIp();
-  const limit = consume(`forgot:${ip}`, 5, 15 * 60 * 1000);
+  const limit = await consumeShared(`forgot:${ip}`, 5, 15 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many requests. Try again shortly." },

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { authenticate, needsEmailVerification, sessionUserFrom } from "@/lib/auth/store";
 import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
-import { clientIp, consume, reset } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared, resetShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   // Brute-force speed bump: 8 attempts per IP+email per 10 minutes.
   const ip = await clientIp();
   const key = `login:${ip}:${email.trim().toLowerCase()}`;
-  const limit = consume(key, 8, 10 * 60 * 1000);
+  const limit = await consumeShared(key, 8, 10 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many attempts. Try again shortly." },
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     );
   }
 
-  reset(key);
+  await resetShared(key);
 
   const cookie = await createSessionCookie(sessionUserFrom(user));
 

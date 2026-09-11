@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { AuthError, upsertFirebaseUser, sessionUserFrom } from "@/lib/auth/store";
 import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
 import { getAdminAuth } from "@/lib/firebase/admin";
-import { clientIp, consume } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   // attempt tells an attacker whether an address exists — the same speed bump
   // the password login gets.
   const ip = await clientIp();
-  const limit = consume(`firebase-auth:${ip}`, 10, 15 * 60 * 1000);
+  const limit = await consumeShared(`firebase-auth:${ip}`, 10, 15 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many sign-in attempts. Try again shortly." },

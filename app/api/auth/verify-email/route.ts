@@ -13,7 +13,7 @@ import {
   sessionUserFrom,
 } from "@/lib/auth/store";
 import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
-import { clientIp, consume } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   const ip = await clientIp();
-  const limit = consume(`verify:${ip}:${email.trim().toLowerCase()}`, 8, 15 * 60 * 1000);
+  const limit = await consumeShared(`verify:${ip}:${email.trim().toLowerCase()}`, 8, 15 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many attempts. Try again shortly." },
@@ -84,7 +84,7 @@ export async function PUT(request: Request) {
   }
 
   const ip = await clientIp();
-  const limit = consume(`verify-resend:${ip}`, 5, 15 * 60 * 1000);
+  const limit = await consumeShared(`verify-resend:${ip}`, 5, 15 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many requests. Try again shortly." },

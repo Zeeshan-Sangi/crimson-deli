@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { AuthError, findById, setUserPassword } from "@/lib/auth/store";
 import { consumeResetToken } from "@/lib/auth/reset-tokens";
-import { clientIp, consume } from "@/lib/security/rate-limit";
+import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   }
 
   const ip = await clientIp();
-  const limit = consume(`reset:${ip}`, 10, 15 * 60 * 1000);
+  const limit = await consumeShared(`reset:${ip}`, 10, 15 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: "Too many attempts. Try again shortly." },
