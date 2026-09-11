@@ -1,11 +1,24 @@
 import { NextResponse } from "next/server";
-import { upsertFirebaseUser, sessionUserFrom } from "@/lib/auth/store";
+import { AuthError, upsertFirebaseUser, sessionUserFrom } from "@/lib/auth/store";
 import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
 import { getAdminAuth } from "@/lib/firebase/admin";
+import { clientIp, consume } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  // Verifying a token is cheap for the caller and not for us, and a failed
+  // attempt tells an attacker whether an address exists — the same speed bump
+  // the password login gets.
+  const ip = await clientIp();
+  const limit = consume(`firebase-auth:${ip}`, 10, 15 * 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many sign-in attempts. Try again shortly." },
+      { status: 429, headers: { "retry-after": String(limit.retryAfterSec) } },
+    );
+  }
+
   const adminAuth = await getAdminAuth();
   if (!adminAuth) {
     return NextResponse.json(
@@ -26,12 +39,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing sign-in token." }, { status: 400 });
   }
 
+  let decoded;
   try {
-    const decoded = await adminAuth.verifyIdToken(idToken);
+    decoded = await adminAuth.verifyIdToken(idToken);
+  } catch (err) {
+    console.error("[firebase auth] token rejected", err);
+    return NextResponse.json({ error: "Could not verify your sign-in." }, { status: 401 });
+  }
+
+  try {
     const user = await upsertFirebaseUser({
       firebaseUid: decoded.uid,
       email: decoded.email,
-      phone: decoded.phone_number,
+      emailVerified: decoded.email_verified === true,
       name: decoded.name,
     });
 
@@ -47,7 +67,12 @@ export async function POST(request: Request) {
     res.cookies.set(SESSION_COOKIE, cookie, sessionCookieOptions);
     return res;
   } catch (err) {
+    // A refused link is the caller's answer, not a server fault: it says the
+    // address is unverified, or that the account signs in with a password.
+    if (err instanceof AuthError) {
+      return NextResponse.json({ error: err.message }, { status: 403 });
+    }
     console.error("[firebase auth] failed", err);
-    return NextResponse.json({ error: "Could not verify your sign-in." }, { status: 401 });
+    return NextResponse.json({ error: "Could not sign you in." }, { status: 500 });
   }
 }

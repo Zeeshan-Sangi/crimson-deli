@@ -1,14 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import {
-  GoogleAuthProvider,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  signInWithPopup,
-  type ConfirmationResult,
-} from "firebase/auth";
+import { useState } from "react";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getClientAuth, isFirebaseClientConfigured } from "@/lib/firebase/client";
 import { completeFirebaseSignIn, homeForRole } from "./firebase-session";
 
@@ -35,278 +29,83 @@ function GoogleIcon() {
   );
 }
 
-function PhoneIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M6.5 2h3l1.2 5.1a1 1 0 0 1-.5 1.1l-2.1 1.2a12 12 0 0 0 5.7 5.7l1.2-2.1a1 1 0 0 1 1.1-.5L19 13v3a2 2 0 0 1-2 2C9.6 18 6 14.4 6 8.5A2 2 0 0 1 8 6.5Z"
-        stroke="#111"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-/**
- * Turns a Firebase auth error into a message that names the actual cause.
- *
- * The catch-all "check the number" text was actively misleading: a blocked SMS
- * region, an unauthorised domain and a bad reCAPTCHA all look identical to the
- * person typing, and none of them are fixed by re-checking the number.
- */
-function phoneErrorMessage(err: unknown): string {
-  const code =
-    typeof err === "object" && err !== null && "code" in err
-      ? String((err as { code: unknown }).code)
-      : "";
-  const raw =
-    typeof err === "object" && err !== null && "message" in err
-      ? String((err as { message: unknown }).message)
-      : "";
-
-  if (raw.includes("region enabled") || code === "auth/invalid-app-credential") {
-    if (raw.includes("region enabled")) {
-      return "Text messages are not enabled for this country yet. The store needs to allow this region in Firebase before phone sign-in works.";
-    }
-    return "Phone sign-in could not verify this browser. Reload the page and try again.";
-  }
-  if (code === "auth/billing-not-enabled")
-    return "Phone sign-in needs billing enabled on the Firebase project.";
-  if (code === "auth/invalid-phone-number")
-    return "That phone number does not look right. Include the country code — +1 for the US.";
-  if (code === "auth/too-many-requests")
-    return "Too many attempts from this device. Wait a few minutes and try again.";
-  if (code === "auth/unauthorized-domain")
-    return "This site is not on the Firebase authorised domains list.";
-  if (code === "auth/quota-exceeded")
-    return "The daily SMS limit has been reached. Try again tomorrow or sign in another way.";
-
-  return "Could not send the verification code. Please try another sign-in method.";
-}
-
-function toE164(raw: string): string | null {
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length === 10) return `+1${digits}`;
-  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
-  if (raw.trim().startsWith("+") && digits.length >= 10) return `+${digits}`;
-  return null;
-}
-
 type FirebaseAuthButtonsProps = {
   next?: string;
-  phoneLayout?: "row" | "full";
   onError?: (message: string | null) => void;
 };
 
+/**
+ * Google sign-in.
+ *
+ * Phone sign-in used to sit beside it and is gone: Firebase bills SMS on the
+ * paid plan, and the store does not need it. Its number matching was also a
+ * second way into an account, since numbers get recycled.
+ */
 export default function FirebaseAuthButtons({
   next = "",
-  phoneLayout = "row",
   onError,
 }: FirebaseAuthButtonsProps) {
   const router = useRouter();
-  const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
-  const confirmationRef = useRef<ConfirmationResult | null>(null);
-
-  const [phoneOpen, setPhoneOpen] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
-  const [codeSent, setCodeSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const configured = isFirebaseClientConfigured();
 
-  useEffect(() => {
-    return () => {
-      recaptchaRef.current?.clear();
-      recaptchaRef.current = null;
-    };
-  }, []);
-
-  function reportError(message: string) {
-    onError?.(message);
-  }
-
-  async function finishWithToken(idToken: string) {
-    const result = await completeFirebaseSignIn(idToken);
-    if (!result.ok || !result.user) {
-      reportError(result.error ?? "Could not sign in.");
-      return;
-    }
-    router.push(homeForRole(result.user.role, next));
-    router.refresh();
-  }
-
   async function onGoogle() {
     if (!configured) {
-      reportError("Google sign-in is not configured yet.");
+      onError?.("Google sign-in is not configured yet.");
       return;
     }
     const auth = getClientAuth();
     if (!auth) {
-      reportError("Firebase Auth is not available.");
+      onError?.("Firebase Auth is not available.");
       return;
     }
+
     setBusy(true);
     onError?.(null);
     try {
       const result = await signInWithPopup(auth, new GoogleAuthProvider());
       const idToken = await result.user.getIdToken();
-      await finishWithToken(idToken);
+      const session = await completeFirebaseSignIn(idToken);
+      if (!session.ok || !session.user) {
+        // The server refuses a staff account or an unverified address by name,
+        // so its wording is shown rather than a generic failure.
+        onError?.(session.error ?? "Could not sign in.");
+        return;
+      }
+      router.push(homeForRole(session.user.role, next));
+      router.refresh();
     } catch (err) {
       const code = (err as { code?: string }).code;
-      if (code === "auth/popup-closed-by-user") return;
-      reportError("Google sign-in failed. Try again.");
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request")
+        return;
+      if (code === "auth/unauthorized-domain") {
+        onError?.("This site is not on the Firebase authorised domains list.");
+        return;
+      }
+      if (code === "auth/popup-blocked") {
+        onError?.("Your browser blocked the sign-in window. Allow pop-ups and try again.");
+        return;
+      }
+      console.error("[google-auth] sign-in failed", err);
+      onError?.("Google sign-in failed. Try again.");
     } finally {
       setBusy(false);
     }
-  }
-
-  function ensureRecaptcha(auth: NonNullable<ReturnType<typeof getClientAuth>>) {
-    if (recaptchaRef.current) return recaptchaRef.current;
-    recaptchaRef.current = new RecaptchaVerifier(auth, "firebase-recaptcha", {
-      size: "invisible",
-    });
-    return recaptchaRef.current;
-  }
-
-  async function sendCode() {
-    if (!configured) {
-      reportError("Phone sign-in is not configured yet.");
-      return;
-    }
-    const auth = getClientAuth();
-    if (!auth) {
-      reportError("Firebase Auth is not available.");
-      return;
-    }
-    const e164 = toE164(phone);
-    if (!e164) {
-      reportError(
-        "Enter a valid phone number — a 10-digit US number, or include the country code like +92 317 6293902.",
-      );
-      return;
-    }
-
-    setBusy(true);
-    onError?.(null);
-    try {
-      const verifier = ensureRecaptcha(auth);
-      confirmationRef.current = await signInWithPhoneNumber(auth, e164, verifier);
-      setCodeSent(true);
-    } catch (err) {
-      recaptchaRef.current?.clear();
-      recaptchaRef.current = null;
-      // Logged as well as shown: the console line is what an operator needs to
-      // find the setting to change.
-      console.error("[phone-auth] sendVerificationCode failed", err);
-      reportError(phoneErrorMessage(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function verifyCode() {
-    if (!confirmationRef.current) {
-      reportError("Send a verification code first.");
-      return;
-    }
-    if (!code.trim()) {
-      reportError("Enter the verification code.");
-      return;
-    }
-
-    setBusy(true);
-    onError?.(null);
-    try {
-      const result = await confirmationRef.current.confirm(code.trim());
-      const idToken = await result.user.getIdToken();
-      await finishWithToken(idToken);
-    } catch (err) {
-      const code =
-        typeof err === "object" && err !== null && "code" in err
-          ? String((err as { code: unknown }).code)
-          : "";
-      reportError(
-        code === "auth/code-expired"
-          ? "That code has expired. Send a new one."
-          : "That code is incorrect. Check it and try again.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function openPhone() {
-    setPhoneOpen(true);
-    onError?.(null);
   }
 
   return (
-    <>
-      <div className={phoneLayout === "row" ? "auth-social" : "auth-social auth-social--stack"}>
-        <button
-          type="button"
-          className={`auth-social__btn${phoneLayout === "full" ? " auth-social__btn--full" : ""}`}
-          onClick={onGoogle}
-          disabled={busy || !configured}
-          title={configured ? undefined : "Add Firebase keys to enable Google sign-in."}
-        >
-          <GoogleIcon />
-          Google
-        </button>
-        <button
-          type="button"
-          className={`auth-social__btn${phoneLayout === "full" ? " auth-social__btn--full" : ""}`}
-          onClick={openPhone}
-          disabled={busy || !configured}
-          title={configured ? undefined : "Add Firebase keys to enable phone sign-in."}
-        >
-          <PhoneIcon />
-          Phone number
-        </button>
-      </div>
-
-      <div id="firebase-recaptcha" className="auth-recaptcha" aria-hidden="true" />
-
-      {phoneOpen && (
-        <div className="auth-phone">
-          <input
-            type="tel"
-            className="auth-input"
-            placeholder="Phone number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            autoComplete="tel"
-            disabled={busy || codeSent}
-          />
-          {codeSent && (
-            <input
-              type="text"
-              className="auth-input"
-              placeholder="Verification code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              disabled={busy}
-            />
-          )}
-          <button
-            type="button"
-            className="auth-submit auth-submit--secondary"
-            onClick={codeSent ? verifyCode : sendCode}
-            disabled={busy}
-          >
-            {busy
-              ? "Please wait…"
-              : codeSent
-                ? "Verify & sign in"
-                : "Send verification code"}
-          </button>
-        </div>
-      )}
-
-    </>
+    <div className="auth-social">
+      <button
+        type="button"
+        className="auth-social__btn"
+        onClick={onGoogle}
+        disabled={busy || !configured}
+        title={configured ? undefined : "Add Firebase keys to enable Google sign-in."}
+      >
+        <GoogleIcon />
+        {busy ? "Signing in…" : "Continue with Google"}
+      </button>
+    </div>
   );
 }

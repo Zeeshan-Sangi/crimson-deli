@@ -206,49 +206,73 @@ export async function setUserDisabled(id: string, disabled: boolean): Promise<Us
   });
 }
 
+/**
+ * Signs a customer in from a verified Firebase token, creating the account the
+ * first time.
+ *
+ * Two rules decide who this may return, and both exist because anyone can put
+ * any address on a Firebase account:
+ *
+ * 1. An email address only identifies an account when Firebase says it is
+ *    verified. Otherwise it is a claim, not proof, and claiming
+ *    `owner@crimsondeli.com` would have handed over that account.
+ * 2. Staff and admin never sign in this way at all. They have passwords, and
+ *    the blast radius of getting rule 1 wrong for them is the whole store.
+ *
+ * Matching by phone number is gone with phone sign-in: a recycled number would
+ * have been a second way into somebody else's account.
+ */
 export async function upsertFirebaseUser(input: {
   firebaseUid: string;
   email?: string | null;
-  phone?: string | null;
+  /** Firebase's own `email_verified` claim — never inferred here. */
+  emailVerified: boolean;
   name?: string | null;
 }): Promise<User> {
   const firebaseUid = input.firebaseUid.trim();
   if (!firebaseUid) throw new AuthError("Missing Firebase account.");
 
   const emailRaw = input.email?.trim().toLowerCase() ?? "";
-  const phoneRaw = input.phone?.trim() ?? "";
-  const phone = phoneRaw ? normalizePhone(phoneRaw) : null;
+  const emailVerified = input.emailVerified === true && emailRaw !== "";
   const name = input.name?.trim() ?? "";
 
-  // Matched on firebaseUid first, then phone, then email — a customer who
-  // signed up by email and later uses Google should land on the same account.
+  // The uid is the only identifier proved by the token itself; the email is
+  // usable once Firebase has verified it.
   const existing =
     (await findOneBy("firebaseUid", firebaseUid)) ??
-    (phone ? await findOneBy("phone", phone) : null) ??
-    (emailRaw ? await findOneBy("email", emailRaw) : null);
+    (emailVerified ? await findOneBy("email", emailRaw) : null);
+
+  if (existing && existing.role !== "customer")
+    throw new AuthError("Staff accounts sign in with their email and password.");
 
   if (existing) {
     const updated: User = {
       ...existing,
       firebaseUid,
-      phone: phone ?? existing.phone,
-      email: emailRaw || existing.email,
+      // An unverified address never overwrites the one already on the account.
+      email: emailVerified ? emailRaw : existing.email,
       name: name || existing.name,
-      emailVerifiedAt: existing.emailVerifiedAt ?? new Date().toISOString(),
+      emailVerifiedAt: emailVerified
+        ? existing.emailVerifiedAt ?? new Date().toISOString()
+        : existing.emailVerifiedAt,
     };
     await col().doc(existing.id).set(updated);
     return updated;
   }
 
-  const email =
-    emailRaw ||
-    (phone ? `phone+${phone}@phone.crimsondeli.com` : `uid+${firebaseUid}@firebase.crimsondeli.com`);
+  // A brand new account has nothing but the token to go on, so it is only
+  // opened for an address the provider has actually verified.
+  if (!emailVerified)
+    throw new AuthError(
+      "Verify your email address with your sign-in provider, then try again.",
+    );
+
   const passwordHash = await hashPassword(randomUUID());
   const user: User = {
     id: randomUUID(),
-    email,
-    name: name || (phone ? `Customer ${phone.slice(-4)}` : "Customer"),
-    phone,
+    email: emailRaw,
+    name: name || "Customer",
+    phone: null,
     firebaseUid,
     role: "customer",
     passwordHash,
