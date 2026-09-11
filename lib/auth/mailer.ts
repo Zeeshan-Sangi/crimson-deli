@@ -166,18 +166,34 @@ async function deliver(email: Email): Promise<void> {
   const key = process.env.RESEND_API_KEY;
 
   if (!key) {
+    const to = Array.isArray(email.to) ? email.to.join(", ") : email.to;
+
+    // The body carries password-reset links and verification codes, so it does
+    // not go to the logs: whoever can read those could then take the account
+    // over, and hosted logs outlive the 15-minute code by a long way. Local
+    // development can opt back in with MAIL_PREVIEW=1 (CD-MAIL-01).
+    if (process.env.NODE_ENV !== "production" && process.env.MAIL_PREVIEW === "1") {
+      console.warn(
+        [
+          "",
+          "──────────────────────────────────────────────────────────────",
+          " EMAIL NOT SENT — no mail provider configured (RESEND_API_KEY).",
+          ` To:      ${to}`,
+          ` Subject: ${email.subject}`,
+          "",
+          email.text,
+          "──────────────────────────────────────────────────────────────",
+          "",
+        ].join("\n"),
+      );
+      return;
+    }
+
     console.warn(
-      [
-        "",
-        "──────────────────────────────────────────────────────────────",
-        " EMAIL NOT SENT — no mail provider configured (RESEND_API_KEY).",
-        ` To:      ${Array.isArray(email.to) ? email.to.join(", ") : email.to}`,
-        ` Subject: ${email.subject}`,
-        "",
-        email.text,
-        "──────────────────────────────────────────────────────────────",
-        "",
-      ].join("\n"),
+      `[mailer] not sent — RESEND_API_KEY is not set. to=${to} subject="${email.subject}"` +
+        (process.env.NODE_ENV === "production"
+          ? ""
+          : " (set MAIL_PREVIEW=1 to print the body locally)"),
     );
     return;
   }
