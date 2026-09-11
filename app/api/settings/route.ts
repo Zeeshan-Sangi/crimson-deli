@@ -41,8 +41,40 @@ export async function PUT(request: Request) {
       );
     }
 
+    // Points are money. A negative rate would pay customers to order and a
+    // zero redemption rate would make a balance unspendable, so both are
+    // refused rather than clamped quietly.
+    const rewards = body.rewards ?? current.rewards;
+    const perDollar = Number(rewards.pointsPerDollar);
+    const perDollarOff = Number(rewards.pointsPerDollarOff);
+    const minRedeem = Number(rewards.minRedeemPoints);
+    if (!Number.isFinite(perDollar) || perDollar < 0 || perDollar > 1000) {
+      return NextResponse.json(
+        { error: "Points per dollar must be between 0 and 1000." },
+        { status: 400 },
+      );
+    }
+    if (!Number.isFinite(perDollarOff) || perDollarOff < 1 || perDollarOff > 100000) {
+      return NextResponse.json(
+        { error: "Points for a dollar off must be at least 1." },
+        { status: 400 },
+      );
+    }
+    if (!Number.isFinite(minRedeem) || minRedeem < 0 || minRedeem > 100000) {
+      return NextResponse.json(
+        { error: "Minimum redemption must be between 0 and 100000 points." },
+        { status: 400 },
+      );
+    }
+
     const next: Settings = {
       store: { ...current.store, ...body.store, prepTimeMinutes: Math.round(prep) },
+      rewards: {
+        enabled: Boolean(rewards.enabled),
+        pointsPerDollar: Math.round(perDollar),
+        pointsPerDollarOff: Math.round(perDollarOff),
+        minRedeemPoints: Math.round(minRedeem),
+      },
       checkout: {
         ...current.checkout,
         ...body.checkout,

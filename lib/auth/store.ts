@@ -11,6 +11,11 @@ import type { Role, User } from "./types";
  */
 const COLLECTION = "users";
 
+/** One user's document. Rewards writes points inside its own transactions. */
+export function userRef(id: string) {
+  return col().doc(id);
+}
+
 function col() {
   return getAdminDb().collection(COLLECTION);
 }

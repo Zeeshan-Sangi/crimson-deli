@@ -15,7 +15,11 @@ import {
   modsSuffix,
 } from "@/lib/data/food-menu";
 import { getSettings, storeOpenState } from "@/lib/settings/store";
+import { pointsForSpend, pointsToCents } from "@/lib/settings/types";
 import { computeOrderTotals } from "@/lib/settings/tax";
+import { movePointsInTransaction } from "@/lib/rewards/store";
+import { userRef } from "@/lib/auth/store";
+import type { User } from "@/lib/auth/types";
 import {
   NEXT_STATUS,
   type CreateOrderInput,
@@ -207,29 +211,80 @@ export async function createOrder(
     return next;
   });
 
-  {
-    const order: Order = {
-      id: randomUUID(),
-      orderNumber: `CD-${seq}`,
-      status: "received",
-      items,
-      subtotalCents,
-      taxCents,
-      totalCents,
-      paymentMethod: "pay_at_store",
-      paymentStatus: "unpaid",
-      customer: { name, phone, email, uid },
-      isGuest: uid === null,
-      notes: input.notes?.trim() || null,
-      trackingToken: token(),
-      statusHistory: [{ status: "received", at: now, byUid: null }],
-      createdAt: now,
-      updatedAt: now,
-    };
+  const draft = (extra: {
+    discountCents?: number;
+    pointsSpent?: number;
+    totalCents: number | null;
+  }): Order => ({
+    id: randomUUID(),
+    orderNumber: `CD-${seq}`,
+    status: "received",
+    items,
+    subtotalCents,
+    taxCents,
+    discountCents: extra.discountCents,
+    pointsSpent: extra.pointsSpent,
+    totalCents: extra.totalCents,
+    paymentMethod: "pay_at_store",
+    paymentStatus: "unpaid",
+    customer: { name, phone, email, uid },
+    isGuest: uid === null,
+    notes: input.notes?.trim() || null,
+    trackingToken: token(),
+    statusHistory: [{ status: "received", at: now, byUid: null }],
+    createdAt: now,
+    updatedAt: now,
+  });
 
+  const asked = Math.max(0, Math.floor(Number(input.pointsToSpend ?? 0)));
+  const canRedeem =
+    asked > 0 && uid !== null && settings.rewards.enabled && totalCents !== null;
+
+  if (!canRedeem) {
+    if (asked > 0)
+      throw new OrderValidationError("Points cannot be used on this order.");
+    const order = draft({ totalCents });
     await col().doc(order.id).set(order);
     return order;
   }
+
+  // The balance is read and spent in one transaction with the order write, so
+  // two checkouts at once cannot both spend the same points, and an order that
+  // fails to save never takes them.
+  return db.runTransaction(async (tx) => {
+    const userDoc = await tx.get(userRef(uid!));
+    const balance = Math.max(0, Math.floor((userDoc.data() as User | undefined)?.points ?? 0));
+
+    if (balance < asked || asked < settings.rewards.minRedeemPoints)
+      throw new OrderValidationError("You do not have enough points for that.");
+
+    // Never take more points than the discount they actually bought: the
+    // remainder that buys no whole dollar stays in the balance.
+    const capped = Math.min(pointsToCents(asked, settings.rewards), totalCents!);
+    const discountCents = Math.max(0, capped);
+    const pointsSpent =
+      (discountCents / 100) * settings.rewards.pointsPerDollarOff;
+
+    const order = draft({
+      discountCents,
+      pointsSpent,
+      totalCents: Math.max(0, totalCents! - discountCents),
+    });
+
+    if (pointsSpent > 0) {
+      movePointsInTransaction(tx, {
+        uid: uid!,
+        currentPoints: balance,
+        delta: -pointsSpent,
+        reason: "redeemed",
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        at: now,
+      });
+    }
+    tx.set(col().doc(order.id), order);
+    return order;
+  });
 }
 
 /** One customer's own orders, newest first — their account page. */
@@ -264,8 +319,11 @@ export async function setOrderStatus(
   status: OrderStatus,
 ): Promise<Order> {
   const db = getAdminDb();
+  const settings = await getSettings();
+
   // A transaction, because this is a read-check-write: two staff advancing the
-  // same order at once must not both pass the legality check.
+  // same order at once must not both pass the legality check — and with points
+  // riding on it, must not both award them.
   return db.runTransaction(async (tx) => {
     const ref = col().doc(id);
     const snap = await tx.get(ref);
@@ -278,14 +336,40 @@ export async function setOrderStatus(
         `Cannot move an order from ${current.status} to ${status}.`,
       );
 
+    // Points are earned on collection, not on ordering: an order that is
+    // cancelled before pickup was never worth anything. `pointsEarned` on the
+    // order is what stops a second award if it is advanced again.
+    const uid = current.customer.uid;
+    const earns =
+      status === "picked_up" &&
+      uid !== null &&
+      current.pointsEarned === undefined &&
+      current.totalCents !== null;
+
+    const earned = earns ? pointsForSpend(current.totalCents!, settings.rewards) : 0;
+    const userDoc = earns && earned > 0 ? await tx.get(userRef(uid!)) : null;
+
     const now = new Date().toISOString();
     const updated: Order = {
       ...current,
       status,
+      pointsEarned: earns ? earned : current.pointsEarned,
       updatedAt: now,
       statusHistory: [...current.statusHistory, { status, at: now, byUid: null }],
     };
     tx.set(ref, updated);
+
+    if (userDoc) {
+      movePointsInTransaction(tx, {
+        uid: uid!,
+        currentPoints: Math.max(0, Math.floor((userDoc.data() as User | undefined)?.points ?? 0)),
+        delta: earned,
+        reason: "earned",
+        orderId: current.id,
+        orderNumber: current.orderNumber,
+        at: now,
+      });
+    }
     return updated;
   });
 }

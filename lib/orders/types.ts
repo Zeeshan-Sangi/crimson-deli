@@ -76,6 +76,11 @@ export type Order = {
   subtotalCents: number | null;
   /** Sales tax in cents. Zero when tax is included in prices or the rate is 0. */
   taxCents: number | null;
+  /** Knocked off by reward points, already reflected in `totalCents`. */
+  discountCents?: number;
+  /** Points spent on this order, and points it earned once picked up. */
+  pointsSpent?: number;
+  pointsEarned?: number;
   totalCents: number | null;
   paymentMethod: "prepaid" | "pay_at_store";
   paymentStatus: "unpaid" | "paid" | "refunded";
@@ -100,4 +105,6 @@ export type CreateOrderInput = {
   }[];
   customer: { name: string; phone: string; email?: string };
   notes?: string;
+  /** Reward points the customer asked to spend. Checked against their balance. */
+  pointsToSpend?: number;
 };

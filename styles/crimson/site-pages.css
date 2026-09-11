@@ -935,6 +935,33 @@
   color: #fff;
 }
 
+/* ---- reward points at checkout ---- */
+
+.cd-rewards {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius-sm);
+  background: var(--cd-cream, #fdf7f4);
+}
+
+.cd-rewards__use {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cd-ink);
+  cursor: pointer;
+}
+
+.cd-rewards__use input {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--cd-crimson);
+}
+
 /* ---- make it your own ---- */
 
 .cd-customise {

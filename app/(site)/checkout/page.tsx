@@ -5,6 +5,7 @@ import CheckoutView from "@/components/site/CheckoutView";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { findById } from "@/lib/auth/store";
 import { listAvailableProducts } from "@/lib/products/store";
+import { getBalance } from "@/lib/rewards/store";
 import { getSettings } from "@/lib/settings/store";
 
 export const metadata: Metadata = {
@@ -29,7 +30,8 @@ export default async function CheckoutPage() {
   const menu = Object.fromEntries(
     products.map((p) => [p.slug, { name: p.name, priceCents: p.priceCents }]),
   );
-  const { checkout } = await getSettings();
+  const { checkout, rewards } = await getSettings();
+  const pointsBalance = rewards.enabled ? await getBalance(session.id) : 0;
 
   return (
     <>
@@ -46,6 +48,8 @@ export default async function CheckoutPage() {
             defaultEmail={account?.email ?? session.email}
             taxRate={checkout.taxRate}
             taxIncludedInPrice={checkout.taxIncludedInPrice}
+            rewards={rewards}
+            pointsBalance={pointsBalance}
           />
         </div>
       </section>

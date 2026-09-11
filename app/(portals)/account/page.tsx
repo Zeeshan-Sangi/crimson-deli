@@ -8,6 +8,9 @@ import { CartProvider } from "@/lib/cart/CartContext";
 import { requirePageRole } from "@/lib/auth/current-user";
 import { listOrders, ordersForUser } from "@/lib/orders/store";
 import { listAvailableProducts } from "@/lib/products/store";
+import { getBalance, listLedger } from "@/lib/rewards/store";
+import { getSettings } from "@/lib/settings/store";
+import { pointsToCents } from "@/lib/settings/types";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +39,13 @@ export default async function AccountPage() {
   // other people's — there is nothing for them to reorder.
   const menu = isStaff ? [] : await listAvailableProducts();
 
+  const { rewards } = await getSettings();
+  const showRewards = !isStaff && rewards.enabled;
+  const [points, ledger] = showRewards
+    ? await Promise.all([getBalance(user.id), listLedger(user.id, 8)])
+    : [0, []];
+  const worthCents = showRewards ? pointsToCents(points, rewards) : 0;
+
   // Staff keep the operations sidebar; a customer has nothing to put in it, so
   // they get a plain page with a way back to the shop instead.
   const Shell = isStaff ? PortalShell : AccountShell;
@@ -50,6 +60,51 @@ export default async function AccountPage() {
           : "Your details, password and order history."
       }
     >
+      {showRewards && (
+        <section className="crm-card" style={{ marginBottom: 20 }}>
+          <div className="crm-card__head">
+            <div>
+              <h2>Reward points</h2>
+              <p>
+                {rewards.pointsPerDollar} points for every dollar you spend, once your
+                order is picked up. {rewards.pointsPerDollarOff} points take a dollar off
+                the next one.
+              </p>
+            </div>
+            <Link href="/food" className="portal-btn">Order something</Link>
+          </div>
+
+          <p style={{ fontSize: 32, fontWeight: 800, margin: "4px 0 0" }}>
+            {points.toLocaleString()}{" "}
+            <span style={{ fontSize: 15, fontWeight: 600 }} className="portal-muted">
+              points
+              {worthCents > 0
+                ? ` · $${(worthCents / 100).toFixed(2)} off your next order`
+                : ` · ${Math.max(0, rewards.minRedeemPoints - points)} more to spend them`}
+            </span>
+          </p>
+
+          {ledger.length > 0 && (
+            <table className="portal-table" style={{ marginTop: 12 }}>
+              <tbody>
+                {ledger.map((entry) => (
+                  <tr key={entry.id}>
+                    <td>{when(entry.at)}</td>
+                    <td>
+                      {entry.reason === "earned" ? "Earned on" : "Spent on"}{" "}
+                      <strong>{entry.orderNumber ?? "an order"}</strong>
+                    </td>
+                    <td style={{ textAlign: "right", fontWeight: 700 }}>
+                      {entry.delta > 0 ? `+${entry.delta}` : entry.delta}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+      )}
+
       <div className="crm-grid-2">
         <section className="crm-card">
           <div className="crm-card__head">

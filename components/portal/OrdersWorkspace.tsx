@@ -248,6 +248,16 @@ export default function OrdersWorkspace({ orders }: { orders: Order[] }) {
                                   </li>
                                 ))}
                               </ul>
+                              {(o.discountCents ?? 0) > 0 && (
+                                <p className="portal-note" style={{ marginTop: 10 }}>
+                                  <strong>
+                                    ${((o.discountCents ?? 0) / 100).toFixed(2)} paid with
+                                    reward points
+                                  </strong>
+                                  {o.pointsSpent ? ` — ${o.pointsSpent} points spent` : ""}.
+                                  The total already has it taken off.
+                                </p>
+                              )}
                               {o.notes && (
                                 <p className="portal-note" style={{ marginTop: 10 }}>
                                   {o.notes}

@@ -45,6 +45,7 @@ export default function SettingsWorkspace({
 
   const store = s.store;
   const checkout = s.checkout;
+  const rewards = s.rewards;
 
   return (
     <form onSubmit={save}>
@@ -201,6 +202,65 @@ export default function SettingsWorkspace({
                 />
                 Require phone verification (needs an SMS provider)
               </label>
+            </div>
+          </section>
+
+          <section className="crm-card">
+            <div className="crm-card__head">
+              <div>
+                <h2>Reward points</h2>
+                <p>
+                  Customers earn on collection and spend at the next checkout. These
+                  numbers are pricing — they start at five cents back on the dollar,
+                  which is a placeholder, not a recommendation.
+                </p>
+              </div>
+            </div>
+            <div className="portal-form">
+              <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <input
+                  type="checkbox"
+                  checked={rewards.enabled}
+                  disabled={!canEdit}
+                  onChange={(e) => setS({ ...s, rewards: { ...rewards, enabled: e.target.checked } })}
+                />
+                Offer reward points
+              </label>
+              <label>
+                Points earned per dollar spent
+                <input
+                  inputMode="numeric"
+                  value={rewards.pointsPerDollar}
+                  disabled={!canEdit}
+                  onChange={(e) => setS({ ...s, rewards: { ...rewards, pointsPerDollar: Number(e.target.value) } })}
+                />
+              </label>
+              <label>
+                Points it takes to knock a dollar off
+                <input
+                  inputMode="numeric"
+                  value={rewards.pointsPerDollarOff}
+                  disabled={!canEdit}
+                  onChange={(e) => setS({ ...s, rewards: { ...rewards, pointsPerDollarOff: Number(e.target.value) } })}
+                />
+              </label>
+              <label>
+                Fewest points a customer can spend at once
+                <input
+                  inputMode="numeric"
+                  value={rewards.minRedeemPoints}
+                  disabled={!canEdit}
+                  onChange={(e) => setS({ ...s, rewards: { ...rewards, minRedeemPoints: Number(e.target.value) } })}
+                />
+              </label>
+              <p className="portal-muted" style={{ fontSize: 12, margin: "-4px 0 0" }}>
+                As set: a $10 order earns {rewards.pointsPerDollar * 10} points, and{" "}
+                {rewards.pointsPerDollarOff} points come back as $1 — about{" "}
+                {rewards.pointsPerDollarOff > 0
+                  ? ((rewards.pointsPerDollar / rewards.pointsPerDollarOff) * 100).toFixed(1)
+                  : "0"}
+                % back.
+              </p>
             </div>
           </section>
         </div>

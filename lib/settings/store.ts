@@ -14,6 +14,7 @@ export {
   type DayHours,
   type StoreSettings,
   type CheckoutSettings,
+  type RewardsSettings,
   type Settings,
 } from "./types";
 
@@ -44,6 +45,15 @@ const DEFAULTS: Settings = {
     prepayRequiredAbove: null,
     phoneVerificationRequired: false,
   },
+  rewards: {
+    enabled: true,
+    // 10 points a dollar, 200 to the dollar back: five cents on the dollar.
+    // The store changes these in /admin/settings — they are a starting point,
+    // not advice about what a point should be worth.
+    pointsPerDollar: 10,
+    pointsPerDollarOff: 200,
+    minRedeemPoints: 200,
+  },
 };
 
 let queue: Promise<unknown> = Promise.resolve();
@@ -61,6 +71,9 @@ function mergeWithDefaults(parsed: Partial<Settings> | undefined): Settings {
   return {
     store: { ...DEFAULTS.store, ...parsed?.store },
     checkout: { ...DEFAULTS.checkout, ...parsed?.checkout },
+    // Settings saved before rewards existed have no `rewards` key at all, so
+    // the defaults have to fill it rather than leaving it undefined.
+    rewards: { ...DEFAULTS.rewards, ...parsed?.rewards },
   };
 }
 

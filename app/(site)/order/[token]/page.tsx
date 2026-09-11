@@ -122,12 +122,25 @@ export default async function OrderStatusPage({
               </p>
             )}
 
+            {(order.discountCents ?? 0) > 0 && (
+              <p className="cd-order__meta">
+                Reward points paid ${((order.discountCents ?? 0) / 100).toFixed(2)} of this
+                order{order.pointsSpent ? ` (${order.pointsSpent} points)` : ""}.
+              </p>
+            )}
+
             <p className="cd-order__meta">
               {order.totalCents === null
                 ? "Total is confirmed by the store when you collect."
                 : `Total $${(order.totalCents / 100).toFixed(2)}`}{" "}
               · Pay at store · Collect from {siteConfig.address}
             </p>
+
+            {order.pointsEarned ? (
+              <p className="cd-order__meta">
+                <strong>+{order.pointsEarned} points</strong> earned on this order.
+              </p>
+            ) : null}
 
             <div className="cd-not-found__actions">
               <Link href="/food" className="cd-btn-solid">

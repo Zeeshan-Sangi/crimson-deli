@@ -6,6 +6,7 @@ import { formatCents, useCart } from "@/lib/cart/CartContext";
 import { UNPRICED_LABEL } from "@/lib/data/food-menu";
 import { formatPhone } from "@/lib/format/phone";
 import { computeOrderTotals, formatTaxRateLabel } from "@/lib/settings/tax";
+import { pointsToCents, type RewardsSettings } from "@/lib/settings/types";
 import { siteConfig } from "@/lib/site-config";
 
 type Details = { name: string; phone: string; email: string; notes: string };
@@ -18,6 +19,8 @@ export default function CheckoutView({
   taxRate = 0,
   taxIncludedInPrice = false,
   menu,
+  rewards,
+  pointsBalance = 0,
 }: {
   defaultName?: string;
   defaultPhone?: string;
@@ -25,6 +28,8 @@ export default function CheckoutView({
   taxRate?: number;
   taxIncludedInPrice?: boolean;
   menu?: Record<string, { name: string; priceCents: number | null }>;
+  rewards?: RewardsSettings;
+  pointsBalance?: number;
 }) {
   const { lines, count, subtotalCents, ready, clear, syncPrices } = useCart();
 
@@ -45,6 +50,7 @@ export default function CheckoutView({
   const [placed, setPlaced] = useState<{ orderNumber: string; trackingToken: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [usePoints, setUsePoints] = useState(false);
 
   const set =
     (key: keyof Details) =>
@@ -82,6 +88,7 @@ export default function CheckoutView({
             flavors: l.flavors,
             mods: l.mods,
           })),
+          pointsToSpend: pointsToSpend > 0 ? pointsToSpend : undefined,
           customer: {
             name: details.name.trim(),
             phone: details.phone.trim(),
@@ -118,6 +125,18 @@ export default function CheckoutView({
   });
   const showTax =
     subtotalCents !== null && !taxIncludedInPrice && taxRate > 0 && taxCents !== null;
+
+  // What the balance is worth here: whole dollars only, and never more than
+  // the order itself. The server works this out again before it charges.
+  const rewardsOn = Boolean(rewards?.enabled) && totalCents !== null;
+  const canSpend =
+    rewardsOn && rewards!.minRedeemPoints <= pointsBalance
+      ? Math.min(pointsToCents(pointsBalance, rewards!), totalCents!)
+      : 0;
+  const discountCents = usePoints ? canSpend : 0;
+  const pointsToSpend =
+    discountCents > 0 ? (discountCents / 100) * rewards!.pointsPerDollarOff : 0;
+  const dueCents = totalCents === null ? null : Math.max(0, totalCents - discountCents);
 
   if (!ready) return <p className="cd-product__meta">Loading your order…</p>;
 
@@ -273,12 +292,42 @@ export default function CheckoutView({
               <span>{formatCents(taxCents!)}</span>
             </div>
           )}
+          {discountCents > 0 && (
+            <div className="cd-summary-row">
+              <span>Reward points</span>
+              <span>−{formatCents(discountCents)}</span>
+            </div>
+          )}
           <div className="cd-summary-row cd-summary-row--total">
             <span>Total</span>
             <span>
-              {totalCents === null ? "Confirmed at store" : formatCents(totalCents)}
+              {dueCents === null ? "Confirmed at store" : formatCents(dueCents)}
             </span>
           </div>
+
+          {rewardsOn && pointsBalance > 0 && (
+            <div className="cd-rewards">
+              {canSpend > 0 ? (
+                <label className="cd-rewards__use">
+                  <input
+                    type="checkbox"
+                    checked={usePoints}
+                    onChange={(e) => setUsePoints(e.target.checked)}
+                  />
+                  <span>
+                    Use {(canSpend / 100) * rewards!.pointsPerDollarOff} of your{" "}
+                    {pointsBalance} points — {formatCents(canSpend)} off
+                  </span>
+                </label>
+              ) : (
+                <p className="cd-product__fine" style={{ margin: 0 }}>
+                  You have {pointsBalance} points. They are worth a dollar off at{" "}
+                  {rewards!.pointsPerDollarOff}, from {rewards!.minRedeemPoints} up —
+                  keep collecting and they will apply here.
+                </p>
+              )}
+            </div>
+          )}
 
           {submitError && (
             <p className="cd-form-error" role="alert">

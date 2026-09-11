@@ -17,6 +17,12 @@ export type User = {
   emailVerifiedAt?: string | null;
   /** Bumped on password change so old session cookies stop working. */
   sessionVersion?: number;
+  /**
+   * Reward points in hand. Earned when an order is picked up and spent at the
+   * next checkout; the ledger in `pointsLedger` says where each change came
+   * from. Absent on accounts that predate rewards, which reads as zero.
+   */
+  points?: number;
 };
 
 /** What travels in the session cookie. Deliberately small. */
