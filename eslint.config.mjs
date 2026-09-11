@@ -19,8 +19,12 @@ const eslintConfig = [
       // dev server holds .next. .gitignore already covers it; without this line
       // linting a repo that has been built that way reports the build output.
       ".next-build/**",
+      // The e2e suite builds here, for the same reason.
+      ".next-e2e/**",
       "out/**",
       "build/**",
+      "playwright-report/**",
+      "test-results/**",
       "next-env.d.ts",
     ],
   },
