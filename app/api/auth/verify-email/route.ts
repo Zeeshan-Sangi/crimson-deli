@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import {
   consumeEmailVerifyCode,
   createEmailVerifyCode,
-  recordEmailVerifyAttempt,
 } from "@/lib/auth/email-verify";
 import { sendEmailVerificationEmail } from "@/lib/auth/mailer";
 import {
@@ -38,9 +37,10 @@ export async function POST(request: Request) {
     );
   }
 
+  // A wrong guess is counted inside this call, so the five-attempt limit is
+  // spent whether or not the caller comes back.
   const userId = await consumeEmailVerifyCode(email, code);
   if (!userId) {
-    await recordEmailVerifyAttempt(email, code);
     return NextResponse.json(
       { error: "That code is incorrect or has expired. Request a new one." },
       { status: 400 },
