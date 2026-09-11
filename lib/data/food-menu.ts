@@ -4,7 +4,7 @@ import type { FoodCategory, FoodItem, ItemIngredient, ItemMods } from "./types";
  * The fresh food menu, exactly as the store supplied it.
  *
  * Prices are deliberately `null`: the real in-store prices have not been given
- * to us yet, and CLAUDE.md forbids inventing them. `formatFoodPrice` renders the
+ * to us yet, and inventing them is not allowed. `formatFoodPrice` renders the
  * placeholder so the gap stays visible instead of silently showing $0.00.
  */
 export const foodCategories: FoodCategory[] = [

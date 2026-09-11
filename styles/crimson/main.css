@@ -6863,7 +6863,7 @@ input.main-search-input::placeholder {
   }
 }
 
-/* CLAUDE.md §10: every animation is gated behind prefers-reduced-motion. The
+/* Project brief §10: every animation is gated behind prefers-reduced-motion. The
    theme ships .service2-items with an unguarded hover scale. */
 @media (prefers-reduced-motion: reduce) {
   .service2-items,

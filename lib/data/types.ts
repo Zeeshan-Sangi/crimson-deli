@@ -26,7 +26,7 @@ export type FoodItem = {
   imageUrl: string;
   categorySlug: string;
   /**
-   * Price in integer cents (CLAUDE.md: money is never a float).
+   * Price in integer cents (project rule: money is never a float).
    * `null` means the real price has not been supplied by the store yet — the UI
    * shows a placeholder rather than inventing a number.
    */

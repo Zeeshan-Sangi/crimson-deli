@@ -6,7 +6,7 @@ import { getAdminDb } from "@/lib/firebase/admin";
  *
  * Same JSON-file storage as the user and order stores, and the same caveat:
  * this does not survive serverless hosting. Firestore with a TTL policy is the
- * real home (CLAUDE.md §4).
+ * real home (project brief §4).
  *
  * Only the SHA-256 *hash* of each token is stored. The raw token exists once,
  * in the email we send, so a leaked `.data` directory cannot be used to seize

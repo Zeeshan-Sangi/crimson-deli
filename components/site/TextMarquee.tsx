@@ -15,7 +15,7 @@ const FLOWER = "/assets/img/home-2/text-slide-flower.png";
  * Speed 6000, delay 1, centered, auto width.
  *
  * Under `prefers-reduced-motion` the strip renders as a static row instead of
- * scrolling, per CLAUDE.md's animation rule.
+ * scrolling, per the project's animation rule.
  */
 export default function TextMarquee() {
   const [reduced, setReduced] = useState(false);

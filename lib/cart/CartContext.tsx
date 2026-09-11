@@ -27,7 +27,7 @@ import type { FoodItem, ItemMods } from "@/lib/data/types";
 /**
  * Cart for fresh food only.
  *
- * CLAUDE.md is explicit: convenience items never enter a cart — they link out to
+ * The project brief is explicit: convenience items never enter a cart — they link out to
  * DoorDash. So this only ever holds `FoodItem`s, all of them pickup.
  */
 export type CartLine = {

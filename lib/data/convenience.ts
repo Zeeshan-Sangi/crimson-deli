@@ -9,7 +9,7 @@ import type { ConvenienceCatalog, ConvenienceProduct } from "./types";
  * the file only changes on deploy.
  *
  * NOTE: prices in this file came from the DoorDash listing and are marked up.
- * CLAUDE.md wants the store's own in-store price list instead; until that
+ * The store's own in-store price list is what belongs here; until that
  * arrives these are shown as DoorDash prices and labelled as such.
  */
 let cached: ConvenienceCatalog | null = null;

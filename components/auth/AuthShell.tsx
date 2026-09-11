@@ -8,7 +8,7 @@ import "./auth.css";
  *
  * Brand panel on the left carries the food photography and sweeps into the
  * cream form panel along an organic curve. Photos are Crimson Deli's own —
- * CLAUDE.md §10 rules out stock or invented imagery.
+ * The project brief rules out stock or invented imagery.
  */
 
 const PHOTOS = [

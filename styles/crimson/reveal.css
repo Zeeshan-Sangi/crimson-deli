@@ -4,7 +4,7 @@
    ScrollReveal.tsx adds `.animated` when an element scrolls into view; the
    keyframe below is the same 20px rise animate.css shipped.
 
-   CLAUDE.md §10: gated behind prefers-reduced-motion here as well as in
+   Project brief §10: gated behind prefers-reduced-motion here as well as in
    ScrollReveal.tsx, so the animation cannot run even if the class is applied. */
 @keyframes fadeInUp {
   from {

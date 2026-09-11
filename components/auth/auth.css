@@ -2,7 +2,7 @@
 
    Art direction: a full-bleed brand panel on the left carrying the food
    photography, sweeping into a cream form panel on the right along an organic
-   curve. Colours are Crimson Deli's own (CLAUDE.md §2: red / white / dark
+   curve. Colours are Crimson Deli's own (project brief §2: red / white / dark
    tones) — the layout idea comes from the reference, the palette does not. */
 
 .auth-page {
@@ -583,7 +583,7 @@
   }
 }
 
-/* CLAUDE.md §10 */
+/* Project brief §10 */
 @media (prefers-reduced-motion: reduce) {
   .auth-input,
   .auth-submit,

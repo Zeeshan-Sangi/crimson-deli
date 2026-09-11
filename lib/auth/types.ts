@@ -1,4 +1,4 @@
-/** Roles from CLAUDE.md §4. Guests are simply unauthenticated. */
+/** Roles from the project brief §4. Guests are simply unauthenticated. */
 export const ROLES = ["customer", "staff", "admin"] as const;
 export type Role = (typeof ROLES)[number];
 

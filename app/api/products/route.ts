@@ -21,7 +21,7 @@ export async function GET() {
 }
 
 /**
- * Staff may only flip availability (the sold-out toggle CLAUDE.md §4 allows);
+ * Staff may only flip availability (the sold-out toggle the brief allows);
  * everything else is admin-only.
  */
 export async function PATCH(request: Request) {

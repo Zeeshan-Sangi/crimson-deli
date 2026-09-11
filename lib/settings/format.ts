@@ -3,7 +3,7 @@ import { DAYS, type Day, type DayHours } from "./types";
 /**
  * Rendering helpers for `settings/store.hours`.
  *
- * CLAUDE.md §3: store hours are never hardcoded in a page — they live in
+ * Project brief §3: store hours are never hardcoded in a page — they live in
  * settings and are edited from the admin panel. These turn that record into the
  * strings the storefront shows, so changing hours in one place changes them
  * everywhere.

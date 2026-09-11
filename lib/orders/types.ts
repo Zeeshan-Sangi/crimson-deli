@@ -1,4 +1,4 @@
-/** Order lifecycle from CLAUDE.md §5. No delivery stage — fresh food is pickup only. */
+/** Order lifecycle from the project brief §5. No delivery stage — fresh food is pickup only. */
 export const ORDER_STATUSES = [
   "received",
   "preparing",

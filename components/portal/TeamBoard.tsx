@@ -83,7 +83,7 @@ export default function TeamBoard() {
     }
   }, []);
 
-  // Polling stands in for the Firestore realtime listener CLAUDE.md calls for.
+  // Polling stands in for the Firestore realtime listener the brief calls for.
   useEffect(() => {
     load();
     const t = setInterval(load, 10000);

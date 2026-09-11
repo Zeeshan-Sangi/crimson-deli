@@ -33,7 +33,7 @@ import {
  *
  * NOTE: a JSON file does not persist on serverless hosting (Vercel gives each
  * invocation a fresh, read-only filesystem). This is fine for local work; real
- * deployment needs the Firestore implementation from CLAUDE.md §3.
+ * deployment needs the Firestore implementation the brief calls for.
  */
 /**
  * Orders live in Firestore, one document per order keyed by its id.
@@ -69,7 +69,7 @@ export class OrderValidationError extends Error {}
  *
  * Item names and prices are re-resolved from the menu on the server — the
  * client only gets to say *which* product and *how many*, never what it costs
- * (CLAUDE.md: never trust client-computed totals).
+ * (project rule: never trust client-computed totals).
  */
 export async function createOrder(
   input: CreateOrderInput,
