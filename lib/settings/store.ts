@@ -47,12 +47,12 @@ const DEFAULTS: Settings = {
   },
   rewards: {
     enabled: true,
-    // 10 points a dollar, 200 to the dollar back: five cents on the dollar.
-    // The store changes these in /admin/settings — they are a starting point,
-    // not advice about what a point should be worth.
+    // 10 points a dollar, 400 to the dollar back: two and a half cents on the
+    // dollar, the rate the store picked. Changed in /admin/settings — what a
+    // point is worth is pricing, and pricing is theirs.
     pointsPerDollar: 10,
-    pointsPerDollarOff: 200,
-    minRedeemPoints: 200,
+    pointsPerDollarOff: 400,
+    minRedeemPoints: 400,
   },
 };
 

@@ -211,7 +211,7 @@ export default function SettingsWorkspace({
                 <h2>Reward points</h2>
                 <p>
                   Customers earn on collection and spend at the next checkout. These
-                  numbers are pricing — they start at five cents back on the dollar,
+                  numbers are pricing — they start at two and a half cents on the dollar,
                   which is a placeholder, not a recommendation.
                 </p>
               </div>
