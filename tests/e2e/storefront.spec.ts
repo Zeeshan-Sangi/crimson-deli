@@ -46,7 +46,7 @@ test.describe("storefront", () => {
     expect(`$${(lines[0].priceCents / 100).toFixed(2)}`).toBe(price);
 
     await page.goto("/cart");
-    const row = page.locator(".cd-cart-table tbody tr").first();
+    const row = page.locator(".cd-bag__line").first();
     await expect(row).toContainText("Deli Sandwich");
     await expect(row).toContainText(price);
   });
@@ -83,10 +83,10 @@ test.describe("storefront", () => {
 
     await page.goto("/cart");
     await page.reload();
-    await expect(page.locator(".cd-cart-table tbody tr")).toHaveCount(1);
+    await expect(page.locator(".cd-bag__line")).toHaveCount(1);
 
     await page.getByRole("button", { name: "Clear cart" }).click();
-    await expect(page.getByText("Your cart is empty")).toBeVisible();
+    await expect(page.getByText("Nothing in here yet")).toBeVisible();
     expect(await cartLines(page)).toHaveLength(0);
   });
 
