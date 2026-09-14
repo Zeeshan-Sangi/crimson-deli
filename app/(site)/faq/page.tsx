@@ -223,7 +223,7 @@ export default async function FaqPage() {
             <p>
               {allFaqs.length} straight answers on ordering, payment, allergens,
               DoorDash and account help. If yours is not here, call the store on{" "}
-              <a href={siteConfig.phoneHref}>{siteConfig.phone}</a> — someone at the
+              <a href={siteConfig.phoneHref}>{siteConfig.phone}</a>. Someone at the
               counter can usually answer faster than email.
             </p>
           </div>

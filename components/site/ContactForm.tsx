@@ -130,7 +130,7 @@ export default function ContactForm() {
 
       {sent && (
         <p className="cd-form-success" role="status">
-          Thanks — we have your message and will get back to you. If it&rsquo;s urgent,
+          Thanks, we have your message and will get back to you. If it&rsquo;s urgent,
           call the store on <a href={siteConfig.phoneHref}>{siteConfig.phone}</a>.
         </p>
       )}

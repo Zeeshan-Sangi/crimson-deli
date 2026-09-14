@@ -108,7 +108,7 @@ export default function ProductTabs({
           <p className="cd-tabs__lede">{description}</p>
           <ul className="cd-facts">
             <li><strong>Made fresh</strong> at the counter when you order.</li>
-            <li><strong>Pickup only</strong> — we don&rsquo;t deliver fresh food.</li>
+            <li><strong>Pickup only</strong>, we don&rsquo;t deliver fresh food.</li>
             <li><strong>Prices confirmed</strong> by the store at pickup.</li>
           </ul>
         </div>
@@ -174,7 +174,7 @@ export default function ProductTabs({
 
               {done && (
                 <p className="cd-reviewform__ok" role="status">
-                  Thanks — your review is live.
+                  Thanks, your review is live.
                 </p>
               )}
               {error && (

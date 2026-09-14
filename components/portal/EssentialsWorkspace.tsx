@@ -72,7 +72,7 @@ export default function EssentialsWorkspace({
 
       <div className="portal-note" style={{ marginTop: 0 }}>
         <strong>This list came from the DoorDash catalog, not the shelves.</strong>{" "}
-        Anything the store does not carry can be switched off here — it disappears from
+        Anything the store does not carry can be switched off here. It disappears from
         Everyday Essentials on the site straight away, and switching it back on restores
         it. Prices shown are the DoorDash ones.
       </div>

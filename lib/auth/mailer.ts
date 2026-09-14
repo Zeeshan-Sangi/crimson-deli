@@ -177,7 +177,7 @@ async function deliver(email: Email): Promise<void> {
         [
           "",
           "──────────────────────────────────────────────────────────────",
-          " EMAIL NOT SENT — no mail provider configured (RESEND_API_KEY).",
+          " EMAIL NOT SENT: no mail provider configured (RESEND_API_KEY).",
           ` To:      ${to}`,
           ` Subject: ${email.subject}`,
           "",
@@ -190,7 +190,7 @@ async function deliver(email: Email): Promise<void> {
     }
 
     console.warn(
-      `[mailer] not sent — RESEND_API_KEY is not set. to=${to} subject="${email.subject}"` +
+      `[mailer] not sent: RESEND_API_KEY is not set. to=${to} subject="${email.subject}"` +
         (process.env.NODE_ENV === "production"
           ? ""
           : " (set MAIL_PREVIEW=1 to print the body locally)"),
@@ -237,7 +237,7 @@ export async function sendPasswordResetEmail(input: {
     "",
     input.resetUrl,
     "",
-    "If this wasn't you, you can ignore this email — your password stays as",
+    "If this wasn't you, you can ignore this email. Your password stays as",
     "it is.",
     "",
     `${siteConfig.name} · ${siteConfig.address} · ${siteConfig.phone}`,
@@ -285,7 +285,7 @@ export async function sendPasswordResetEmail(input: {
     </table>
 
     <p style="margin:28px 0 0;font-size:13px;color:${MUTED};text-align:center;line-height:1.6;">
-      Didn't ask for this? Ignore this email — your password will stay the same.
+      Didn't ask for this? Ignore this email. Your password will stay the same.
     </p>`;
 
   await deliver({
@@ -364,7 +364,7 @@ export async function sendOrderNotificationEmail(order: Order): Promise<void> {
   const lines = order.items.map((item) => {
     const unit =
       item.priceCents === null ? "At store" : formatCents(item.priceCents);
-    return `  · ${item.qty}× ${item.name} — ${unit}`;
+    return `  · ${item.qty}× ${item.name}: ${unit}`;
   });
 
   const totalLabel =
@@ -502,7 +502,7 @@ export async function sendOrderNotificationEmail(order: Order): Promise<void> {
 
   await deliver({
     to: orderNotificationEmail(),
-    subject: `New order ${order.orderNumber} — ${order.customer.name}`,
+    subject: `New order ${order.orderNumber} from ${order.customer.name}`,
     text,
     html: emailLayout(`New order ${order.orderNumber}`, bodyHtml),
   });
@@ -514,7 +514,7 @@ function orderItemRows(order: Order): string {
       const unit =
         item.priceCents === null ? "At store" : formatCents(item.priceCents);
       const lineTotal =
-        item.priceCents === null ? "—" : formatCents(item.priceCents * item.qty);
+        item.priceCents === null ? "At store" : formatCents(item.priceCents * item.qty);
       const bg = i % 2 === 0 ? WHITE : CREAM;
       return `<tr style="background:${bg};">
         <td style="padding:14px 16px;font-size:15px;color:${INK};border-bottom:1px solid ${BORDER};">
@@ -547,7 +547,7 @@ export async function sendOrderConfirmationEmail(
   const lines = order.items.map((item) => {
     const unit =
       item.priceCents === null ? "At store" : formatCents(item.priceCents);
-    return `  · ${item.qty}× ${item.name} — ${unit}`;
+    return `  · ${item.qty}× ${item.name}: ${unit}`;
   });
 
   const text = [

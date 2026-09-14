@@ -318,14 +318,14 @@ export default function CheckoutView({
                   />
                   <span>
                     Use {(canSpend / 100) * rewards!.pointsPerDollarOff} of your{" "}
-                    {pointsBalance} points — {formatCents(canSpend)} off
+                    {pointsBalance} points for {formatCents(canSpend)} off
                   </span>
                 </label>
               ) : (
                 <p className="cd-product__fine" style={{ margin: 0 }}>
                   You have {pointsBalance} points. They are worth a dollar off at{" "}
-                  {rewards!.pointsPerDollarOff}, from {rewards!.minRedeemPoints} up —
-                  keep collecting and they will apply here.
+                  {rewards!.pointsPerDollarOff}, from {rewards!.minRedeemPoints} up. Keep
+                  collecting and they will apply here.
                 </p>
               )}
             </div>

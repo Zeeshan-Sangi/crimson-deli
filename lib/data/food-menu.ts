@@ -174,7 +174,7 @@ export const foodItems: FoodItem[] = [
     slug: "water-ice",
     name: "Water Ice",
     description:
-      "Philadelphia water ice (Italian ice). Pick your flavor above — this week's special is sour apple.",
+      "Philadelphia water ice (Italian ice). Pick your flavor above. This week's special is sour apple.",
     imageUrl: "/assets/img/crimson/products/water-ice-small.png",
     categorySlug: "ice-cream",
     priceCents: 399,
@@ -184,7 +184,7 @@ export const foodItems: FoodItem[] = [
     slug: "gelati",
     name: "Gelati",
     description:
-      "Layers of creamy soft-serve ice cream with your favorite water ice. Pick the ice cream base and the water ice flavor above — this week's water ice special is sour apple.",
+      "Layers of creamy soft-serve ice cream with your favorite water ice. Pick the ice cream base and the water ice flavor above. This week's water ice special is sour apple.",
     imageUrl: "/assets/img/crimson/products/gelati-small.png",
     categorySlug: "ice-cream",
     priceCents: 399,
@@ -306,7 +306,7 @@ export function flavorValues(slug: string, choices?: FlavorChoices): string[] {
 }
 
 /**
- * Line-name suffix, e.g. `" — Vanilla · Cherry"`.
+ * Line-name suffix, e.g. `": Vanilla · Cherry"`.
  *
  * Flavors ride along inside the item name so every place that already prints a
  * line — cart, checkout, tracking page, team board, admin — shows them without
@@ -314,7 +314,7 @@ export function flavorValues(slug: string, choices?: FlavorChoices): string[] {
  */
 export function flavorSuffix(slug: string, choices?: FlavorChoices): string {
   const values = flavorValues(slug, choices);
-  return values.length > 0 ? ` — ${values.join(" · ")}` : "";
+  return values.length > 0 ? `: ${values.join(" · ")}` : "";
 }
 
 function picksForGroup(
@@ -392,7 +392,7 @@ export function modsPriceCents(item: Customisable, mods?: ItemMods): number {
 }
 
 /**
- * Kitchen-readable summary, e.g. `" — No Tomato, Add Extra Cheese"`.
+ * Kitchen-readable summary, e.g. `" (No Tomato, Add Extra Cheese)"`.
  *
  * Like the flavors, the changes ride along inside the line name, so the cart,
  * the tracking page, the team board and the admin order view all show them
@@ -405,7 +405,7 @@ export function modsSuffix(item: Customisable, mods?: ItemMods): string {
     ...(mods?.removed ?? []).map((k) => nameOf(k)).map((n) => (n ? `No ${n}` : null)),
     ...(mods?.added ?? []).map((k) => nameOf(k)).map((n) => (n ? `Add ${n}` : null)),
   ].filter((p): p is string => p !== null);
-  return parts.length > 0 ? ` — ${parts.join(", ")}` : "";
+  return parts.length > 0 ? ` (${parts.join(", ")})` : "";
 }
 
 /** Turns stored ingredients back into the two boxes the admin form shows. */

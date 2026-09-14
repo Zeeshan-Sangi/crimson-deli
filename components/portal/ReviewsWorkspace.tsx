@@ -83,7 +83,7 @@ export default function ReviewsWorkspace({
         <div className="crm-stat">
           <div className="crm-stat__label">Average rating</div>
           <div className="crm-stat__value">
-            {average === null ? "—" : average}
+            {average === null ? "None yet" : average}
             {average !== null && <span className="crm-stat__unit"> out of 5</span>}
           </div>
         </div>

@@ -32,7 +32,7 @@ export function getAdminDb(): Firestore {
   const app = getAdminApp();
   if (!app) {
     throw new Error(
-      "Firestore is not configured — set FIREBASE_SERVICE_ACCOUNT_JSON.",
+      "Firestore is not configured. Set FIREBASE_SERVICE_ACCOUNT_JSON.",
     );
   }
   return getFirestore(app);

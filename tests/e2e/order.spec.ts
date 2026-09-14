@@ -52,7 +52,7 @@ test("a placed order comes back on its tracking page", async ({ page }) => {
 
   await page.locator("#co-name").fill("Playwright Tier A");
   await page.locator("#co-phone").fill("2155550123");
-  await page.locator("#co-notes").fill("Automated test order — please cancel.");
+  await page.locator("#co-notes").fill("Automated test order, please cancel.");
   await page.getByRole("button", { name: "Place pickup order" }).click();
 
   await expect(page.getByText("Order placed")).toBeVisible();
@@ -82,7 +82,7 @@ test("a tampered cart price does not decide what the order costs", async ({ page
   await page.goto("/checkout");
   await page.locator("#co-name").fill("Playwright Tier A");
   await page.locator("#co-phone").fill("2155550123");
-  await page.locator("#co-notes").fill("Automated price-integrity test — please cancel.");
+  await page.locator("#co-notes").fill("Automated price-integrity test, please cancel.");
   await page.getByRole("button", { name: "Place pickup order" }).click();
 
   await expect(page.getByText("Order placed")).toBeVisible();

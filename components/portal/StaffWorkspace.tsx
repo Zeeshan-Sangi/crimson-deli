@@ -253,7 +253,7 @@ export default function StaffWorkspace({
                 />
               </label>
               <p className="portal-muted" style={{ fontSize: 13, margin: 0 }}>
-                Tell them the new password yourself — it is not emailed.
+                Tell them the new password yourself. It is not emailed.
               </p>
               <div className="portal-modal__actions">
                 <button

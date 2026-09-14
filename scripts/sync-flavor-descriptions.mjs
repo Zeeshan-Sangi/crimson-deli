@@ -18,13 +18,15 @@ import { getFirestore } from "firebase-admin/firestore";
 
 const UPDATES = {
   "water-ice":
-    "Philadelphia water ice (Italian ice). Pick your flavor above — this week's special is sour apple.",
+    "Philadelphia water ice (Italian ice). Pick your flavor above. This week's special is sour apple.",
   gelati:
-    "Layers of creamy soft-serve ice cream with your favorite water ice. Pick the ice cream base and the water ice flavor above — this week's water ice special is sour apple.",
+    "Layers of creamy soft-serve ice cream with your favorite water ice. Pick the ice cream base and the water ice flavor above. This week's water ice special is sour apple.",
 };
 
 /** The wording this script exists to replace. */
-const STALE = /ask at the counter|flavors:|vanilla or chocolate ice cream base/i;
+// Also the earlier copy of these same sentences that ran them together with a
+// dash: the site carries no em dashes in its copy.
+const STALE = /ask at the counter|flavors:|vanilla or chocolate ice cream base|above \u2014 this week/i;
 
 function initDb() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
@@ -49,17 +51,17 @@ for (const [slug, description] of Object.entries(UPDATES)) {
   const snap = await ref.get();
 
   if (!snap.exists) {
-    console.log(`skip  ${slug} — no such product`);
+    console.log(`skip  ${slug}: no such product`);
     continue;
   }
 
   const current = snap.data()?.description ?? "";
   if (current === description) {
-    console.log(`ok    ${slug} — already up to date`);
+    console.log(`ok    ${slug}: already up to date`);
     continue;
   }
   if (!STALE.test(current)) {
-    console.log(`skip  ${slug} — description was edited in /admin/products:`);
+    console.log(`skip  ${slug}: description was edited in /admin/products:`);
     console.log(`      ${current}`);
     continue;
   }

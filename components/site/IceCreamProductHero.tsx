@@ -26,7 +26,7 @@ export default function IceCreamProductHero({
   return (
     <div className="cd-product__grid">
       <div className="cd-product__media">
-        <img src={imageUrl} alt={`${item.name} — ${size} cup`} decoding="async" />
+        <img src={imageUrl} alt={`${item.name}, ${size} cup`} decoding="async" />
       </div>
 
       <div>

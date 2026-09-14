@@ -411,7 +411,7 @@ export default function ProductsWorkspace({
               </label>
               {flavorGroups.map((group) => (
                 <label key={group.key}>
-                  {group.label} — what the customer can choose, separated by commas
+                  {group.label}: what the customer can choose, separated by commas
                   <textarea
                     rows={2}
                     value={draft.flavors[group.key] ?? ""}
@@ -436,7 +436,7 @@ export default function ProductsWorkspace({
               {!creating && (
                 <>
                   <label>
-                    Comes with — one per line, customers can take these off
+                    Comes with (one per line, customers can take these off)
                     <textarea
                       rows={3}
                       value={draft.comesWith}
@@ -445,7 +445,7 @@ export default function ProductsWorkspace({
                     />
                   </label>
                   <label>
-                    Extras customers can add — one per line, price after the name
+                    Extras customers can add (one per line, price after the name)
                     <textarea
                       rows={3}
                       value={draft.extras}

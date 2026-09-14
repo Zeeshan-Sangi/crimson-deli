@@ -187,7 +187,7 @@ export default async function AccountPage() {
           <p className="portal-muted" style={{ fontSize: 12, marginTop: 12 }}>
             {isStaff
               ? "Store-wide view. Customers see only their own orders here."
-              : "Orders placed as a guest are not listed here — track those with the link from your confirmation."}
+              : "Orders placed as a guest are not listed here. Track those with the link from your confirmation."}
           </p>
         </section>
       </div>

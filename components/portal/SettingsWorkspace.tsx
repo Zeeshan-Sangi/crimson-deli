@@ -211,7 +211,7 @@ export default function SettingsWorkspace({
                 <h2>Reward points</h2>
                 <p>
                   Customers earn on collection and spend at the next checkout. These
-                  numbers are pricing — they start at two and a half cents on the dollar,
+                  numbers are pricing. They start at two and a half cents on the dollar,
                   which is a placeholder, not a recommendation.
                 </p>
               </div>
@@ -255,7 +255,7 @@ export default function SettingsWorkspace({
               </label>
               <p className="portal-muted" style={{ fontSize: 12, margin: "-4px 0 0" }}>
                 As set: a $10 order earns {rewards.pointsPerDollar * 10} points, and{" "}
-                {rewards.pointsPerDollarOff} points come back as $1 — about{" "}
+                {rewards.pointsPerDollarOff} points come back as $1, about{" "}
                 {rewards.pointsPerDollarOff > 0
                   ? ((rewards.pointsPerDollar / rewards.pointsPerDollarOff) * 100).toFixed(1)
                   : "0"}

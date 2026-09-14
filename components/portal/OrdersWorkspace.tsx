@@ -252,8 +252,8 @@ export default function OrdersWorkspace({ orders }: { orders: Order[] }) {
                                 (o.status === "cancelled" ? (
                                   <p className="portal-note" style={{ marginTop: 10 }}>
                                     <strong>Reward points returned</strong>
-                                    {o.pointsSpent ? ` — ${o.pointsSpent} points` : ""} went
-                                    back to the customer when this order was cancelled.
+                                    {o.pointsSpent ? ` (${o.pointsSpent} points)` : ""}. They
+                                    went back to the customer when this order was cancelled.
                                   </p>
                                 ) : (
                                   <p className="portal-note" style={{ marginTop: 10 }}>
@@ -261,7 +261,7 @@ export default function OrdersWorkspace({ orders }: { orders: Order[] }) {
                                       ${((o.discountCents ?? 0) / 100).toFixed(2)} paid with
                                       reward points
                                     </strong>
-                                    {o.pointsSpent ? ` — ${o.pointsSpent} points spent` : ""}.
+                                    {o.pointsSpent ? ` (${o.pointsSpent} points spent)` : ""}.
                                     The total already has it taken off.
                                   </p>
                                 ))}

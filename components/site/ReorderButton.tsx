@@ -50,7 +50,7 @@ export default function ReorderButton({
       return;
     }
     if (missing.length > 0) {
-      setNote(`${missing.join(", ")} could not be added — not on the menu right now.`);
+      setNote(`${missing.join(", ")} could not be added: not on the menu right now.`);
       return;
     }
     router.push("/cart");

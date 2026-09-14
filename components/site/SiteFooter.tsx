@@ -63,7 +63,7 @@ export default function SiteFooter() {
             </Link>
             <p>
               Fresh hoagies, sandwiches, fruit bowls and smoothies made in-store for pickup at
-              Ogontz Avenue — plus everyday essentials on our shelves or on DoorDash.
+              Ogontz Avenue, plus everyday essentials on our shelves or on DoorDash.
             </p>
             <p className="cd-site-footer__meta">
               {siteConfig.address} ·{" "}

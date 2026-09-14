@@ -39,8 +39,8 @@ export async function GET() {
           (item) =>
             `- [${item.name}](${absoluteUrl(`/food/${item.slug}`)})` +
             (item.priceCents === null
-              ? " — priced at store"
-              : ` — $${(item.priceCents / 100).toFixed(2)}`),
+              ? ": priced at store"
+              : `: $${(item.priceCents / 100).toFixed(2)}`),
         ),
       ];
     });
@@ -51,7 +51,7 @@ export async function GET() {
   const body = [
     `# ${siteConfig.name}`,
     "",
-    `> A neighborhood deli and convenience store at ${siteConfig.address}. Fresh food is made in-store and is **pickup only** — we do not deliver it. Everyday essentials are sold in-store or delivered through DoorDash. Payment for pickup orders is taken **at the counter**; the website never asks for card details.`,
+    `> A neighborhood deli and convenience store at ${siteConfig.address}. Fresh food is made in-store and is **pickup only**, so we do not deliver it. Everyday essentials are sold in-store or delivered through DoorDash. Payment for pickup orders is taken **at the counter**; the website never asks for card details.`,
     "",
     `- Phone: ${siteConfig.phone}`,
     `- Email: ${siteConfig.email}`,
@@ -60,16 +60,16 @@ export async function GET() {
     "",
     "## Ordering",
     "",
-    `- [Fresh food menu](${absoluteUrl("/food")}) — order for pickup; an account is required`,
-    `- [Cart](${absoluteUrl("/cart")}) and [checkout](${absoluteUrl("/checkout")}) — pickup orders, paid at the store`,
-    `- [Everyday essentials](${absoluteUrl("/store")}) — in-store, or delivered via [DoorDash](${siteConfig.doordashUrl})`,
+    `- [Fresh food menu](${absoluteUrl("/food")}): order for pickup; an account is required`,
+    `- [Cart](${absoluteUrl("/cart")}) and [checkout](${absoluteUrl("/checkout")}): pickup orders, paid at the store`,
+    `- [Everyday essentials](${absoluteUrl("/store")}): in-store, or delivered via [DoorDash](${siteConfig.doordashUrl})`,
     "",
     "## Information",
     "",
-    `- [About](${absoluteUrl("/about")}) — what the store is and how the two lanes work`,
-    `- [FAQ](${absoluteUrl("/faq")}) — ordering, payment, allergens, DoorDash, account help`,
-    `- [Contact](${absoluteUrl("/contact")}) — phone, address, directions and a message form`,
-    `- [Terms & Conditions](${absoluteUrl("/terms")}) — includes the allergen statement`,
+    `- [About](${absoluteUrl("/about")}): what the store is and how the two lanes work`,
+    `- [FAQ](${absoluteUrl("/faq")}): ordering, payment, allergens, DoorDash, account help`,
+    `- [Contact](${absoluteUrl("/contact")}): phone, address, directions and a message form`,
+    `- [Terms & Conditions](${absoluteUrl("/terms")}): includes the allergen statement`,
     `- [Privacy Policy](${absoluteUrl("/privacy")})`,
     "",
     "## Departments",
