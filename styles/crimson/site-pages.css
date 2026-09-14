@@ -1962,13 +1962,24 @@
 
 /* ---- 404 + order tracking ---- */
 
-.cd-not-found__code {
+/* Scoped under .cd-empty so it outranks `.cd-empty p`, which otherwise
+   shrinks the code to 16px body text. */
+.cd-empty .cd-not-found__code {
   margin: 0 0 8px;
-  font-size: clamp(72px, 16vw, 120px);
+  font-size: clamp(150px, 42vw, 400px);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
   color: var(--cd-crimson);
+}
+
+/* Same scale as the page titles in .cd-breadcrumb. */
+.cd-empty h1 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--cd-ink);
 }
 
 .cd-not-found__actions {

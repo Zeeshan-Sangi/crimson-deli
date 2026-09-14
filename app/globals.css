@@ -148,7 +148,6 @@
   font-size: 14px;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: var(--cd-shadow);
   transition: filter 0.15s ease, background 0.15s ease;
 }
 
@@ -161,7 +160,6 @@
   background: var(--cd-surface);
   color: var(--cd-ink);
   border-color: var(--cd-border);
-  box-shadow: none;
 }
 
 .cd-btn-solid--ghost:hover {

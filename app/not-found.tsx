@@ -8,6 +8,8 @@ import { CartProvider } from "@/lib/cart/CartContext";
 // this file pulls in the storefront chrome and stylesheets itself.
 import "@/styles/crimson/reveal.css";
 import "@/styles/crimson/expose.css";
+import "@/styles/crimson/site-chrome.css";
+import "@/styles/crimson/site-pages.css";
 
 import type { Metadata } from "next";
 
@@ -22,11 +24,13 @@ export default async function RootNotFound() {
 
   return (
     <CartProvider>
-      <SiteHeader user={user} />
-      <main>
-        <NotFoundContent />
-      </main>
-      <SiteFooter />
+      <div className="cd-site">
+        <SiteHeader user={user} />
+        <main>
+          <NotFoundContent />
+        </main>
+        <SiteFooter />
+      </div>
     </CartProvider>
   );
 }
