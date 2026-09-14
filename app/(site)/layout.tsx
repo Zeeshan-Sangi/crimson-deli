@@ -2,6 +2,7 @@ import SiteHeader from "@/components/site/SiteHeader";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import SiteFooter from "@/components/site/SiteFooter";
 import ScrollReveal from "@/components/site/ScrollReveal";
+import SmoothScroll from "@/components/site/SmoothScroll";
 import { CartProvider } from "@/lib/cart/CartContext";
 
 import "@/styles/crimson/reveal.css";
@@ -25,6 +26,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <SiteFooter />
       </div>
       <ScrollReveal />
+      <SmoothScroll />
     </CartProvider>
   );
 }

@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import SiteFooter from "@/components/site/SiteFooter";
 import NotFoundContent from "@/components/site/NotFoundContent";
 import { CartProvider } from "@/lib/cart/CartContext";
+import SmoothScroll from "@/components/site/SmoothScroll";
 
 // A URL that matches no route at all lands here, outside the (site) group, so
 // this file pulls in the storefront chrome and stylesheets itself.
@@ -31,6 +32,7 @@ export default async function RootNotFound() {
         </main>
         <SiteFooter />
       </div>
+      <SmoothScroll />
     </CartProvider>
   );
 }

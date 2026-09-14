@@ -116,7 +116,11 @@ export default function SiteHeader({ user = null }: { user?: HeaderUser }) {
         </div>
       </div>
 
-      <div className={`cd-site-drawer${navOpen ? " is-open" : ""}`} aria-hidden={!navOpen}>
+      <div
+        className={`cd-site-drawer${navOpen ? " is-open" : ""}`}
+        aria-hidden={!navOpen}
+        data-lenis-prevent
+      >
         <div className="cd-site-drawer__overlay" onClick={() => setNavOpen(false)} />
         <div className="cd-site-drawer__panel" role="dialog" aria-label="Menu">
           <div className="cd-site-drawer__head">
