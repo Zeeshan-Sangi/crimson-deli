@@ -122,12 +122,19 @@ export default async function OrderStatusPage({
               </p>
             )}
 
-            {(order.discountCents ?? 0) > 0 && (
-              <p className="cd-order__meta">
-                Reward points paid ${((order.discountCents ?? 0) / 100).toFixed(2)} of this
-                order{order.pointsSpent ? ` (${order.pointsSpent} points)` : ""}.
-              </p>
-            )}
+            {(order.discountCents ?? 0) > 0 &&
+              (cancelled ? (
+                <p className="cd-order__meta">
+                  {order.pointsSpent
+                    ? `The ${order.pointsSpent} points used on this order are back in your account.`
+                    : "The points used on this order are back in your account."}
+                </p>
+              ) : (
+                <p className="cd-order__meta">
+                  Reward points paid ${((order.discountCents ?? 0) / 100).toFixed(2)} of this
+                  order{order.pointsSpent ? ` (${order.pointsSpent} points)` : ""}.
+                </p>
+              ))}
 
             <p className="cd-order__meta">
               {order.totalCents === null

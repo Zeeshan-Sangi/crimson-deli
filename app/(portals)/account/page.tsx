@@ -91,7 +91,11 @@ export default async function AccountPage() {
                   <tr key={entry.id}>
                     <td>{when(entry.at)}</td>
                     <td>
-                      {entry.reason === "earned" ? "Earned on" : "Spent on"}{" "}
+                      {entry.reason === "earned"
+                        ? "Earned on"
+                        : entry.reason === "refunded"
+                          ? "Returned from cancelled"
+                          : "Spent on"}{" "}
                       <strong>{entry.orderNumber ?? "an order"}</strong>
                     </td>
                     <td style={{ textAlign: "right", fontWeight: 700 }}>

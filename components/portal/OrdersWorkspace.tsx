@@ -248,16 +248,23 @@ export default function OrdersWorkspace({ orders }: { orders: Order[] }) {
                                   </li>
                                 ))}
                               </ul>
-                              {(o.discountCents ?? 0) > 0 && (
-                                <p className="portal-note" style={{ marginTop: 10 }}>
-                                  <strong>
-                                    ${((o.discountCents ?? 0) / 100).toFixed(2)} paid with
-                                    reward points
-                                  </strong>
-                                  {o.pointsSpent ? ` — ${o.pointsSpent} points spent` : ""}.
-                                  The total already has it taken off.
-                                </p>
-                              )}
+                              {(o.discountCents ?? 0) > 0 &&
+                                (o.status === "cancelled" ? (
+                                  <p className="portal-note" style={{ marginTop: 10 }}>
+                                    <strong>Reward points returned</strong>
+                                    {o.pointsSpent ? ` — ${o.pointsSpent} points` : ""} went
+                                    back to the customer when this order was cancelled.
+                                  </p>
+                                ) : (
+                                  <p className="portal-note" style={{ marginTop: 10 }}>
+                                    <strong>
+                                      ${((o.discountCents ?? 0) / 100).toFixed(2)} paid with
+                                      reward points
+                                    </strong>
+                                    {o.pointsSpent ? ` — ${o.pointsSpent} points spent` : ""}.
+                                    The total already has it taken off.
+                                  </p>
+                                ))}
                               {o.notes && (
                                 <p className="portal-note" style={{ marginTop: 10 }}>
                                   {o.notes}

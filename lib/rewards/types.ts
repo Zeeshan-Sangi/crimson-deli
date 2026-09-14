@@ -5,7 +5,8 @@ export type PointsEntry = {
   /** Positive when earned, negative when spent. */
   delta: number;
   balanceAfter: number;
-  reason: "earned" | "redeemed";
+  /** `refunded` is points spent on an order the store then cancelled. */
+  reason: "earned" | "redeemed" | "refunded";
   orderId: string | null;
   orderNumber: string | null;
   at: string;

@@ -258,9 +258,14 @@ export async function createOrder(
     if (balance < asked || asked < settings.rewards.minRedeemPoints)
       throw new OrderValidationError("You do not have enough points for that.");
 
-    // Never take more points than the discount they actually bought: the
-    // remainder that buys no whole dollar stays in the balance.
-    const capped = Math.min(pointsToCents(asked, settings.rewards), totalCents!);
+    // Whole dollars only, on both sides: points never buy a part-dollar, and
+    // never more whole dollars than the order is worth. The remainder stays in
+    // the balance. Checkout offers exactly this, so the customer is charged
+    // what the page showed.
+    const capped = Math.min(
+      pointsToCents(asked, settings.rewards),
+      Math.floor(totalCents! / 100) * 100,
+    );
     const discountCents = Math.max(0, capped);
     const pointsSpent =
       (discountCents / 100) * settings.rewards.pointsPerDollarOff;
@@ -330,7 +335,12 @@ export async function setOrderStatus(
     if (!snap.exists) throw new OrderValidationError("Order not found.");
 
     const current = snap.data() as Order;
-    const allowed = status === "cancelled" || NEXT_STATUS[current.status] === status;
+    // Only an open order can be cancelled. Picked up and cancelled are final —
+    // the staff screen already offers no cancel for them — and holding that
+    // here is what stops a second cancel from returning the same points twice.
+    const isOpen = NEXT_STATUS[current.status] !== null;
+    const allowed =
+      status === "cancelled" ? isOpen : NEXT_STATUS[current.status] === status;
     if (!allowed)
       throw new OrderValidationError(
         `Cannot move an order from ${current.status} to ${status}.`,
@@ -347,7 +357,14 @@ export async function setOrderStatus(
       current.totalCents !== null;
 
     const earned = earns ? pointsForSpend(current.totalCents!, settings.rewards) : 0;
-    const userDoc = earns && earned > 0 ? await tx.get(userRef(uid!)) : null;
+
+    // Points spent on an order the store cancels go back: the customer never
+    // got what they paid for with them.
+    const refunded =
+      status === "cancelled" && uid !== null ? Math.max(0, current.pointsSpent ?? 0) : 0;
+
+    const pointsDelta = earned > 0 ? earned : refunded;
+    const userDoc = pointsDelta > 0 ? await tx.get(userRef(uid!)) : null;
 
     const now = new Date().toISOString();
     const updated: Order = {
@@ -363,8 +380,8 @@ export async function setOrderStatus(
       movePointsInTransaction(tx, {
         uid: uid!,
         currentPoints: Math.max(0, Math.floor((userDoc.data() as User | undefined)?.points ?? 0)),
-        delta: earned,
-        reason: "earned",
+        delta: pointsDelta,
+        reason: earned > 0 ? "earned" : "refunded",
         orderId: current.id,
         orderNumber: current.orderNumber,
         at: now,

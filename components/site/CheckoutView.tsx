@@ -126,12 +126,14 @@ export default function CheckoutView({
   const showTax =
     subtotalCents !== null && !taxIncludedInPrice && taxRate > 0 && taxCents !== null;
 
-  // What the balance is worth here: whole dollars only, and never more than
-  // the order itself. The server works this out again before it charges.
+  // What the balance is worth here: whole dollars only, and never more whole
+  // dollars than the order. A $3.99 order takes $3 off, not $3.99 — the server
+  // works it out the same way before it charges, so what this shows is what
+  // the customer pays.
   const rewardsOn = Boolean(rewards?.enabled) && totalCents !== null;
   const canSpend =
     rewardsOn && rewards!.minRedeemPoints <= pointsBalance
-      ? Math.min(pointsToCents(pointsBalance, rewards!), totalCents!)
+      ? Math.min(pointsToCents(pointsBalance, rewards!), Math.floor(totalCents! / 100) * 100)
       : 0;
   const discountCents = usePoints ? canSpend : 0;
   const pointsToSpend =
