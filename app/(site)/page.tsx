@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Clock, MapPin, Phone } from "lucide-react";
 import FoodCard from "@/components/site/FoodCard";
 import OfferSlider from "@/components/site/OfferSlider";
-import { listAvailableProducts } from "@/lib/products/store";
+import { foodCategories, listAvailableProducts } from "@/lib/products/store";
 import { formatHoursLine } from "@/lib/settings/format";
 import { getSettings } from "@/lib/settings/store";
 import { siteConfig } from "@/lib/site-config";
@@ -63,7 +63,13 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const visible = await listAvailableProducts();
-  const picks = visible.slice(0, 5);
+  // One pick per fresh food category, in menu order. Products come back sorted
+  // by slug, so taking the first few filled the row with ice cream. A sold-out
+  // item is only featured when its category has nothing else to show.
+  const picks = foodCategories.flatMap((category) => {
+    const inCategory = visible.filter((p) => p.categorySlug === category.slug);
+    return inCategory.find((p) => p.available) ?? inCategory.slice(0, 1);
+  });
   const { store } = await getSettings();
   const hoursLine = formatHoursLine(store.hours);
 
@@ -194,7 +200,7 @@ export default async function HomePage() {
               Full menu →
             </Link>
           </div>
-          <div className="cd-food-grid">
+          <div className="cd-food-grid cd-food-grid--picks">
             {picks.map((item, i) => (
               <FoodCard key={item.slug} item={item} delay={`0.${2 + (i % 3)}s`} />
             ))}

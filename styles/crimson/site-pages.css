@@ -323,6 +323,18 @@
   .cd-food-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  /* Home's picks are one per category — four of them — so they sit two by two
+     rather than leaving one card alone on a second row of three. */
+  .cd-food-grid--picks {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .cd-food-grid--picks {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .cd-food-card {
