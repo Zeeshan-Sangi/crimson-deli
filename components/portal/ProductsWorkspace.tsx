@@ -495,8 +495,8 @@ export default function ProductsWorkspace({
                     <details className="crm-disclosure">
                       <summary>Ingredient photos and nutrition</summary>
                       <p className="portal-muted crm-disclosure__hint">
-                        A photo path shows a round picture on the product page; without one
-                        the circle shows the first letter. An ingredient&apos;s figures are
+                        Paste a link to a photo (https://…) and it shows as a round picture
+                        on the product page; without one the circle shows the first letter. An ingredient&apos;s figures are
                         what taking it off removes from the label, or adding it adds.
                         Ingredients typed above appear here once saved.
                       </p>
@@ -519,9 +519,10 @@ export default function ProductsWorkspace({
                               </span>
                             </legend>
                             <label>
-                              Photo path
+                              Photo URL
                               <input
-                                placeholder={`/assets/img/crimson/ingredients/${ingredient.key}.webp`}
+                                inputMode="url"
+                                placeholder="https://example.com/photo.jpg"
                                 value={detail.imageUrl}
                                 onChange={(e) =>
                                   setDetail({ ...detail, imageUrl: e.target.value })
@@ -541,9 +542,9 @@ export default function ProductsWorkspace({
               )}
 
               <label>
-                Image path {creating && <span className="portal-muted">(optional)</span>}
+                Image URL {creating && <span className="portal-muted">(optional)</span>}
                 <input
-                  placeholder="/assets/img/crimson/products/example.webp"
+                  placeholder="https://example.com/photo.jpg"
                   value={draft.imageUrl}
                   onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })}
                 />
