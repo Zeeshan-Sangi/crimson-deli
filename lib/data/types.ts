@@ -10,6 +10,32 @@ export type ItemIngredient = {
   included: boolean;
   /** Charge for adding it. Included ingredients are always 0. */
   priceCents: number;
+  /** Round photo on the product page. Absent shows the first letter instead. */
+  imageUrl?: string;
+  /**
+   * What this ingredient contributes, so the label can take it off or add it
+   * on. Absent means the store has not supplied it, and a change to it is
+   * listed under the label as not counted rather than guessed.
+   */
+  nutrition?: Nutrition;
+};
+
+/**
+ * One serving's nutrition facts, as the store supplies them. Every value is
+ * required once a label exists — a blank would read as zero on the label.
+ */
+export type Nutrition = {
+  calories: number;
+  totalFatG: number;
+  saturatedFatG: number;
+  cholesterolMg: number;
+  totalCarbsG: number;
+  fiberG: number;
+  sugarG: number;
+  addedSugarG: number;
+  proteinG: number;
+  sodiumMg: number;
+  caffeineMg: number;
 };
 
 /** What the customer changed: ingredient keys taken off, and extras put on. */
@@ -52,6 +78,13 @@ export type FoodItem = {
    * Optional so rows written before this field stay valid.
    */
   hidden?: boolean;
+  /**
+   * The label for the item as normally made. Absent means no label is shown —
+   * never an estimate. For ice cream this is the small cup.
+   */
+  nutrition?: Nutrition;
+  /** The large cup's label, for items sold in two cup sizes. */
+  nutritionLarge?: Nutrition;
 };
 
 export type FoodCategory = {

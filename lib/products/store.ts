@@ -1,6 +1,7 @@
 import { getAdminDb } from "@/lib/firebase/admin";
-import { FLAVOR_GROUPS, foodCategories, foodItems } from "@/lib/data/food-menu";
-import type { FoodItem, ItemIngredient } from "@/lib/data/types";
+import { FLAVOR_GROUPS, foodCategories, foodItems, isIceCreamItem } from "@/lib/data/food-menu";
+import { NUTRITION_FIELDS } from "@/lib/data/nutrition";
+import type { FoodItem, ItemIngredient, Nutrition } from "@/lib/data/types";
 
 /**
  * Fresh food products — Firestore-backed, one document per slug.
@@ -157,7 +158,64 @@ export type ProductPatch = {
    * Two lists in, one ordered list out. An empty pair turns customising off.
    */
   ingredients?: { comesWith?: string; extras?: string };
+  /** The label as typed, one box per row. All boxes blank removes the label. */
+  nutrition?: Record<string, string> | null;
+  /** The large cup's label, for items sold in two cup sizes. */
+  nutritionLarge?: Record<string, string> | null;
+  /**
+   * Photo path and label per ingredient, keyed by ingredient key. Only
+   * ingredients already on the item are touched; an unknown key is ignored.
+   */
+  ingredientDetails?: Record<
+    string,
+    { imageUrl?: string; nutrition?: Record<string, string> | null }
+  >;
 };
+
+const MAX_NUTRITION_VALUE = 100_000;
+
+/**
+ * Reads a label from the admin form.
+ *
+ * All boxes blank means no label. Some filled and some blank is refused rather
+ * than saved: a blank row would print as 0 on the label, which is a claim the
+ * store never made. Zero has to be typed.
+ */
+function parseNutrition(input: unknown, what: string): Nutrition | undefined {
+  if (input === null || input === undefined) return undefined;
+  if (typeof input !== "object" || Array.isArray(input))
+    throw new ProductError(`Nutrition for ${what} must be a set of numbers.`);
+
+  const raw = input as Record<string, unknown>;
+  const text = (key: string) => String(raw[key] ?? "").trim();
+  const blank = NUTRITION_FIELDS.filter((f) => text(f.key) === "");
+  if (blank.length === NUTRITION_FIELDS.length) return undefined;
+  if (blank.length > 0)
+    throw new ProductError(
+      `Nutrition for ${what} is missing ${blank.map((f) => f.label).join(", ")}. ` +
+        "Fill in every row, typing 0 where it is zero, or clear them all.",
+    );
+
+  const facts = {} as Nutrition;
+  for (const field of NUTRITION_FIELDS) {
+    const value = Number(text(field.key));
+    if (!Number.isFinite(value) || value < 0 || value > MAX_NUTRITION_VALUE)
+      throw new ProductError(`${field.label} for ${what} must be a number, 0 or more.`);
+    facts[field.key] = value;
+  }
+  return facts;
+}
+
+/** An ingredient photo: a site path like the product image, or an https URL. */
+function cleanImagePath(input: unknown, what: string): string | undefined {
+  const value = String(input ?? "").trim();
+  if (value === "") return undefined;
+  if (value.length > 300 || !(value.startsWith("/") || value.startsWith("https://")))
+    throw new ProductError(
+      `The photo for ${what} must be a path starting with / or an https:// address.`,
+    );
+  return value;
+}
 
 const MAX_INGREDIENTS = 40;
 const MAX_INGREDIENT_LENGTH = 60;
@@ -279,8 +337,45 @@ export async function updateProduct(
     if (patch.hidden !== undefined) next.hidden = patch.hidden;
 
     if (patch.ingredients !== undefined) {
-      const list = parseIngredients(patch.ingredients);
+      // The lists are retyped as text on every save, so an ingredient that is
+      // still there keeps the photo and label it already had.
+      const previous = new Map((existing.ingredients ?? []).map((i) => [i.key, i]));
+      const list = parseIngredients(patch.ingredients).map((i) => ({
+        ...i,
+        imageUrl: previous.get(i.key)?.imageUrl,
+        nutrition: previous.get(i.key)?.nutrition,
+      }));
       next.ingredients = list.length > 0 ? list : undefined;
+    }
+
+    if (patch.ingredientDetails !== undefined) {
+      const details = patch.ingredientDetails;
+      if (typeof details !== "object" || details === null || Array.isArray(details))
+        throw new ProductError("Ingredient details must be keyed by ingredient.");
+      next.ingredients = next.ingredients?.map((i) => {
+        const detail = details[i.key];
+        if (!detail) return i;
+        return {
+          ...i,
+          imageUrl:
+            detail.imageUrl !== undefined ? cleanImagePath(detail.imageUrl, i.name) : i.imageUrl,
+          nutrition:
+            detail.nutrition !== undefined
+              ? parseNutrition(detail.nutrition, i.name)
+              : i.nutrition,
+        };
+      });
+    }
+
+    if (patch.nutrition !== undefined) {
+      next.nutrition = parseNutrition(patch.nutrition, next.name);
+    }
+
+    if (patch.nutritionLarge !== undefined) {
+      const large = parseNutrition(patch.nutritionLarge, `${next.name} (large cup)`);
+      if (large && !isIceCreamItem(next))
+        throw new ProductError("Only items sold in two cup sizes have a large-cup label.");
+      next.nutritionLarge = large;
     }
 
     if (patch.flavorOptions !== undefined) {

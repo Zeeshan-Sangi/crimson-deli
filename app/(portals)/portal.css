@@ -1708,3 +1708,58 @@
     width: 100%;
   }
 }
+
+/* ---- product editor: nutrition and ingredient details ---- */
+
+.crm-disclosure {
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+  padding: 10px 14px;
+}
+
+.crm-disclosure > summary {
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.crm-disclosure[open] > summary {
+  margin-bottom: 8px;
+}
+
+.crm-disclosure__hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+
+.crm-disclosure__label {
+  margin: 12px 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.crm-nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.portal-form .crm-nutrition-grid input {
+  min-height: 38px;
+  padding: 6px 10px;
+}
+
+.crm-ingredient-detail {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--p-border);
+  border-radius: var(--p-radius);
+}
+
+.crm-ingredient-detail legend {
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+}

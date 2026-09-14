@@ -18,7 +18,9 @@ import {
   isIceCreamItem,
   modsPriceCents,
 } from "@/lib/data/food-menu";
-import type { FoodItem, ItemMods } from "@/lib/data/types";
+import { nutritionFor } from "@/lib/data/nutrition";
+import type { FoodItem, ItemIngredient, ItemMods } from "@/lib/data/types";
+import NutritionLabel from "@/components/site/NutritionLabel";
 
 /** Quantity stepper + add-to-cart for a single fresh food item. */
 export default function AddToCart({
@@ -97,6 +99,9 @@ export default function AddToCart({
     if (Array.isArray(picked)) return picked.includes(option);
     return picked === option;
   }
+
+  // Follows the cup size and every ingredient toggle, like the price below.
+  const nutrition = nutritionFor(item, { size: sized ? size : undefined, mods });
 
   const basePriceCents = sized ? iceCreamPriceCents(size) : item.priceCents;
   // The price moves as extras go on, so the customer sees the cost of a change
@@ -200,28 +205,20 @@ export default function AddToCart({
                   · tap to take something off
                 </span>
               </p>
-              <div className="cd-size-group">
+              <div className="cd-ingredient-grid">
                 {comesWith.map((ingredient) => {
                   const off = mods.removed.includes(ingredient.key);
                   return (
-                    <button
+                    <IngredientTile
                       key={ingredient.key}
-                      type="button"
-                      className="cd-mod-btn"
-                      data-off={off ? "true" : "false"}
-                      aria-pressed={!off}
-                      aria-label={
+                      ingredient={ingredient}
+                      state={off ? "removed" : "included"}
+                      pressed={!off}
+                      ariaLabel={
                         off ? `Put ${ingredient.name} back` : `Remove ${ingredient.name}`
                       }
-                      onClick={() => toggleRemoved(ingredient.key)}
-                    >
-                      {ingredient.name}
-                      {off ? (
-                        <Plus size={14} aria-hidden="true" />
-                      ) : (
-                        <X size={14} aria-hidden="true" />
-                      )}
-                    </button>
+                      onToggle={() => toggleRemoved(ingredient.key)}
+                    />
                   );
                 })}
               </div>
@@ -233,35 +230,22 @@ export default function AddToCart({
               <p className="cd-product__meta" style={{ marginBottom: 8 }}>
                 <strong>Add extras</strong>
               </p>
-              <div className="cd-size-group">
+              <div className="cd-ingredient-grid">
                 {extras.map((ingredient) => {
                   const on = mods.added.includes(ingredient.key);
                   return (
-                    <button
+                    <IngredientTile
                       key={ingredient.key}
-                      type="button"
-                      className="cd-mod-btn"
-                      data-on={on ? "true" : "false"}
-                      aria-pressed={on}
-                      aria-label={`${on ? "Remove" : "Add"} ${ingredient.name}${
+                      ingredient={ingredient}
+                      state={on ? "added" : "available"}
+                      pressed={on}
+                      ariaLabel={`${on ? "Remove" : "Add"} ${ingredient.name}${
                         ingredient.priceCents > 0
                           ? `, ${formatFoodPrice(ingredient.priceCents)}`
                           : ""
                       }`}
-                      onClick={() => toggleAdded(ingredient.key)}
-                    >
-                      {on ? (
-                        <X size={14} aria-hidden="true" />
-                      ) : (
-                        <Plus size={14} aria-hidden="true" />
-                      )}
-                      {ingredient.name}
-                      {ingredient.priceCents > 0 && (
-                        <span className="cd-mod-btn__price">
-                          +{formatFoodPrice(ingredient.priceCents)}
-                        </span>
-                      )}
-                    </button>
+                      onToggle={() => toggleAdded(ingredient.key)}
+                    />
                   );
                 })}
               </div>
@@ -310,6 +294,14 @@ export default function AddToCart({
         </Link>
       </div>
 
+      {nutrition && (
+        <NutritionLabel
+          result={nutrition}
+          sizeLabel={sized ? ICE_CREAM_SIZES[size].label : undefined}
+          flavorsNotCounted={flavorGroups.length > 0}
+        />
+      )}
+
       {added && (
         <p className="cd-product__fine" role="status">
           Added to your cart.{" "}
@@ -319,5 +311,53 @@ export default function AddToCart({
         </p>
       )}
     </>
+  );
+}
+
+/**
+ * One ingredient as a round photo with its name under it. Until the store adds
+ * a photo, the circle shows the ingredient's first letter.
+ */
+function IngredientTile({
+  ingredient,
+  state,
+  pressed,
+  ariaLabel,
+  onToggle,
+}: {
+  ingredient: ItemIngredient;
+  /** On the item, taken off it, an extra not yet added, or an extra added. */
+  state: "included" | "removed" | "available" | "added";
+  pressed: boolean;
+  ariaLabel: string;
+  onToggle: () => void;
+}) {
+  const showsRemove = state === "included" || state === "added";
+  return (
+    <button
+      type="button"
+      className="cd-ingredient"
+      data-state={state}
+      aria-pressed={pressed}
+      aria-label={ariaLabel}
+      onClick={onToggle}
+    >
+      <span className="cd-ingredient__photo">
+        {ingredient.imageUrl ? (
+          <img src={ingredient.imageUrl} alt="" loading="lazy" decoding="async" />
+        ) : (
+          <span className="cd-ingredient__initial" aria-hidden="true">
+            {ingredient.name.charAt(0)}
+          </span>
+        )}
+        <span className="cd-ingredient__badge" aria-hidden="true">
+          {showsRemove ? <X size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
+        </span>
+      </span>
+      <span className="cd-ingredient__name">{ingredient.name}</span>
+      {ingredient.priceCents > 0 && (
+        <span className="cd-ingredient__price">+{formatFoodPrice(ingredient.priceCents)}</span>
+      )}
+    </button>
   );
 }

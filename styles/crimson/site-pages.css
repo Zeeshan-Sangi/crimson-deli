@@ -1079,40 +1079,201 @@
   color: var(--cd-ink);
 }
 
-.cd-mod-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 40px;
-  padding: 0 12px;
-  border: 1px solid var(--cd-border);
-  border-radius: 999px;
-  background: var(--cd-surface);
-  color: var(--cd-ink);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+/* Ingredients as round photos with the name under them, the way a kiosk menu
+   shows them. Tapping toggles; the badge says what a tap will do. */
+.cd-ingredient-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 14px 8px;
+  margin-bottom: 14px;
 }
 
-/* Taken off the item: struck through and faded, but still on screen so it can
-   be put back — a chip that vanished would leave the customer nothing to undo. */
-.cd-mod-btn[data-off="true"] {
-  opacity: 0.55;
+.cd-ingredient {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: var(--cd-ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.cd-ingredient__photo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border: 1px solid var(--cd-border);
+  border-radius: 50%;
+  background: var(--cd-surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cd-ingredient__photo img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: opacity 0.15s, filter 0.15s;
+}
+
+.cd-ingredient__initial {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--cd-crimson);
+  transition: opacity 0.15s;
+}
+
+.cd-ingredient__badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--cd-cream);
+  border-radius: 50%;
+  background: var(--cd-crimson);
+  color: #fff;
+}
+
+.cd-ingredient__name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.cd-ingredient__price {
+  margin-top: -4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cd-crimson);
+}
+
+.cd-ingredient:hover .cd-ingredient__photo {
+  border-color: var(--cd-crimson);
+}
+
+.cd-ingredient:focus-visible {
+  outline: none;
+}
+
+.cd-ingredient:focus-visible .cd-ingredient__photo {
+  outline: 2px solid var(--cd-crimson);
+  outline-offset: 3px;
+}
+
+/* Taken off: faded and struck through, but still on screen so it can be put
+   back — a tile that vanished would leave the customer nothing to undo. */
+.cd-ingredient[data-state="removed"] .cd-ingredient__photo img,
+.cd-ingredient[data-state="removed"] .cd-ingredient__initial {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.cd-ingredient[data-state="removed"] .cd-ingredient__name {
+  color: var(--cd-muted);
   text-decoration: line-through;
   text-decoration-color: var(--cd-crimson);
 }
 
-.cd-mod-btn[data-on="true"] {
-  background: var(--cd-crimson);
-  border-color: var(--cd-crimson);
-  color: #fff;
+.cd-ingredient[data-state="removed"] .cd-ingredient__badge,
+.cd-ingredient[data-state="available"] .cd-ingredient__badge {
+  border-color: var(--cd-cream);
+  background: var(--cd-surface);
+  color: var(--cd-crimson);
+  box-shadow: inset 0 0 0 1.5px var(--cd-crimson);
 }
 
-.cd-mod-btn__price {
+.cd-ingredient[data-state="added"] .cd-ingredient__photo {
+  border: 2px solid var(--cd-crimson);
+  box-shadow: 0 0 0 3px rgba(144, 0, 0, 0.12);
+}
+
+/* ---- nutrition facts ---- */
+
+.cd-nutrition {
+  max-width: 420px;
+  margin: 4px 0 16px;
+  padding: 18px 20px 16px;
+  border: 2px solid var(--cd-crimson);
+  border-radius: 16px;
+  background: var(--cd-surface);
+}
+
+.cd-nutrition__title {
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 8px solid var(--cd-crimson);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--cd-crimson);
+}
+
+.cd-nutrition__serving {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--cd-muted);
+}
+
+.cd-nutrition__calories {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 0 8px;
+  border-bottom: 3px solid var(--cd-crimson);
+}
+
+.cd-nutrition__calories span {
+  font-size: 15px;
   font-weight: 700;
-  opacity: 0.8;
+}
+
+.cd-nutrition__calories strong {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cd-nutrition__rows {
+  margin: 0;
+}
+
+.cd-nutrition__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--cd-border);
+  font-size: 14px;
+}
+
+.cd-nutrition__row:last-child {
+  border-bottom: 0;
+}
+
+.cd-nutrition__row dt {
+  font-weight: 600;
+}
+
+.cd-nutrition__row dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cd-nutrition__note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--cd-muted);
 }
 
 .cd-qty-row {

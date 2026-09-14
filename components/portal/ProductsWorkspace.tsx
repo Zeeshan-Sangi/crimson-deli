@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { flavorGroupsFor, ingredientsToText } from "@/lib/data/food-menu";
-import type { FoodCategory, FoodItem } from "@/lib/data/types";
+import { flavorGroupsFor, ingredientsToText, isIceCreamItem } from "@/lib/data/food-menu";
+import { NUTRITION_FIELDS } from "@/lib/data/nutrition";
+import type { FoodCategory, FoodItem, Nutrition } from "@/lib/data/types";
 import ActionMenu, { type MenuAction } from "./ActionMenu";
 
 type Draft = {
@@ -18,7 +19,19 @@ type Draft = {
   comesWith: string;
   /** Paid extras, one per line, price optional. */
   extras: string;
+  /** Label boxes as typed, keyed by nutrition field. All blank = no label. */
+  nutrition: NutritionDraft;
+  /** The large cup's label, for items sold in two sizes. */
+  nutritionLarge: NutritionDraft;
+  /** Photo path and label per saved ingredient, keyed by ingredient key. */
+  details: Record<string, { imageUrl: string; nutrition: NutritionDraft }>;
 };
+
+type NutritionDraft = Record<string, string>;
+
+function nutritionToDraft(n?: Nutrition): NutritionDraft {
+  return Object.fromEntries(NUTRITION_FIELDS.map((f) => [f.key, n ? String(n[f.key]) : ""]));
+}
 
 const EMPTY_DRAFT: Draft = {
   name: "",
@@ -29,6 +42,9 @@ const EMPTY_DRAFT: Draft = {
   flavors: {},
   comesWith: "",
   extras: "",
+  nutrition: {},
+  nutritionLarge: {},
+  details: {},
 };
 
 /** "Cherry, Mango" → ["Cherry", "Mango"]. The server trims and de-duplicates. */
@@ -120,6 +136,14 @@ export default function ProductsWorkspace({
         flavorGroupsFor(p).map((g) => [g.key, g.options.join(", ")]),
       ),
       ...ingredientsToText(p),
+      nutrition: nutritionToDraft(p.nutrition),
+      nutritionLarge: nutritionToDraft(p.nutritionLarge),
+      details: Object.fromEntries(
+        (p.ingredients ?? []).map((i) => [
+          i.key,
+          { imageUrl: i.imageUrl ?? "", nutrition: nutritionToDraft(i.nutrition) },
+        ]),
+      ),
     });
     setEditing(p.slug);
   }
@@ -133,12 +157,15 @@ export default function ProductsWorkspace({
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const { flavors, comesWith, extras, ...fields } = draft;
+    const { flavors, comesWith, extras, nutrition, nutritionLarge, details, ...fields } = draft;
     const ok = creating
       ? await request("POST", fields, "new")
       : await save(editingProduct!.slug, {
           ...fields,
           ingredients: { comesWith, extras },
+          ingredientDetails: details,
+          nutrition,
+          ...(isIceCreamItem(editingProduct!) ? { nutritionLarge } : {}),
           ...(flavorGroups.length > 0
             ? {
                 flavorOptions: Object.fromEntries(
@@ -430,6 +457,86 @@ export default function ProductsWorkspace({
                     Leave both boxes empty and the item is not customisable. A line with no
                     price is a free extra.
                   </p>
+
+                  <details className="crm-disclosure">
+                    <summary>
+                      Nutrition facts
+                      <span className="portal-muted">
+                        {editingProduct?.nutrition ? " · shown on the site" : " · not set"}
+                      </span>
+                    </summary>
+                    <p className="portal-muted crm-disclosure__hint">
+                      Per item as normally made, from the store&apos;s own figures. Fill in
+                      every row, typing 0 where it is zero, or leave them all blank and no
+                      label is shown.
+                    </p>
+                    {editingProduct && isIceCreamItem(editingProduct) ? (
+                      <>
+                        <p className="crm-disclosure__label">Small cup</p>
+                        <NutritionFields
+                          value={draft.nutrition}
+                          onChange={(nutrition) => setDraft({ ...draft, nutrition })}
+                        />
+                        <p className="crm-disclosure__label">Large cup</p>
+                        <NutritionFields
+                          value={draft.nutritionLarge}
+                          onChange={(nutritionLarge) => setDraft({ ...draft, nutritionLarge })}
+                        />
+                      </>
+                    ) : (
+                      <NutritionFields
+                        value={draft.nutrition}
+                        onChange={(nutrition) => setDraft({ ...draft, nutrition })}
+                      />
+                    )}
+                  </details>
+
+                  {(editingProduct?.ingredients ?? []).length > 0 && (
+                    <details className="crm-disclosure">
+                      <summary>Ingredient photos and nutrition</summary>
+                      <p className="portal-muted crm-disclosure__hint">
+                        A photo path shows a round picture on the product page; without one
+                        the circle shows the first letter. An ingredient&apos;s figures are
+                        what taking it off removes from the label, or adding it adds.
+                        Ingredients typed above appear here once saved.
+                      </p>
+                      {(editingProduct?.ingredients ?? []).map((ingredient) => {
+                        const detail = draft.details[ingredient.key] ?? {
+                          imageUrl: "",
+                          nutrition: {},
+                        };
+                        const setDetail = (next: typeof detail) =>
+                          setDraft({
+                            ...draft,
+                            details: { ...draft.details, [ingredient.key]: next },
+                          });
+                        return (
+                          <fieldset key={ingredient.key} className="crm-ingredient-detail">
+                            <legend>
+                              {ingredient.name}
+                              <span className="portal-muted">
+                                {ingredient.included ? " · comes with" : " · extra"}
+                              </span>
+                            </legend>
+                            <label>
+                              Photo path
+                              <input
+                                placeholder={`/assets/img/crimson/ingredients/${ingredient.key}.webp`}
+                                value={detail.imageUrl}
+                                onChange={(e) =>
+                                  setDetail({ ...detail, imageUrl: e.target.value })
+                                }
+                              />
+                            </label>
+                            <NutritionFields
+                              value={detail.nutrition}
+                              onChange={(nutrition) => setDetail({ ...detail, nutrition })}
+                            />
+                          </fieldset>
+                        );
+                      })}
+                    </details>
+                  )}
                 </>
               )}
 
@@ -459,5 +566,30 @@ export default function ProductsWorkspace({
         )}
       </dialog>
     </>
+  );
+}
+
+/** One box per label row. Numbers are checked on the server, not here. */
+function NutritionFields({
+  value,
+  onChange,
+}: {
+  value: NutritionDraft;
+  onChange: (next: NutritionDraft) => void;
+}) {
+  return (
+    <div className="crm-nutrition-grid">
+      {NUTRITION_FIELDS.map((field) => (
+        <label key={field.key}>
+          {field.label}
+          {field.unit ? ` (${field.unit})` : ""}
+          <input
+            inputMode="decimal"
+            value={value[field.key] ?? ""}
+            onChange={(e) => onChange({ ...value, [field.key]: e.target.value })}
+          />
+        </label>
+      ))}
+    </div>
   );
 }
