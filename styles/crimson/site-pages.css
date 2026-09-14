@@ -1636,13 +1636,15 @@
   color: #fff;
 }
 
-.cd-summary a {
+/* Text links only. `.cd-summary a` outranks `.cd-btn-solid`, so without the
+   :not() the checkout button's label turned crimson on its crimson fill. */
+.cd-summary a:not(.cd-btn-solid) {
   color: var(--cd-crimson);
   font-weight: 700;
   text-decoration: none;
 }
 
-.cd-summary a:hover {
+.cd-summary a:not(.cd-btn-solid):hover {
   text-decoration: underline;
 }
 
