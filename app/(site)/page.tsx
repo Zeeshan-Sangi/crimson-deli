@@ -70,8 +70,12 @@ export default async function HomePage() {
     const inCategory = visible.filter((p) => p.categorySlug === category.slug);
     return inCategory.find((p) => p.available) ?? inCategory.slice(0, 1);
   });
-  const { store } = await getSettings();
+  const { store, rewards } = await getSettings();
   const hoursLine = formatHoursLine(store.hours);
+  // The numbers are whatever /admin/settings holds, and the section goes when
+  // the store switches rewards off.
+  const showRewards =
+    rewards.enabled && rewards.pointsPerDollar > 0 && rewards.pointsPerDollarOff > 0;
 
   return (
     <>
@@ -207,6 +211,52 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {showRewards && (
+        <section className="cd-section cd-section--cream">
+          <div className="cd-page-wrap">
+            <div className="cd-points-promo">
+              <div className="cd-points-promo__copy">
+                <span className="cd-points-promo__eyebrow">Reward points</span>
+                <h2 className="wow fadeInUp" data-wow-delay=".3s">
+                  Earn points on every pickup.
+                </h2>
+                <p>
+                  Sign in when you order fresh food and every dollar you spend earns
+                  points. They are added once you collect your order, and come off a
+                  later one at checkout.
+                </p>
+                <div className="cd-points-promo__actions">
+                  <Link href="/food" className="cd-btn-solid">
+                    Start earning
+                  </Link>
+                  <Link href="/account" className="cd-btn-solid cd-btn-solid--ghost">
+                    See your points
+                  </Link>
+                </div>
+              </div>
+              <ul className="cd-points-promo__facts">
+                <li>
+                  <strong>{rewards.pointsPerDollar.toLocaleString("en-US")} points</strong>
+                  <span>for every $1 you spend</span>
+                </li>
+                <li>
+                  <strong>{rewards.pointsPerDollarOff.toLocaleString("en-US")} points</strong>
+                  <span>
+                    take $1 off an order
+                    {rewards.minRedeemPoints > rewards.pointsPerDollarOff &&
+                      `, once you have ${rewards.minRedeemPoints.toLocaleString("en-US")}`}
+                  </span>
+                </li>
+                <li>
+                  <strong>On pickup</strong>
+                  <span>points are added when you collect, not when you order</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="cd-section cd-section--white">
         <div className="cd-page-wrap">

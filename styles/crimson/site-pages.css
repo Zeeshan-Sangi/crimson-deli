@@ -974,6 +974,94 @@
   accent-color: var(--cd-crimson);
 }
 
+/* ---- reward points on the home page ---- */
+
+.cd-points-promo {
+  display: grid;
+  gap: 28px;
+  padding: 32px 24px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius);
+  background: var(--cd-surface);
+}
+
+@media (min-width: 768px) {
+  .cd-points-promo {
+    padding: 48px 56px;
+  }
+}
+
+@media (min-width: 992px) {
+  .cd-points-promo {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 48px;
+  }
+}
+
+.cd-points-promo__eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cd-crimson);
+}
+
+.cd-points-promo__copy h2 {
+  margin: 0 0 16px;
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--cd-ink);
+}
+
+.cd-points-promo__copy p {
+  margin: 0 0 24px;
+  max-width: 34rem;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--cd-muted);
+}
+
+.cd-points-promo__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cd-points-promo__facts {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cd-points-promo__facts li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 18px 22px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius-sm);
+  background: var(--cd-cream);
+}
+
+.cd-points-promo__facts strong {
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--cd-crimson);
+}
+
+.cd-points-promo__facts span {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--cd-muted);
+}
+
 /* ---- make it your own ---- */
 
 .cd-customise {
