@@ -53,6 +53,12 @@ export const convenienceCategories = [
   // are unreachable from any department page. "Essentials" is the label the
   // data itself carries for them.
   { slug: "mixed", name: "Essentials" },
+  // In-store drink deals from the landing-page posters. Each poster links to
+  // its own department; none of these are on DoorDash.
+  { slug: "ryl-iced-tea", name: "The Ryl Co. Iced Tea" },
+  { slug: "vinut-juice", name: "Vinut 100% Juice" },
+  { slug: "vivo-cans", name: "Vivo Fruit Drink Cans" },
+  { slug: "vivo-bottles", name: "Vivo Fruit Drink Bottles" },
 ] as const;
 
 export type ConvenienceCategory = (typeof convenienceCategories)[number];

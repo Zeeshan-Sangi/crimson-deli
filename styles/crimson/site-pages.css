@@ -337,123 +337,254 @@
   }
 }
 
-.cd-food-card {
+/* ==========================================================================
+   Modern Product Cards (Match Reference UI)
+   ========================================================================== */
+
+.cd-food-card,
+.cd-store-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: 1px solid var(--cd-border);
-  border-radius: var(--cd-radius);
-  background: var(--cd-surface);
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 12px 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.cd-food-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(144, 0, 0, 0.22);
-  box-shadow: 0 12px 28px rgba(144, 0, 0, 0.1);
+.cd-food-card:hover,
+.cd-store-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(144, 0, 0, 0.25);
+  box-shadow: 0 18px 36px -4px rgba(0, 0, 0, 0.08), 0 4px 14px -2px rgba(144, 0, 0, 0.07);
+}
+
+/* --- Inset Media / Thumbnail --- */
+.cd-food-card__media-wrap,
+.cd-store-card__media-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f4f4f6;
+}
+
+.cd-store-card__media-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .cd-food-card__thumb {
   position: relative;
-  display: block;
-  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1.15 / 1;
   overflow: hidden;
-  background: var(--cd-cream);
+  background: linear-gradient(180deg, #f8f8fa 0%, #ececf0 100%);
+  text-decoration: none;
+}
+
+.cd-store-card__thumb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1.15 / 1;
+  overflow: hidden;
+  background: #ffffff;
+  text-decoration: none;
 }
 
 .cd-food-card__thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s ease;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cd-food-card:hover .cd-food-card__thumb img {
-  transform: scale(1.04);
+.cd-store-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 16px;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.cd-food-card__badge {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 6px 12px 6px 10px;
-  border-bottom-right-radius: var(--cd-radius-sm);
-  background: var(--cd-crimson);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.cd-food-card:hover .cd-food-card__thumb img,
+.cd-store-card:hover .cd-store-card__thumb img {
+  transform: scale(1.06);
 }
 
-.cd-food-card__body {
+
+/* --- Card Body --- */
+.cd-food-card__body,
+.cd-store-card__body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 16px 18px 18px;
+  padding: 14px 4px 0;
 }
 
-.cd-food-card__title {
-  margin: 0 0 8px;
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.cd-food-card__title a {
-  color: var(--cd-ink);
-  text-decoration: none;
-}
-
-.cd-food-card__title a:hover {
-  color: var(--cd-crimson);
-}
-
-.cd-food-card__meta {
+/* --- Header: Title + Price Badge --- */
+.cd-food-card__header,
+.cd-store-card__header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--cd-muted);
-}
-
-.cd-food-card__meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.cd-food-card__desc {
-  margin: 0 0 14px;
-  flex: 1;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--cd-muted);
-}
-
-.cd-food-card__foot {
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  margin-bottom: 6px;
 }
 
-.cd-food-card__price {
-  font-size: 17px;
+.cd-food-card__title,
+.cd-store-card__title {
+  margin: 0;
+  font-size: 18px;
   font-weight: 800;
-  color: var(--cd-crimson);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
-.cd-food-card__btn {
-  min-height: 38px;
-  padding: 0 14px;
-  font-size: 13px;
+.cd-food-card__title a,
+.cd-store-card__title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
+
+.cd-food-card__title a:hover,
+.cd-store-card__title a:hover {
+  color: #900000;
+}
+
+/* Price Badge Pill */
+.cd-card-price-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cd-crimson, #900000);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 4px 11px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 6px rgba(144, 0, 0, 0.2);
+}
+
+/* --- Description --- */
+.cd-food-card__desc,
+.cd-store-card__meta {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #64748b;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 38px;
+}
+
+/* --- Tags Row --- */
+.cd-card-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  margin-bottom: 14px;
+}
+
+.cd-card-tag {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.cd-card-tag--primary {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: rgba(153, 27, 27, 0.12);
+}
+
+.cd-card-tag--muted {
+  background: #f4f4f5;
+  color: #71717a;
+}
+
+.cd-card-tag--doordash {
+  background: #fff1f0;
+  color: #eb1700;
+  border-color: rgba(235, 23, 0, 0.15);
+}
+
+/* --- Full-Width Action Button --- */
+.cd-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  border-radius: 9999px;
+  background: var(--cd-crimson, #900000);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 3px 10px rgba(144, 0, 0, 0.22);
+}
+
+.cd-card-btn:hover {
+  background: var(--cd-crimson-deep, #6b0000);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(144, 0, 0, 0.35);
+}
+
+.cd-card-btn:active {
+  transform: translateY(0);
+}
+
+.cd-card-btn--doordash {
+  background: #eb1700;
+  box-shadow: 0 3px 10px rgba(235, 23, 0, 0.22);
+}
+
+.cd-card-btn--doordash:hover {
+  background: #cc1400;
+  box-shadow: 0 6px 18px rgba(235, 23, 0, 0.35);
+}
+
 
 /* ---- offers slider ---- */
 
@@ -462,7 +593,10 @@
 }
 
 .cd-offer-card {
+  position: relative;
   display: block;
+  aspect-ratio: 2 / 3;
+  isolation: isolate;
   border: 1px solid var(--cd-border);
   border-radius: var(--cd-radius);
   overflow: hidden;
@@ -476,10 +610,23 @@
   box-shadow: 0 10px 24px rgba(144, 0, 0, 0.1);
 }
 
+/* Backdrop for posters that are not 2:3: the same image, blurred. */
+.cd-offer-card::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -20px;
+  background: var(--offer-img) center / cover no-repeat;
+  filter: blur(18px) saturate(1.1);
+}
+
 .cd-offer-card img {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* ---- CTA split ---- */
@@ -1495,101 +1642,7 @@
   }
 }
 
-.cd-store-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  border: 1px solid var(--cd-border);
-  border-radius: var(--cd-radius);
-  background: var(--cd-surface);
-  overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
 
-.cd-store-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(144, 0, 0, 0.08);
-}
-
-.cd-store-card__thumb {
-  position: relative;
-  display: block;
-  background: var(--cd-cream);
-}
-
-.cd-store-card__thumb img {
-  display: block;
-  width: 100%;
-  height: 200px;
-  object-fit: contain;
-  padding: 12px;
-}
-
-.cd-store-card__badge {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 6px 12px 6px 10px;
-  border-bottom-right-radius: var(--cd-radius-sm);
-  background: var(--cd-crimson);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.cd-store-card__body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 16px 18px 18px;
-}
-
-.cd-store-card__title {
-  margin: 0 0 8px;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
-.cd-store-card__title a {
-  color: var(--cd-ink);
-  text-decoration: none;
-}
-
-.cd-store-card__title a:hover {
-  color: var(--cd-crimson);
-}
-
-.cd-store-card__meta {
-  margin: 0 0 14px;
-  flex: 1;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--cd-muted);
-}
-
-.cd-store-card__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.cd-store-card__price {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--cd-crimson);
-}
-
-.cd-store-card__btn {
-  min-height: 36px;
-  padding: 0 12px;
-  font-size: 12px;
-}
 
 .cd-store-cta {
   margin-top: 40px;
@@ -2328,9 +2381,13 @@
   }
 }
 
+/* align-content: start keeps label and input packed at the top when the
+   neighbouring field in the row grows (an error message under it), instead of
+   spreading the extra height between them. */
 .cd-form-field {
   display: grid;
   gap: 6px;
+  align-content: start;
 }
 
 .cd-form-field label {
@@ -2365,11 +2422,29 @@
   border-color: var(--cd-crimson);
 }
 
+/* A field that failed validation: red outline and a faint red wash, kept
+   while focused so the problem stays visible until it is fixed. */
+.cd-form input[aria-invalid="true"],
+.cd-form textarea[aria-invalid="true"],
+.cd-form input[aria-invalid="true"]:focus,
+.cd-form textarea[aria-invalid="true"]:focus {
+  border-color: #d92d20;
+  background: #fff5f4;
+}
+
 .cd-form-error {
   margin: 0;
   font-size: 13px;
-  color: var(--cd-crimson);
+  color: #c01d12;
   font-weight: 600;
+}
+
+/* reCAPTCHA checkbox: reserve its height so the button below does not jump
+   when Google's widget arrives. */
+.cd-recaptcha {
+  display: grid;
+  gap: 6px;
+  min-height: 78px;
 }
 
 .cd-form-success {
@@ -2556,6 +2631,10 @@
   margin-top: 0;
 }
 
+.cd-contact-form .cd-recaptcha {
+  margin-top: 18px;
+}
+
 .cd-contact-form__submit {
   margin-top: 16px;
 }
@@ -2587,6 +2666,40 @@
   display: grid;
   gap: 28px;
   align-items: stretch;
+}
+
+/* Store photo card. These base rules used to live in main.css, which the
+   storefront no longer loads; without them the photo spilled out of its box
+   and sat on top of the address below it. */
+.contact-store-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.contact-store-card__image {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.contact-store-card__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contact-store-card__body {
+  padding-top: 20px;
+}
+
+.contact-store-card__body h3 {
+  margin: 0 0 4px;
+}
+
+.contact-store-card__body > p {
+  margin: 0 0 8px;
 }
 
 .cd-contact-layout .contact-store-card__image {
@@ -3263,5 +3376,36 @@
 
   .cd-faq__trigger {
     font-size: 15px;
+  }
+}
+
+/* Contact page map, between the store details and the footer CTA. */
+.cd-contact-map {
+  padding: 0 0 16px;
+  background: var(--cd-cream, #fbf8f5);
+}
+
+.cd-contact-map__frame {
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid #e5ddd6;
+  height: 420px;
+  background: #f1ece8;
+}
+
+.cd-contact-map__frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (max-width: 767px) {
+  .cd-contact-map {
+    padding-bottom: 8px;
+  }
+
+  .cd-contact-map__frame {
+    height: 300px;
   }
 }

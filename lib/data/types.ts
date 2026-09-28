@@ -100,6 +100,8 @@ export type ConvenienceProduct = {
   catLabel: string;
   img: string;
   slug: string;
+  /** Sold at the counter but not listed on DoorDash, so the card sends no one there. */
+  inStoreOnly?: boolean;
 };
 
 export type ConvenienceCatalog = {

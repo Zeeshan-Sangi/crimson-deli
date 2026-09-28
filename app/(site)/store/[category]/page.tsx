@@ -10,6 +10,14 @@ import {
   productsInCategory,
 } from "@/lib/data/convenience";
 
+/** The poster deal each in-store drink department carries, for its page description. */
+const IN_STORE_DEALS: Record<string, string> = {
+  "ryl-iced-tea": "1 for $2.69 or 2 for $5",
+  "vinut-juice": "$5 a can",
+  "vivo-cans": "1 for $2.09 or 2 for $3.50",
+  "vivo-bottles": "1 for $2.99 or 2 for $5",
+};
+
 export function generateStaticParams() {
   return convenienceCategories.map((c) => ({ category: c.slug }));
 }
@@ -24,7 +32,9 @@ export async function generateMetadata({
   if (!found) return { title: "Not found" };
   return {
     title: `${found.name} · Everyday Essentials`,
-    description: `${found.name} at Crimson Deli, on our shelves in-store or delivered on DoorDash.`,
+    description: found.slug in IN_STORE_DEALS
+      ? `${found.name} at Crimson Deli, in-store on Ogontz Avenue. ${IN_STORE_DEALS[found.slug]}.`
+      : `${found.name} at Crimson Deli, on our shelves in-store or delivered on DoorDash.`,
     alternates: { canonical: `/store/${found.slug}` },
   };
 }
@@ -44,6 +54,8 @@ export default async function StoreCategoryPage({
 
   const products = await productsInCategory(category);
   const { doordashUrl } = await getCatalog();
+  // The poster deals are counter-only; their pages have nothing on DoorDash to send people to.
+  const inStoreOnly = products.length > 0 && products.every((p) => p.inStoreOnly);
 
   return (
     <>
@@ -60,7 +72,9 @@ export default async function StoreCategoryPage({
           <div className="cd-section-head">
             <h2>{found.name}</h2>
             <p>
-              {products.length > 0
+              {inStoreOnly
+                ? `${products.length} ${products.length === 1 ? "item" : "items"}, in-store only. Pick them up at the counter on Ogontz Avenue.`
+                : products.length > 0
                 ? `${products.length} ${products.length === 1 ? "item" : "items"} in our catalog. Pick them up in-store, or order for delivery on DoorDash.`
                 : "This department is on our shelves in-store. The catalog listing is still being added, so the full range is on DoorDash."}
             </p>
@@ -75,14 +89,16 @@ export default async function StoreCategoryPage({
           )}
 
           <div className="cd-hero__actions" style={{ justifyContent: "center" }}>
-            <a
-              href={doordashUrl}
-              target="_blank"
-              rel="noopener"
-              className="cd-btn-solid"
-            >
-              Browse {found.name} on DoorDash ↗
-            </a>
+            {!inStoreOnly && (
+              <a
+                href={doordashUrl}
+                target="_blank"
+                rel="noopener"
+                className="cd-btn-solid"
+              >
+                Browse {found.name} on DoorDash ↗
+              </a>
+            )}
             <Link href="/store" className="cd-btn-solid cd-btn-solid--ghost">
               ← All categories
             </Link>

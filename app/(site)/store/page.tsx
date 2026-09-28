@@ -76,7 +76,7 @@ export default async function StorePage({
     redirect(storePageUrl(totalPages));
   }
 
-  const popular = products.slice(0, 2);
+  const popular = products.filter((p) => !p.inStoreOnly).slice(0, 2);
 
   return (
     <>

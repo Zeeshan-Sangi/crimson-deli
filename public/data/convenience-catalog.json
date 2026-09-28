@@ -1,7 +1,7 @@
 {
   "doordashUrl": "https://www.doordash.com/convenience/store/crimson-deli-inc.-philadelphia-28047799/",
-  "updated": "2026-09-12",
-  "count": 96,
+  "updated": "2026-09-29",
+  "count": 115,
   "products": [
     {
       "name": "7Up Caffeine-Free Lemon Lime Flavored Soda Cans (12 fl oz x 12 ct)",
@@ -770,6 +770,177 @@
       "img": "/assets/img/crimson/convenience/yoo-hoo-chocolate-drink-cans-11-fl-oz-x-6-ct-dd2b53b0.webp",
       "slug": "yoo-hoo-chocolate-drink-cans-11-fl-oz-x-6-ct-dd2b53b0",
       "catLabel": "Essentials"
+    },
+    {
+      "name": "The Ryl Co. Rocket Pop Iced Tea Can (16 fl oz)",
+      "price": "$2.69",
+      "cat": "ryl-iced-tea",
+      "img": "/assets/img/crimson/convenience/the-ryl-co-rocket-pop-iced-tea-can-16-fl-oz-36ad7b47.webp",
+      "slug": "the-ryl-co-rocket-pop-iced-tea-can-16-fl-oz-36ad7b47",
+      "catLabel": "The Ryl Co. Iced Tea",
+      "inStoreOnly": true
+    },
+    {
+      "name": "The Ryl Co. Rocket Pop Iced Tea Cans (16 fl oz x 2)",
+      "price": "$5.00",
+      "cat": "ryl-iced-tea",
+      "img": "/assets/img/crimson/convenience/the-ryl-co-rocket-pop-iced-tea-cans-16-fl-oz-x-2-b1a4b9a4.webp",
+      "slug": "the-ryl-co-rocket-pop-iced-tea-cans-16-fl-oz-x-2-b1a4b9a4",
+      "catLabel": "The Ryl Co. Iced Tea",
+      "inStoreOnly": true
+    },
+    {
+      "name": "The Ryl Co. Half & Half Iced Tea with Lemonade Can (16 fl oz)",
+      "price": "$2.69",
+      "cat": "ryl-iced-tea",
+      "img": "/assets/img/crimson/convenience/the-ryl-co-half-half-iced-tea-with-lemonade-can-16-260bfb63.webp",
+      "slug": "the-ryl-co-half-half-iced-tea-with-lemonade-can-16-260bfb63",
+      "catLabel": "The Ryl Co. Iced Tea",
+      "inStoreOnly": true
+    },
+    {
+      "name": "The Ryl Co. Half & Half Iced Tea with Lemonade Cans (16 fl oz x 2)",
+      "price": "$5.00",
+      "cat": "ryl-iced-tea",
+      "img": "/assets/img/crimson/convenience/the-ryl-co-half-half-iced-tea-with-lemonade-cans-1-7117f1b5.webp",
+      "slug": "the-ryl-co-half-half-iced-tea-with-lemonade-cans-1-7117f1b5",
+      "catLabel": "The Ryl Co. Iced Tea",
+      "inStoreOnly": true
+    },
+    {
+      "name": "The Ryl Co. Southern Sweet Iced Tea with Lemonade Can (16 fl oz)",
+      "price": "$2.69",
+      "cat": "ryl-iced-tea",
+      "img": "/assets/img/crimson/convenience/the-ryl-co-southern-sweet-iced-tea-with-lemonade-c-0235904a.webp",
+      "slug": "the-ryl-co-southern-sweet-iced-tea-with-lemonade-c-0235904a",
+      "catLabel": "The Ryl Co. Iced Tea",
+      "inStoreOnly": true
+    },
+    {
+      "name": "The Ryl Co. Southern Sweet Iced Tea with Lemonade Cans (16 fl oz x 2)",
+      "price": "$5.00",
+      "cat": "ryl-iced-tea",
+      "img": "/assets/img/crimson/convenience/the-ryl-co-southern-sweet-iced-tea-with-lemonade-c-e0ee07c0.webp",
+      "slug": "the-ryl-co-southern-sweet-iced-tea-with-lemonade-c-e0ee07c0",
+      "catLabel": "The Ryl Co. Iced Tea",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vinut 100% Mango Juice Can (500 ml)",
+      "price": "$5.00",
+      "cat": "vinut-juice",
+      "img": "/assets/img/crimson/convenience/vinut-100-mango-juice-can-500-ml-0ac122de.webp",
+      "slug": "vinut-100-mango-juice-can-500-ml-0ac122de",
+      "catLabel": "Vinut 100% Juice",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vinut 100% Sugarcane with Calamansi Juice Can (500 ml)",
+      "price": "$5.00",
+      "cat": "vinut-juice",
+      "img": "/assets/img/crimson/convenience/vinut-100-sugarcane-with-calamansi-juice-can-500-m-936653fb.webp",
+      "slug": "vinut-100-sugarcane-with-calamansi-juice-can-500-m-936653fb",
+      "catLabel": "Vinut 100% Juice",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vinut 100% Lychee Juice Can (490 ml)",
+      "price": "$5.00",
+      "cat": "vinut-juice",
+      "img": "/assets/img/crimson/convenience/vinut-100-lychee-juice-can-490-ml-99e21805.webp",
+      "slug": "vinut-100-lychee-juice-can-490-ml-99e21805",
+      "catLabel": "Vinut 100% Juice",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Mango Fruit Drink with Fruit Chunks Can (250 ml)",
+      "price": "$2.09",
+      "cat": "vivo-cans",
+      "img": "/assets/img/crimson/convenience/vivo-mango-fruit-drink-with-fruit-chunks-can-250-m-49050975.webp",
+      "slug": "vivo-mango-fruit-drink-with-fruit-chunks-can-250-m-49050975",
+      "catLabel": "Vivo Fruit Drink Cans",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Mango Fruit Drink with Fruit Chunks Cans (250 ml x 2)",
+      "price": "$3.50",
+      "cat": "vivo-cans",
+      "img": "/assets/img/crimson/convenience/vivo-mango-fruit-drink-with-fruit-chunks-cans-250-95f2614a.webp",
+      "slug": "vivo-mango-fruit-drink-with-fruit-chunks-cans-250-95f2614a",
+      "catLabel": "Vivo Fruit Drink Cans",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Peach Fruit Drink with Fruit Chunks Can (250 ml)",
+      "price": "$2.09",
+      "cat": "vivo-cans",
+      "img": "/assets/img/crimson/convenience/vivo-peach-fruit-drink-with-fruit-chunks-can-250-m-427cd9a4.webp",
+      "slug": "vivo-peach-fruit-drink-with-fruit-chunks-can-250-m-427cd9a4",
+      "catLabel": "Vivo Fruit Drink Cans",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Peach Fruit Drink with Fruit Chunks Cans (250 ml x 2)",
+      "price": "$3.50",
+      "cat": "vivo-cans",
+      "img": "/assets/img/crimson/convenience/vivo-peach-fruit-drink-with-fruit-chunks-cans-250-00de12cf.webp",
+      "slug": "vivo-peach-fruit-drink-with-fruit-chunks-cans-250-00de12cf",
+      "catLabel": "Vivo Fruit Drink Cans",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Guava Fruit Drink Bottle (16.9 fl oz)",
+      "price": "$2.99",
+      "cat": "vivo-bottles",
+      "img": "/assets/img/crimson/convenience/vivo-guava-fruit-drink-bottle-16-9-fl-oz-b521b214.webp",
+      "slug": "vivo-guava-fruit-drink-bottle-16-9-fl-oz-b521b214",
+      "catLabel": "Vivo Fruit Drink Bottles",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Guava Fruit Drink Bottles (16.9 fl oz x 2)",
+      "price": "$5.00",
+      "cat": "vivo-bottles",
+      "img": "/assets/img/crimson/convenience/vivo-guava-fruit-drink-bottles-16-9-fl-oz-x-2-edaf72dc.webp",
+      "slug": "vivo-guava-fruit-drink-bottles-16-9-fl-oz-x-2-edaf72dc",
+      "catLabel": "Vivo Fruit Drink Bottles",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Peach Fruit Drink Bottle (16.9 fl oz)",
+      "price": "$2.99",
+      "cat": "vivo-bottles",
+      "img": "/assets/img/crimson/convenience/vivo-peach-fruit-drink-bottle-16-9-fl-oz-1401f1f7.webp",
+      "slug": "vivo-peach-fruit-drink-bottle-16-9-fl-oz-1401f1f7",
+      "catLabel": "Vivo Fruit Drink Bottles",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Peach Fruit Drink Bottles (16.9 fl oz x 2)",
+      "price": "$5.00",
+      "cat": "vivo-bottles",
+      "img": "/assets/img/crimson/convenience/vivo-peach-fruit-drink-bottles-16-9-fl-oz-x-2-56b6b4d4.webp",
+      "slug": "vivo-peach-fruit-drink-bottles-16-9-fl-oz-x-2-56b6b4d4",
+      "catLabel": "Vivo Fruit Drink Bottles",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Mango Fruit Drink Bottle (16.9 fl oz)",
+      "price": "$2.99",
+      "cat": "vivo-bottles",
+      "img": "/assets/img/crimson/convenience/vivo-mango-fruit-drink-bottle-16-9-fl-oz-159ac2a4.webp",
+      "slug": "vivo-mango-fruit-drink-bottle-16-9-fl-oz-159ac2a4",
+      "catLabel": "Vivo Fruit Drink Bottles",
+      "inStoreOnly": true
+    },
+    {
+      "name": "Vivo Mango Fruit Drink Bottles (16.9 fl oz x 2)",
+      "price": "$5.00",
+      "cat": "vivo-bottles",
+      "img": "/assets/img/crimson/convenience/vivo-mango-fruit-drink-bottles-16-9-fl-oz-x-2-f913996c.webp",
+      "slug": "vivo-mango-fruit-drink-bottles-16-9-fl-oz-x-2-f913996c",
+      "catLabel": "Vivo Fruit Drink Bottles",
+      "inStoreOnly": true
     }
   ],
   "priceSource": "Alberta POS in-store price list"
