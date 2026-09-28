@@ -3,7 +3,7 @@ import Link from "next/link";
 import PortalShell from "@/components/portal/PortalShell";
 import { requirePageRole } from "@/lib/auth/current-user";
 import { listOrders } from "@/lib/orders/store";
-import { foodItems } from "@/lib/data/food-menu";
+import { listProducts } from "@/lib/products/store";
 import { listVisibleProducts } from "@/lib/data/convenience";
 import type { Order, OrderStatus } from "@/lib/orders/types";
 
@@ -47,14 +47,18 @@ function topItems(orders: Order[]) {
 
 export default async function AdminDashboard() {
   const user = await requirePageRole(["admin"]);
-  const orders = await listOrders();
-  const listedEssentials = (await listVisibleProducts()).length;
+  const [orders, products, visibleEssentials] = await Promise.all([
+    listOrders(),
+    listProducts(),
+    listVisibleProducts(),
+  ]);
+  const listedEssentials = visibleEssentials.length;
 
   const today = orders.filter((o) => isToday(o.createdAt));
   const open = orders.filter((o) =>
     ["received", "preparing", "packed"].includes(o.status),
   );
-  const unpriced = foodItems.filter((f) => f.priceCents === null).length;
+  const unpriced = products.filter((f) => f.priceCents === null).length;
 
   const revenueKnown = orders
     .filter((o) => o.status === "picked_up" && o.totalCents !== null)
@@ -95,7 +99,7 @@ export default async function AdminDashboard() {
 
       {unpriced > 0 && (
         <div className="portal-note" style={{ marginTop: 0, marginBottom: 16 }}>
-          <strong>{unpriced} of {foodItems.length} fresh food items have no price yet.</strong>{" "}
+          <strong>{unpriced} of {products.length} fresh food items have no price yet.</strong>{" "}
           Totals stay blank and customers pay at the counter until the store supplies
           them. Add them in <Link href="/admin/products">Products</Link>.
         </div>
@@ -182,7 +186,7 @@ export default async function AdminDashboard() {
             <tbody>
               <tr>
                 <td>Fresh food items</td>
-                <td style={{ textAlign: "right", fontWeight: 700 }}>{foodItems.length}</td>
+                <td style={{ textAlign: "right", fontWeight: 700 }}>{products.length}</td>
               </tr>
               <tr>
                 <td>Convenience products</td>
@@ -191,7 +195,7 @@ export default async function AdminDashboard() {
               <tr>
                 <td>Sold out</td>
                 <td style={{ textAlign: "right", fontWeight: 700 }}>
-                  {foodItems.filter((f) => !f.available).length}
+                  {products.filter((f) => !f.available).length}
                 </td>
               </tr>
             </tbody>

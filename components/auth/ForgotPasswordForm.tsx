@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useId, useState } from "react";
+import { useFormGuard } from "@/components/security/FormGuard";
+import { emailError } from "@/lib/forms/validate";
 
 export default function ForgotPasswordForm() {
   const emailId = useId();
@@ -9,19 +11,31 @@ export default function ForgotPasswordForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [emailErr, setEmailErr] = useState<string | undefined>();
+  const guard = useFormGuard();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
-    setBusy(true);
     setError(null);
+
+    const bad = emailError(email);
+    setEmailErr(bad);
+    if (bad) return;
+    if (!guard.ready()) {
+      setError(guard.captchaPrompt);
+      return;
+    }
+
+    setBusy(true);
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, ...guard.payload() }),
       });
       const data = await res.json().catch(() => ({}));
+      guard.reset();
       if (!res.ok) {
         setError(data.error ?? "Could not send the reset link.");
         return;
@@ -64,7 +78,7 @@ export default function ForgotPasswordForm() {
         new password.
       </p>
 
-      <form className="auth-form" onSubmit={onSubmit}>
+      <form className="auth-form" onSubmit={onSubmit} noValidate>
         <div className="auth-field">
           <label className="auth-label" htmlFor={emailId}>
             Email address
@@ -75,12 +89,20 @@ export default function ForgotPasswordForm() {
             className="auth-input"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (emailErr) setEmailErr(emailError(e.target.value));
+            }}
+            onBlur={() => email && setEmailErr(emailError(email))}
             autoComplete="email"
             required
             autoFocus
+            aria-invalid={!!emailErr}
           />
+          {emailErr && <p className="auth-field-error">{emailErr}</p>}
         </div>
+
+        {guard.fields}
 
         {error && (
           <p className="auth-error" role="alert">

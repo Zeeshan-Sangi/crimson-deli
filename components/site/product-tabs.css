@@ -175,6 +175,17 @@
 
 .cd-reviewform textarea { resize: vertical; }
 
+.cd-reviewform input[aria-invalid="true"],
+.cd-reviewform textarea[aria-invalid="true"],
+.cd-reviewform input[aria-invalid="true"]:focus,
+.cd-reviewform textarea[aria-invalid="true"]:focus {
+  border-color: #d92d20;
+  background: #fff5f4;
+}
+
+.cd-reviewform .cd-form-error { margin: 0; font-size: 13px; font-weight: 600; color: #c01d12; }
+.cd-reviewform .cd-recaptcha { min-height: 78px; }
+
 .cd-reviewform input:focus,
 .cd-reviewform textarea:focus {
   outline: none;

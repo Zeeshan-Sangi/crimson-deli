@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { authenticate, needsEmailVerification, sessionUserFrom } from "@/lib/auth/store";
 import { SESSION_COOKIE, createSessionCookie, sessionCookieOptions } from "@/lib/auth/session";
+import { guardForm, type GuardedBody } from "@/lib/security/form-guard";
 import { clientIp, consumeShared, resetShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -8,10 +9,12 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   let email = "";
   let password = "";
+  let body: GuardedBody;
   try {
-    const body = (await request.json()) as { email?: string; password?: string };
-    email = body.email ?? "";
-    password = body.password ?? "";
+    const parsed = (await request.json()) as GuardedBody & { email?: string; password?: string };
+    body = parsed;
+    email = parsed.email ?? "";
+    password = parsed.password ?? "";
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
@@ -26,6 +29,10 @@ export async function POST(request: Request) {
       { status: 429, headers: { "retry-after": String(limit.retryAfterSec) } },
     );
   }
+
+  // No fill-time check: a password manager can fill and submit in a blink.
+  const blocked = await guardForm(body, { ip, minFillMs: 0 });
+  if (blocked) return blocked;
 
   const user = await authenticate(email, password);
   // One message for both wrong-email and wrong-password: never confirm which

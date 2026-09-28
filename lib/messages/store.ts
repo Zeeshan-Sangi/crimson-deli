@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { isEmail, isPhone } from "@/lib/forms/validate";
 import type { ContactMessage } from "./types";
 
 const COLLECTION = "messages";
@@ -47,13 +48,16 @@ export async function createMessage(input: {
   const name = input.name.trim();
   const email = input.email.trim();
   const body = input.body.trim();
-  const phone = input.phone?.trim() || null;
-  const subject = input.subject?.trim() || `Message from ${name}`;
+  const phone = input.phone?.trim() ?? "";
+  const subject = input.subject?.trim() ?? "";
 
   if (!name) throw new MessageError("Please tell us your name.");
   if (name.length > MAX_NAME) throw new MessageError("That name is too long.");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+  if (!isEmail(email))
     throw new MessageError("Please enter a valid email address.");
+  if (!isPhone(phone))
+    throw new MessageError("Please enter a 10-digit phone number.");
+  if (!subject) throw new MessageError("Please add a subject.");
   if (!body) throw new MessageError("Please write a message.");
   if (body.length > MAX_BODY) throw new MessageError("That message is too long.");
   if (subject.length > MAX_SUBJECT) throw new MessageError("That subject is too long.");

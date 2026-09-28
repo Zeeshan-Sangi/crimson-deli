@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { isEmail, isPhone } from "@/lib/forms/validate";
 import { hashPassword, verifyPassword } from "./password";
 import type { Role, User } from "./types";
 
@@ -103,13 +104,13 @@ export async function createUser(input: {
   const phoneRaw = input.phone?.trim() ?? "";
   const phone = phoneRaw ? normalizePhone(phoneRaw) : null;
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+  if (!isEmail(email))
     throw new AuthError("That email address is not valid.");
   if (!name) throw new AuthError("A name is required.");
   if (input.password.length < 8)
     throw new AuthError("Password must be at least 8 characters.");
-  if (phone && phone.length < 10)
-    throw new AuthError("Enter a valid phone number.");
+  if (phoneRaw && !isPhone(phoneRaw))
+    throw new AuthError("Please enter a 10-digit phone number.");
 
   const passwordHash = await hashPassword(input.password);
 

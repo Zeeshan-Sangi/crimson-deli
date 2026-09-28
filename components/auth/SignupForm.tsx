@@ -3,8 +3,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
+import { useFormGuard } from "@/components/security/FormGuard";
+import { cleanPhoneInput, emailError, phoneError, requiredError } from "@/lib/forms/validate";
 import FirebaseAuthButtons from "./FirebaseAuthButtons";
 import PasswordInput from "./PasswordInput";
+
+type FieldErrors = { name?: string; phone?: string; email?: string; password?: string };
+
+const RULES: Record<keyof FieldErrors, (v: string) => string | undefined> = {
+  name: (v) => requiredError(v, "Please enter your full name."),
+  phone: (v) => phoneError(v),
+  email: (v) => emailError(v),
+  password: (v) =>
+    !v ? "Please choose a password." : v.length < 8 ? "Use at least 8 characters." : undefined,
+};
 
 export default function SignupForm() {
   const nameId = useId();
@@ -22,20 +34,51 @@ export default function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const guard = useFormGuard();
+
+  const [touched, setTouched] = useState<Partial<Record<keyof FieldErrors, boolean>>>({});
+
+  // Checked when a field is left, then live while typing, so the warning shows
+  // early and clears as soon as the value is right.
+  function recheck(key: keyof FieldErrors, value: string) {
+    if (touched[key]) setFieldErrors((f) => ({ ...f, [key]: RULES[key](value) }));
+  }
+
+  function leave(key: keyof FieldErrors, value: string) {
+    setTouched((t) => ({ ...t, [key]: true }));
+    setFieldErrors((f) => ({ ...f, [key]: RULES[key](value) }));
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
-    setBusy(true);
     setError(null);
     setMessage(null);
+
+    const next: FieldErrors = {
+      name: RULES.name(name),
+      phone: RULES.phone(phone),
+      email: RULES.email(email),
+      password: RULES.password(password),
+    };
+    setFieldErrors(next);
+    setTouched({ name: true, phone: true, email: true, password: true });
+    if (Object.values(next).some(Boolean)) return;
+    if (!guard.ready()) {
+      setError(guard.captchaPrompt);
+      return;
+    }
+
+    setBusy(true);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name, phone, email, password }),
+        body: JSON.stringify({ name, phone, email, password, ...guard.payload() }),
       });
       const data = await res.json().catch(() => ({}));
+      guard.reset();
       if (!res.ok) {
         setError(data.error ?? "Could not create your account.");
         return;
@@ -122,7 +165,7 @@ export default function SignupForm() {
               className="auth-input"
               placeholder="6-digit code"
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
               inputMode="numeric"
               autoComplete="one-time-code"
               pattern="\d{6}"
@@ -184,7 +227,7 @@ export default function SignupForm() {
         <span>Or sign up with email</span>
       </div>
 
-      <form className="auth-form" onSubmit={onSubmit}>
+      <form className="auth-form" onSubmit={onSubmit} noValidate>
         <div className="auth-field">
           <label className="auth-label" htmlFor={nameId}>
             Full name
@@ -195,10 +238,16 @@ export default function SignupForm() {
             className="auth-input"
             placeholder="Jane Carter"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              recheck("name", e.target.value);
+            }}
+            onBlur={() => leave("name", name)}
             autoComplete="name"
             required
+            aria-invalid={!!fieldErrors.name}
           />
+          {fieldErrors.name && <p className="auth-field-error">{fieldErrors.name}</p>}
         </div>
 
         <div className="auth-field">
@@ -209,12 +258,20 @@ export default function SignupForm() {
             id={phoneId}
             type="tel"
             className="auth-input"
-            placeholder="(215) 555-0123"
+            placeholder="2155550123"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              const v = cleanPhoneInput(e.target.value);
+              setPhone(v);
+              recheck("phone", v);
+            }}
+            onBlur={() => leave("phone", phone)}
             autoComplete="tel"
+            inputMode="numeric"
             required
+            aria-invalid={!!fieldErrors.phone}
           />
+          {fieldErrors.phone && <p className="auth-field-error">{fieldErrors.phone}</p>}
         </div>
 
         <div className="auth-field">
@@ -227,21 +284,34 @@ export default function SignupForm() {
             className="auth-input"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              recheck("email", e.target.value);
+            }}
+            onBlur={() => leave("email", email)}
             autoComplete="email"
             required
+            aria-invalid={!!fieldErrors.email}
           />
+          {fieldErrors.email && <p className="auth-field-error">{fieldErrors.email}</p>}
         </div>
 
         <PasswordInput
           label="Password"
           value={password}
-          onChange={setPassword}
+          onChange={(v) => {
+            setPassword(v);
+            recheck("password", v);
+          }}
+          onBlur={() => leave("password", password)}
+          error={fieldErrors.password}
           placeholder="At least 8 characters"
           autoComplete="new-password"
           required
           minLength={8}
         />
+
+        {guard.fields}
 
         {error && (
           <p className="auth-error" role="alert">

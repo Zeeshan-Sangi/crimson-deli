@@ -14,6 +14,8 @@ export const siteConfig = {
   },
   phone: "+1 (215) 595-2136",
   phoneHref: "tel:+12155952136",
+  /** Same number, on WhatsApp (the floating chat button). */
+  whatsappHref: "https://wa.me/12155952136",
   email: "info@crimsondeli.com",
   doordashUrl:
     "https://www.doordash.com/convenience/store/crimson-deli-inc.-philadelphia-28047799/",

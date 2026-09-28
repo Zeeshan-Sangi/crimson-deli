@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { findByEmail } from "@/lib/auth/store";
 import { createResetToken } from "@/lib/auth/reset-tokens";
 import { sendPasswordResetEmail } from "@/lib/auth/mailer";
+import { isEmail } from "@/lib/forms/validate";
+import { guardForm, type GuardedBody } from "@/lib/security/form-guard";
 import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -18,9 +20,11 @@ function origin(request: Request): string {
 
 export async function POST(request: Request) {
   let email = "";
+  let body: GuardedBody;
   try {
-    const body = (await request.json()) as { email?: string };
-    email = body.email ?? "";
+    const parsed = (await request.json()) as GuardedBody & { email?: string };
+    body = parsed;
+    email = parsed.email ?? "";
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
@@ -32,6 +36,13 @@ export async function POST(request: Request) {
       { error: "Too many requests. Try again shortly." },
       { status: 429, headers: { "retry-after": String(limit.retryAfterSec) } },
     );
+  }
+
+  const blocked = await guardForm(body, { ip, minFillMs: 1500 });
+  if (blocked) return blocked;
+
+  if (!isEmail(email)) {
+    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
   }
 
   // Always the same answer, whether or not the address has an account. Telling

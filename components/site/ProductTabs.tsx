@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useFormGuard } from "@/components/security/FormGuard";
+import { requiredError } from "@/lib/forms/validate";
 import { Stars, StarPicker } from "./StarRating";
 import type { Review, ReviewSummary } from "@/lib/reviews/types";
 import "./product-tabs.css";
@@ -33,14 +35,23 @@ export default function ProductTabs({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{ rating?: string; name?: string; body?: string }>({});
+  const guard = useFormGuard();
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
     setError(null);
 
-    if (rating === 0) {
-      setError("Please choose a star rating.");
+    const next = {
+      rating: rating === 0 ? "Please choose a star rating." : undefined,
+      name: requiredError(name, "Please enter your name."),
+      body: requiredError(body, "Please write a few words about it."),
+    };
+    setFieldErrors(next);
+    if (next.rating || next.name || next.body) return;
+    if (!guard.ready()) {
+      setError(guard.captchaPrompt);
       return;
     }
 
@@ -49,9 +60,10 @@ export default function ProductTabs({
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ productSlug, name, rating, body }),
+        body: JSON.stringify({ productSlug, name, rating, body, ...guard.payload() }),
       });
       const data = await res.json().catch(() => ({}));
+      guard.reset();
       if (!res.ok) {
         setError(data.error ?? "Could not save your review.");
         return;
@@ -169,7 +181,7 @@ export default function ProductTabs({
               ))}
             </div>
 
-            <form className="cd-reviewform" onSubmit={submit}>
+            <form className="cd-reviewform" onSubmit={submit} noValidate>
               <h3>Write a review</h3>
 
               {done && (
@@ -185,17 +197,31 @@ export default function ProductTabs({
 
               <label>
                 Your rating
-                <StarPicker value={rating} onChange={(v) => { setRating(v); setDone(false); }} />
+                <StarPicker
+                  value={rating}
+                  onChange={(v) => {
+                    setRating(v);
+                    setDone(false);
+                    setFieldErrors((f) => ({ ...f, rating: undefined }));
+                  }}
+                />
+                {fieldErrors.rating && <span className="cd-form-error">{fieldErrors.rating}</span>}
               </label>
 
               <label>
                 Your name
                 <input
                   value={name}
-                  onChange={(e) => { setName(e.target.value); setDone(false); }}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setDone(false);
+                    setFieldErrors((f) => ({ ...f, name: undefined }));
+                  }}
                   maxLength={60}
                   required
+                  aria-invalid={!!fieldErrors.name}
                 />
+                {fieldErrors.name && <span className="cd-form-error">{fieldErrors.name}</span>}
               </label>
 
               <label>
@@ -203,12 +229,20 @@ export default function ProductTabs({
                 <textarea
                   rows={4}
                   value={body}
-                  onChange={(e) => { setBody(e.target.value); setDone(false); }}
+                  onChange={(e) => {
+                    setBody(e.target.value);
+                    setDone(false);
+                    setFieldErrors((f) => ({ ...f, body: undefined }));
+                  }}
                   maxLength={1500}
                   placeholder="How was it? What would you tell a friend?"
                   required
+                  aria-invalid={!!fieldErrors.body}
                 />
+                {fieldErrors.body && <span className="cd-form-error">{fieldErrors.body}</span>}
               </label>
+
+              {guard.fields}
 
               <button type="submit" className="cd-reviewform__submit" disabled={busy}>
                 {busy ? "Posting…" : "Post review"}

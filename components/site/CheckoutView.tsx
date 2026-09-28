@@ -5,12 +5,19 @@ import { useEffect, useState } from "react";
 import { formatCents, useCart } from "@/lib/cart/CartContext";
 import { UNPRICED_LABEL } from "@/lib/data/food-menu";
 import { formatPhone } from "@/lib/format/phone";
+import { cleanPhoneInput, emailError, phoneError, requiredError } from "@/lib/forms/validate";
 import { computeOrderTotals, formatTaxRateLabel } from "@/lib/settings/tax";
 import { pointsToCents, type RewardsSettings } from "@/lib/settings/types";
 import { siteConfig } from "@/lib/site-config";
 
 type Details = { name: string; phone: string; email: string; notes: string };
 const EMPTY: Details = { name: "", phone: "", email: "", notes: "" };
+
+const RULES: Partial<Record<keyof Details, (v: string) => string | undefined>> = {
+  name: (v) => requiredError(v, "We need a name for the order."),
+  phone: (v) => phoneError(v),
+  email: (v) => emailError(v, { required: false }),
+};
 
 export default function CheckoutView({
   defaultName = "",
@@ -55,19 +62,23 @@ export default function CheckoutView({
   const set =
     (key: keyof Details) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setDetails((d) => ({ ...d, [key]: e.target.value }));
-      setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+      const value = key === "phone" ? cleanPhoneInput(e.target.value) : e.target.value;
+      setDetails((d) => ({ ...d, [key]: value }));
+      // Once a field has shown a warning, recheck it live so it clears the
+      // moment the value is right.
+      setErrors((prev) => (prev[key] ? { ...prev, [key]: RULES[key]?.(value) } : prev));
     };
+
+  const blur = (key: keyof Details) => () =>
+    setErrors((prev) => ({ ...prev, [key]: RULES[key]?.(details[key]) }));
 
   function validate() {
     const next: Partial<Record<keyof Details, string>> = {};
-    if (!details.name.trim()) next.name = "We need a name for the order.";
-    if (details.phone.replace(/\D/g, "").length < 10)
-      next.phone = "Enter a phone number we can reach you on.";
-    if (details.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email.trim()))
-      next.email = "That email address does not look right.";
+    next.name = RULES.name!(details.name);
+    next.phone = RULES.phone!(details.phone);
+    next.email = RULES.email!(details.email);
     setErrors(next);
-    return Object.keys(next).length === 0;
+    return !Object.values(next).some(Boolean);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -204,6 +215,7 @@ export default function CheckoutView({
                 placeholder="Your name"
                 value={details.name}
                 onChange={set("name")}
+                onBlur={blur("name")}
                 autoComplete="name"
                 aria-invalid={!!errors.name}
               />
@@ -218,7 +230,9 @@ export default function CheckoutView({
                 placeholder="Phone number"
                 value={details.phone}
                 onChange={set("phone")}
+                onBlur={blur("phone")}
                 autoComplete="tel"
+                inputMode="numeric"
                 aria-invalid={!!errors.phone}
               />
               {errors.phone && <p className="cd-form-error">{errors.phone}</p>}
@@ -232,6 +246,7 @@ export default function CheckoutView({
                 placeholder="Email address (optional)"
                 value={details.email}
                 onChange={set("email")}
+                onBlur={blur("email")}
                 autoComplete="email"
                 aria-invalid={!!errors.email}
               />

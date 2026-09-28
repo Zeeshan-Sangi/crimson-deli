@@ -14,6 +14,10 @@ export const metadata: Metadata = {
 
 const MAP_URL =
   "https://maps.google.com/?q=7720+Ogontz+Avenue+Philadelphia+PA+19150";
+// Keyless Google Maps embed of the same address, shown above the footer.
+const MAP_EMBED_URL = `https://maps.google.com/maps?q=${encodeURIComponent(
+  `${siteConfig.name}, ${siteConfig.address}`,
+)}&z=16&output=embed`;
 
 export default async function ContactPage() {
   const { store } = await getSettings();
@@ -84,6 +88,23 @@ export default async function ContactPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="cd-contact-map" aria-labelledby="contact-map-title">
+        <div className="cd-page-wrap">
+          <h2 id="contact-map-title" className="visually-hidden">
+            Find us on the map
+          </h2>
+          <div className="cd-contact-map__frame">
+            <iframe
+              src={MAP_EMBED_URL}
+              title={`Map showing ${siteConfig.name} at ${siteConfig.address}`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
           </div>
         </div>
       </section>

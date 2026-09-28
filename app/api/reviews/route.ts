@@ -9,6 +9,7 @@ import {
   listForProduct,
   summaryForProduct,
 } from "@/lib/reviews/store";
+import { guardForm, spamReason, type GuardedBody } from "@/lib/security/form-guard";
 import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
 
 /** Public: leave a review. Rate limited — this endpoint takes anonymous writes. */
 export async function POST(request: Request) {
-  let body: { productSlug?: string; name?: string; rating?: number; body?: string };
+  let body: GuardedBody & { productSlug?: string; name?: string; rating?: number; body?: string };
   try {
     body = await request.json();
   } catch {
@@ -42,6 +43,12 @@ export async function POST(request: Request) {
       { status: 429, headers: { "retry-after": String(limit.retryAfterSec) } },
     );
   }
+
+  const blocked = await guardForm(body, { ip, minFillMs: 3000 });
+  if (blocked) return blocked;
+
+  const spam = spamReason({ name: body.name, text: body.body ?? "" });
+  if (spam) return NextResponse.json({ error: spam }, { status: 400 });
 
   const slug = body.productSlug?.trim() ?? "";
   // Reviews may only attach to a product that exists, or the store fills up

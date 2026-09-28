@@ -12,6 +12,9 @@ type Props = {
   autoComplete: "current-password" | "new-password";
   required?: boolean;
   minLength?: number;
+  /** Validation message; also turns the field red. */
+  error?: string;
+  onBlur?: () => void;
 };
 
 /**
@@ -29,6 +32,8 @@ export default function PasswordInput({
   autoComplete,
   required,
   minLength,
+  error,
+  onBlur,
 }: Props) {
   const [shown, setShown] = useState(false);
   const id = useId();
@@ -46,9 +51,12 @@ export default function PasswordInput({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         autoComplete={autoComplete}
         required={required}
         minLength={minLength}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
       />
 
       <button
@@ -62,6 +70,11 @@ export default function PasswordInput({
         {shown ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
       </button>
       </div>
+      {error && (
+        <p id={`${id}-error`} className="auth-field-error">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

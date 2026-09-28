@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { isEmail, isPhone } from "@/lib/forms/validate";
 import { listProducts } from "@/lib/products/store";
 import {
   ICE_CREAM_SIZES,
@@ -96,11 +97,11 @@ export async function createOrder(
   const email = input.customer?.email?.trim() || null;
 
   if (!name) throw new OrderValidationError("A name is required.");
-  if (phone.replace(/\D/g, "").length < 10)
-    throw new OrderValidationError("A reachable phone number is required.");
+  if (!isPhone(phone))
+    throw new OrderValidationError("Please enter a 10-digit phone number.");
   if (!Array.isArray(input.items) || input.items.length === 0)
     throw new OrderValidationError("The order has no items.");
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+  if (email && !isEmail(email))
     throw new OrderValidationError("That email address is not valid.");
 
   const menu = await listProducts();

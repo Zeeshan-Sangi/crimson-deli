@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import SiteFooter from "@/components/site/SiteFooter";
 import ScrollReveal from "@/components/site/ScrollReveal";
 import SmoothScroll from "@/components/site/SmoothScroll";
+import WhatsAppButton from "@/components/site/WhatsAppButton";
 import { CartProvider } from "@/lib/cart/CartContext";
 
 import "@/styles/crimson/reveal.css";
@@ -25,6 +26,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <main>{children}</main>
         <SiteFooter />
       </div>
+      <WhatsAppButton />
       <ScrollReveal />
       <SmoothScroll />
     </CartProvider>

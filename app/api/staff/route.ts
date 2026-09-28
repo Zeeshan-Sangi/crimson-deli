@@ -16,7 +16,11 @@ export async function GET() {
   const users = await listUsers();
   // Never ship password hashes to the client.
   return NextResponse.json({
-    users: users.map(({ passwordHash, ...rest }) => rest),
+    users: users.map((u) => {
+      const clone = { ...u };
+      delete (clone as { passwordHash?: string }).passwordHash;
+      return clone;
+    }),
   });
 }
 
@@ -51,7 +55,8 @@ export async function POST(request: Request) {
       actor,
       note: `role ${user.role}`,
     });
-    const { passwordHash, ...safe } = user;
+    const safe = { ...user };
+    delete (safe as { passwordHash?: string }).passwordHash;
     return NextResponse.json({ user: safe }, { status: 201 });
   } catch (err) {
     if (err instanceof AuthError) {

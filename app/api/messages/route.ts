@@ -8,6 +8,7 @@ import {
   listMessages,
   setMessageHandled,
 } from "@/lib/messages/store";
+import { guardForm, spamReason, type GuardedBody } from "@/lib/security/form-guard";
 import { clientIp, consumeShared } from "@/lib/security/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ export async function GET() {
 
 /** Public: the storefront contact form posts here. */
 export async function POST(request: Request) {
-  let body: {
+  let body: GuardedBody & {
     name?: string;
     email?: string;
     phone?: string;
@@ -45,6 +46,15 @@ export async function POST(request: Request) {
       { status: 429, headers: { "retry-after": String(limit.retryAfterSec) } },
     );
   }
+
+  const blocked = await guardForm(body, { ip, minFillMs: 3000 });
+  if (blocked) return blocked;
+
+  const spam = spamReason({
+    name: body.name,
+    text: `${body.subject ?? ""}\n${body.body ?? ""}`,
+  });
+  if (spam) return NextResponse.json({ error: spam }, { status: 400 });
 
   try {
     const message = await createMessage({

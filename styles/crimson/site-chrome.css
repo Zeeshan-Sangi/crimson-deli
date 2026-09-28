@@ -508,3 +508,57 @@
 .cd-site-footer__socials a:hover {
   color: var(--cd-crimson);
 }
+
+/* ---- floating WhatsApp button ---- */
+
+/* Below the mobile drawer (z-index 50) so an open menu covers it. */
+.cd-whatsapp {
+  position: fixed;
+  right: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.cd-whatsapp:hover {
+  background: #1ebe5b;
+  color: #fff;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26);
+}
+
+.cd-whatsapp:focus-visible {
+  outline: 3px solid #128c7e;
+  outline-offset: 3px;
+}
+
+@media (max-width: 575px) {
+  .cd-whatsapp {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cd-whatsapp,
+  .cd-whatsapp:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+@media print {
+  .cd-whatsapp {
+    display: none;
+  }
+}

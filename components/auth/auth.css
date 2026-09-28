@@ -287,6 +287,27 @@
   border-color: var(--auth-crimson);
 }
 
+/* :user-invalid covers the forms that lean on native `required` (verify code,
+   reset password); it only turns red after someone has touched the field. */
+.auth-input[aria-invalid="true"],
+.auth-input[aria-invalid="true"]:focus,
+.auth-input:user-invalid {
+  border-color: #d92d20;
+  background: #fff5f4;
+}
+
+.auth-form .cd-recaptcha {
+  min-height: 78px;
+}
+
+.auth-field-error,
+.auth-form .cd-form-error {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c01d12;
+}
+
 .auth-password {
   position: relative;
   display: flex;

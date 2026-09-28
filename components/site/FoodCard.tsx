@@ -5,45 +5,47 @@ import {
   ICE_CREAM_SIZES,
   isIceCreamItem,
 } from "@/lib/data/food-menu";
-import { Clock, Store } from "lucide-react";
 
-/** Fresh food card — Phase 2 brand styling. */
+/** Fresh food card — Modern high-aesthetic design matching reference UI */
 export default function FoodCard({ item, delay }: { item: FoodItem; delay?: string }) {
   const priceLabel = isIceCreamItem(item)
-    ? `${formatFoodPrice(ICE_CREAM_SIZES.small.priceCents)} / ${formatFoodPrice(ICE_CREAM_SIZES.large.priceCents)}`
+    ? `From ${formatFoodPrice(ICE_CREAM_SIZES.small.priceCents)}`
     : formatFoodPrice(item.priceCents);
+
+  const tag1 = item.available ? "Top Pick" : "Sold Out";
+  const tag2 = "Pickup in-store";
 
   return (
     <article className="cd-food-card wow fadeInUp" data-wow-delay={delay}>
-      <Link href={`/food/${item.slug}`} className="cd-food-card__thumb">
-        <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" />
-        <span className="cd-food-card__badge">Pickup only</span>
-      </Link>
+      <div className="cd-food-card__media-wrap">
+        <Link href={`/food/${item.slug}`} className="cd-food-card__thumb">
+          <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" />
+        </Link>
+      </div>
 
       <div className="cd-food-card__body">
-        <h3 className="cd-food-card__title">
-          <Link href={`/food/${item.slug}`}>{item.name}</Link>
-        </h3>
-
-        <div className="cd-food-card__meta">
-          <span>
-            <Store size={14} aria-hidden="true" /> Pickup in-store
-          </span>
-          <span>
-            <Clock size={14} aria-hidden="true" /> Made fresh
-          </span>
+        <div className="cd-food-card__header">
+          <h3 className="cd-food-card__title">
+            <Link href={`/food/${item.slug}`}>{item.name}</Link>
+          </h3>
+          <span className="cd-card-price-badge">{priceLabel}</span>
         </div>
 
         <p className="cd-food-card__desc">{item.description}</p>
 
-        <div className="cd-food-card__foot">
-          <span className="cd-food-card__price">{priceLabel}</span>
-          <Link href={`/food/${item.slug}`} className="cd-btn-solid cd-food-card__btn">
-            View &amp; order
-          </Link>
+        <div className="cd-card-tags">
+          <span className={`cd-card-tag ${item.available ? "cd-card-tag--primary" : "cd-card-tag--muted"}`}>
+            {tag1}
+          </span>
+          <span className="cd-card-tag">{tag2}</span>
         </div>
+
+        <Link href={`/food/${item.slug}`} className="cd-card-btn">
+          Add to Cart
+        </Link>
       </div>
     </article>
   );
 }
+
 
