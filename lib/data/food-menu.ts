@@ -174,7 +174,7 @@ export const foodItems: FoodItem[] = [
     slug: "water-ice",
     name: "Water Ice",
     description:
-      "Philadelphia water ice (Italian ice). Pick your flavor above. This week's special is sour apple.",
+      "Philadelphia water ice (Italian ice). Pick your flavor above. This week's special is strawberry kiwi.",
     imageUrl: "/assets/img/crimson/products/water-ice-small.png",
     categorySlug: "ice-cream",
     priceCents: 399,
@@ -184,7 +184,7 @@ export const foodItems: FoodItem[] = [
     slug: "gelati",
     name: "Gelati",
     description:
-      "Layers of creamy soft-serve ice cream with your favorite water ice. Pick the ice cream base and the water ice flavor above. This week's water ice special is sour apple.",
+      "Layers of creamy soft-serve ice cream with your favorite water ice. Pick the ice cream base and the water ice flavor above. This week's water ice special is strawberry kiwi.",
     imageUrl: "/assets/img/crimson/products/gelati-small.png",
     categorySlug: "ice-cream",
     priceCents: 399,
