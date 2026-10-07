@@ -31,7 +31,7 @@ export default async function FoodPage() {
             const items = products.filter((p) => p.categorySlug === category.slug);
             if (items.length === 0) return null;
             return (
-              <div key={category.slug} className="cd-food-category">
+              <div key={category.slug} id={category.slug} className="cd-food-category">
                 <h3>{category.name}</h3>
                 <div className="cd-food-grid">
                   {items.map((item, i) => (

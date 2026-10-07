@@ -12,6 +12,8 @@ type Offer = {
   alt: string;
   /** Fresh-food offers link to their menu page and drop out when the item is hidden. */
   food?: boolean;
+  /** Overrides the default link, for posters that cover a whole menu section. */
+  href?: string;
 };
 
 const OFFERS: Offer[] = [
@@ -32,6 +34,18 @@ const OFFERS: Offer[] = [
     img: "/assets/img/crimson/offers/offer-fruit-bowl.webp",
     alt: "Fresh Fruit Bowl, available to order at Crimson Deli",
     food: true,
+  },
+  {
+    slug: "water-ice",
+    img: "/assets/img/crimson/offers/offer-water-ice.webp",
+    alt: "Philadelphia Water Ice in every flavor at Crimson Deli",
+    food: true,
+  },
+  {
+    slug: "ice-cream",
+    img: "/assets/img/crimson/offers/offer-ice-cream.webp",
+    alt: "Ice cream cups, small $3.99 and large $4.99 at Crimson Deli",
+    href: "/food#ice-cream",
   },
   // In-store drink deals. Each poster opens its own department on /store.
   {
@@ -78,7 +92,9 @@ export default function OfferSlider({ visibleSlugs }: { visibleSlugs: string[] }
         return (
           <SwiperSlide key={offer.slug}>
             <Link
-              href={offer.food ? `/food/${offer.slug}` : `/store/${offer.slug}`}
+              href={
+                offer.href ?? (offer.food ? `/food/${offer.slug}` : `/store/${offer.slug}`)
+              }
               className="cd-offer-card"
               style={style}
             >
