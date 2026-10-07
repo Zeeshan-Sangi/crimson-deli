@@ -27,20 +27,26 @@ export default function AddToCart({
   item,
   size: controlledSize,
   onSizeChange,
+  flavors: controlledFlavors,
+  onFlavorChange,
 }: {
   item: FoodItem;
   size?: IceCreamSize;
   onSizeChange?: (size: IceCreamSize) => void;
+  /** When set with onFlavorChange, flavor picks are controlled by the parent (hero swap). */
+  flavors?: FlavorChoices;
+  onFlavorChange?: (flavors: FlavorChoices) => void;
 }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [internalSize, setInternalSize] = useState<IceCreamSize>("small");
-  const [flavors, setFlavors] = useState<FlavorChoices>({});
+  const [internalFlavors, setInternalFlavors] = useState<FlavorChoices>({});
   const [flavorPrompt, setFlavorPrompt] = useState(false);
   const [mods, setMods] = useState<ItemMods>({ removed: [], added: [] });
   const sized = isIceCreamItem(item);
   const size = controlledSize ?? internalSize;
+  const flavors = controlledFlavors ?? internalFlavors;
 
   // Water ice and gelati are made to order, so nothing is pre-selected: an
   // unnoticed default would send the kitchen a flavor nobody asked for.
@@ -77,9 +83,10 @@ export default function AddToCart({
   }
 
   function chooseFlavor(groupKey: string, option: string, multi?: boolean) {
-    setFlavors((prev) => {
-      if (!multi) return { ...prev, [groupKey]: option };
-      const current = prev[groupKey];
+    let next: FlavorChoices;
+    if (!multi) next = { ...flavors, [groupKey]: option };
+    else {
+      const current = flavors[groupKey];
       const list = Array.isArray(current)
         ? [...current]
         : typeof current === "string" && current
@@ -88,8 +95,10 @@ export default function AddToCart({
       const i = list.indexOf(option);
       if (i >= 0) list.splice(i, 1);
       else list.push(option);
-      return { ...prev, [groupKey]: list };
-    });
+      next = { ...flavors, [groupKey]: list };
+    }
+    if (onFlavorChange) onFlavorChange(next);
+    else setInternalFlavors(next);
     setFlavorPrompt(false);
     setAdded(false);
   }

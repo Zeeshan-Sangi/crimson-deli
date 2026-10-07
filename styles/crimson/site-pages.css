@@ -986,7 +986,14 @@
   }
 }
 
+.cd-product__media-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .cd-product__media {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1002,6 +1009,89 @@
   max-width: 100%;
   max-height: 520px;
   object-fit: contain;
+}
+
+.cd-product__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--cd-border);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--cd-ink);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.cd-product__arrow:hover,
+.cd-product__arrow:focus-visible {
+  border-color: var(--cd-crimson);
+  color: var(--cd-crimson);
+}
+
+.cd-product__arrow--prev {
+  left: 12px;
+}
+
+.cd-product__arrow--next {
+  right: 12px;
+}
+
+/* All flavors sit in one row; on phones the row scrolls sideways. */
+.cd-flavor-thumbs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 575px) {
+  .cd-flavor-thumbs {
+    grid-auto-columns: 84px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+}
+
+.cd-flavor-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--cd-border);
+  border-radius: var(--cd-radius);
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cd-flavor-thumb img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.cd-flavor-thumb span {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--cd-ink);
+}
+
+.cd-flavor-thumb.is-active,
+.cd-flavor-thumb:hover {
+  border-color: var(--cd-crimson);
+  box-shadow: 0 0 0 1px var(--cd-crimson);
 }
 
 .cd-product__eyebrow {

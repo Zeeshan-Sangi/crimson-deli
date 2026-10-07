@@ -430,6 +430,44 @@ export function iceCreamCupImage(slug: string, size: IceCreamSize): string {
   return `/assets/img/crimson/products/${slug}-${size}.png`;
 }
 
+/** Per-flavor water ice cup photos (Crimson white cup). */
+const WATER_ICE_FLAVOR_SLUGS: Record<string, string> = {
+  Watermelon: "watermelon",
+  Mango: "mango",
+  Cherry: "cherry",
+  Pineapple: "pineapple",
+  "Island Breeze": "island-breeze",
+  "Blueberry Lemon": "blueberry-lemon",
+  "Sour Apple": "sour-apple",
+  "Strawberry Kiwi": "strawberry-kiwi",
+};
+
+/** Cup photo URL for one water ice flavor name, or null if we have no asset. */
+export function waterIceFlavorImage(flavor: string): string | null {
+  const file = WATER_ICE_FLAVOR_SLUGS[flavor];
+  return file ? `/assets/img/crimson/products/water-ice-${file}.png` : null;
+}
+
+/**
+ * Water ice hero photo: one flavor when a single flavor is chosen, otherwise
+ * the all-flavors cup group used for small/large.
+ */
+export function waterIceImage(
+  size: IceCreamSize,
+  flavors?: string | string[] | null,
+): string {
+  const picked = Array.isArray(flavors)
+    ? flavors
+    : flavors
+      ? [flavors]
+      : [];
+  if (picked.length === 1) {
+    const one = waterIceFlavorImage(picked[0]);
+    if (one) return one;
+  }
+  return iceCreamCupImage("water-ice", size);
+}
+
 export function iceCreamPriceCents(size: IceCreamSize): number {
   return ICE_CREAM_SIZES[size].priceCents;
 }
